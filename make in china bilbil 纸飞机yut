@@ -1,0 +1,255 @@
+-- GC连点器 v3.11 - 精准连点位置版 (2025开发者模式)
+-- 功能：点击「1」按钮 → 在按钮当前位置疯狂连点（模拟真实点击）
+-- 完全还原GC连点器：左侧工具栏 + 可拖拽「1」 + CPS调节 + 保存
+-- 连点位置 = 「1」按钮中心，拖动即改变点击坐标
+-- 注入即用，安卓/PC通用
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local VirtualInputManager = game:GetService("VirtualInputManager")  -- 关键：模拟点击
+local LocalPlayer = Players.LocalPlayer
+
+-- GC设置
+local Settings = {
+    CPS = 15,
+    ButtonSize = 80,
+    Enabled = false,
+    Dragging = false,
+    ClickPos = Vector2.new(0, 0)  -- 连点坐标
+}
+
+-- 保存文件
+local SAVE_FILE = "GC_Clicker_Settings.json"
+pcall(function()
+    local data = HttpService:JSONDecode(readfile(SAVE_FILE) or "{}")
+    Settings.CPS = data.CPS or 15
+    Settings.ButtonSize = data.ButtonSize or 80
+end)
+
+-- 主GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GC_Clicker_v3.11"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- 左侧工具栏
+local Toolbar = Instance.new("Frame")
+Toolbar.Size = UDim2.new(0, 70, 0, 400)
+Toolbar.Position = UDim2.new(0, 10, 0.5, -200)
+Toolbar.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+Toolbar.BackgroundTransparency = 0.3
+Toolbar.Parent = ScreenGui
+local ToolbarCorner = Instance.new("UICorner")
+ToolbarCorner.CornerRadius = UDim.new(0, 35)
+ToolbarCorner.Parent = Toolbar
+
+-- 工具栏按钮
+local Buttons = {}
+local icons = {"Play", "Plus", "Minus", "Save"}
+for i, icon in ipairs(icons) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 55, 0, 55)
+    btn.Position = UDim2.new(0, 7.5, 0, 15 + (i-1)*70)
+    btn.BackgroundTransparency = 1
+    btn.Text = icon
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.TextScaled = true
+    btn.Font = Enum.Font.GothamBlack
+    btn.Parent = Toolbar
+    Buttons[i] = btn
+end
+
+-- 「1」按钮（点击位置）
+local ClickButton = Instance.new("TextButton")
+ClickButton.Size = UDim2.new(0, Settings.ButtonSize, 0, Settings.ButtonSize)
+ClickButton.Position = UDim2.new(0.5, -Settings.ButtonSize/2, 0.5, -Settings.ButtonSize/2)
+ClickButton.BackgroundColor3 = Color3.fromRGB(60, 110, 255)
+ClickButton.Text = "1"
+ClickButton.TextColor3 = Color3.new(1,1,1)
+ClickButton.TextScaled = true
+ClickButton.Font = Enum.Font.GothamBlack
+ClickButton.Parent = ScreenGui
+
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(1, 0)
+ButtonCorner.Parent = ClickButton
+
+-- 呼吸灯
+local pulse = TweenService:Create(ClickButton, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+    Size = UDim2.new(0, Settings.ButtonSize + 15, 0, Settings.ButtonSize + 15)
+})
+pulse:Play()
+
+-- CPS面板
+local CPSPanel = Instance.new("Frame")
+CPSPanel.Size = UDim2.new(0, 70, 0, 180)
+CPSPanel.Position = UDim2.new(1, -80, 0.5, -90)
+CPSPanel.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+CPSPanel.BackgroundTransparency = 0.3
+CPSPanel.Visible = false
+CPSPanel.Parent = ScreenGui
+local CPSCorner = Instance.new("UICorner")
+CPSCorner.CornerRadius = UDim.new(0, 35)
+CPSCorner.Parent = CPSPanel
+
+local CPSLabel = Instance.new("TextLabel")
+CPSLabel.Size = UDim2.new(1, 0, 0, 40)
+CPSLabel.BackgroundTransparency = 1
+CPSLabel.Text = tostring(Settings.CPS)
+CPSLabel.TextColor3 = Color3.new(1,1,1)
+CPSLabel.Font = Enum.Font.GothamBold
+CPSLabel.TextSize = 24
+CPSLabel.Parent = CPSPanel
+
+local Slider = Instance.new("Frame")
+Slider.Size = UDim2.new(0, 45, 0, 100)
+Slider.Position = UDim2.new(0, 12.5, 0, 60)
+Slider.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+Slider.Parent = CPSPanel
+local SliderCorner = Instance.new("UICorner")
+SliderCorner.CornerRadius = UDim.new(0, 22)
+SliderCorner.Parent = Slider
+
+local Fill = Instance.new("Frame")
+Fill.Size = UDim2.new(1, 0, (Settings.CPS - 1) / 99, 0)
+Fill.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+Fill.Parent = Slider
+local FillCorner = Instance.new("UICorner")
+FillCorner.CornerRadius = UDim.new(0, 22)
+FillCorner.Parent = Fill
+
+-- 连点核心：VirtualInputManager 模拟点击
+local ClickConnection
+local function StartClicker()
+    if ClickConnection then return end
+    ClickConnection = RunService.Heartbeat:Connect(function()
+        if Settings.Enabled then
+            local x = Settings.ClickPos.X
+            local y = Settings.ClickPos.Y
+            VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)  -- 按下
+            task.wait()
+            VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0) -- 抬起
+            task.wait(1 / Settings.CPS - 0.016)
+        end
+    end)
+end
+
+local function StopClicker()
+    if ClickConnection then
+        ClickConnection:Disconnect()
+        ClickConnection = nil
+    end
+end
+
+-- 更新连点位置
+local function UpdateClickPosition()
+    local absPos = ClickButton.AbsolutePosition
+    local absSize = ClickButton.AbsoluteSize
+    Settings.ClickPos = Vector2.new(
+        absPos.X + absSize.X / 2,
+        absPos.Y + absSize.Y / 2
+    )
+end
+
+-- 更新按钮大小
+local function UpdateButtonSize()
+    ClickButton.Size = UDim2.new(0, Settings.ButtonSize, 0, Settings.ButtonSize)
+    ClickButton.Position = UDim2.new(0.5, -Settings.ButtonSize/2, 0.5, -Settings.ButtonSize/2)
+    pulse:Cancel()
+    pulse = TweenService:Create(ClickButton, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+        Size = UDim2.new(0, Settings.ButtonSize + 15, 0, Settings.ButtonSize + 15)
+    })
+    pulse:Play()
+    UpdateClickPosition()
+end
+
+-- 保存设置
+local function SaveSettings()
+    local data = { CPS = Settings.CPS, ButtonSize = Settings.ButtonSize }
+    pcall(function()
+        writefile(SAVE_FILE, HttpService:JSONEncode(data))
+    end)
+    Buttons[4].Text = "Saved"
+    task.delay(1, function() Buttons[4].Text = "Save" end)
+end
+
+-- 工具栏功能
+Buttons[1].MouseButton1Click:Connect(function()
+    Settings.Enabled = not Settings.Enabled
+    if Settings.Enabled then
+        Buttons[1].Text = "Pause"
+        ClickButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        UpdateClickPosition()
+        StartClicker()
+    else
+        Buttons[1].Text = "Play"
+        ClickButton.BackgroundColor3 = Color3.fromRGB(60, 110, 255)
+        StopClicker()
+    end
+end)
+
+Buttons[2].MouseButton1Click:Connect(function()
+    Settings.ButtonSize = math.clamp(Settings.ButtonSize + 10, 50, 200)
+    UpdateButtonSize()
+end)
+
+Buttons[3].MouseButton1Click:Connect(function()
+    Settings.ButtonSize = math.clamp(Settings.ButtonSize - 10, 50, 200)
+    UpdateButtonSize()
+end)
+
+Buttons[4].MouseButton1Click:Connect(SaveSettings)
+
+-- 「1」按钮拖动
+ClickButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        Settings.Dragging = true
+    end
+end)
+
+ClickButton.InputChanged:Connect(function(input)
+    if Settings.Dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+        ClickButton.Position = UDim2.new(0, input.Position.X - Settings.ButtonSize/2, 0, input.Position.Y - Settings.ButtonSize/2)
+        UpdateClickPosition()
+    end
+end)
+
+ClickButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        Settings.Dragging = false
+        CPSPanel.Visible = not CPSPanel.Visible
+    end
+end)
+
+-- CPS滑块
+local draggingSlider = false
+Slider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingSlider = true
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if draggingSlider and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+        local rel = math.clamp((input.Position.Y - Slider.AbsolutePosition.Y) / Slider.AbsoluteSize.Y, 0, 1)
+        Settings.CPS = math.floor(1 + rel * 99)
+        CPSLabel.Text = tostring(Settings.CPS)
+        Fill.Size = UDim2.new(1, 0, rel, 0)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        draggingSlider = false
+    end
+end)
+
+-- 启动时更新位置
+UpdateClickPosition()
+
+print("GC连点器 v3.11 - 位置连点版已加载！")
+print("拖动「1」改变连点位置，点击 Play 开始")
+print("连点坐标 = 「1」按钮中心")
