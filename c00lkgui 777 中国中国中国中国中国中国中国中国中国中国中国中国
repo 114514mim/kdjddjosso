@@ -1,0 +1,117 @@
+-- 手机端专用：自动购买 + 可拖动开关按钮（死亡不消失）
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- 创建 ScreenGui（死亡不重置）
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoBuyUI"
+screenGui.ResetOnSpawn = false  -- 关键：死亡不消失
+screenGui.Parent = playerGui
+
+-- 等待远程函数
+local buyRemote = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RF/MerchantService/Buy")
+
+-- 配置
+local itemId = "2298b248-44dd-4a34-bbfe-e1174e8ae1b4"
+local buyList = {7, 8, 9, 10}
+local delayTime = 0  -- 0延迟 = 极限速度（手机仍流畅）
+local running = true
+
+-- === 创建可拖动按钮 ===
+local dragButton = Instance.new("TextButton")
+dragButton.Size = UDim2.new(0, 80, 0, 80)
+dragButton.Position = UDim2.new(1, -100, 1, -100)  -- 右下角
+dragButton.BackgroundColor3 = Color3.fromRGB(30, 140, 255)
+dragButton.Text = "ON"
+dragButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+dragButton.TextScaled = true
+dragButton.Font = Enum.Font.GothamBold
+dragButton.Parent = screenGui
+
+-- 圆角
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 40)
+corner.Parent = dragButton
+
+-- 发光边框
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(100, 200, 255)
+stroke.Thickness = 3
+stroke.Transparency = 0.4
+stroke.Parent = dragButton
+
+-- 拖拽功能
+local dragging = false
+local dragStart, startPos
+
+dragButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = dragButton.Position
+    end
+end)
+
+dragButton.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        dragButton.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+dragButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- 点击切换开关
+dragButton.MouseButton1Click:Connect(function()
+    running = not running
+    dragButton.Text = running and "ON" or "OFF"
+    dragButton.BackgroundColor3 = running and Color3.fromRGB(30, 140, 255) or Color3.fromRGB(180, 50, 50)
+    
+    -- 通知
+    StarterGui:SetCore("SendNotification", {
+        Title = running and "自动购买已开启" or "自动购买已关闭";
+        Text = running and "7,8,9,10 循环中" or "已暂停";
+        Duration = 2;
+    })
+end)
+
+-- === 自动购买逻辑 ===
+local function buyItem(num)
+    if not running then return end
+    pcall(function()
+        buyRemote:InvokeServer(itemId, num)
+    end)
+end
+
+task.spawn(function()
+    while task.wait() do
+        if not running then continue end
+        for _, n in ipairs(buyList) do
+            buyItem(n)
+            if delayTime > 0 then task.wait(delayTime) end
+        end
+    end
+end)
+
+-- === 启动提示 ===
+StarterGui:SetCore("SendNotification", {
+    Title = "自动购买已启动";
+    Text = "拖动按钮控制开关";
+    Duration = 5;
+})
+
+print("手机端自动购买 + 可拖动按钮已加载！")
+print("按钮：ON=运行，OFF=停止")
+print("死亡不消失，位置可拖动")
