@@ -1,0 +1,103 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoBuyUI"
+screenGui.ResetOnSpawn = false 
+screenGui.Parent = playerGui
+
+local buyRemote = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RF/MerchantService/Buy")
+
+local itemId = "2298b248-44dd-4a34-bbfe-e1174e8ae1b4"
+local buyList = {7, 8, 9, 10}
+local delayTime = 0
+local running = true
+
+local dragButton = Instance.new("TextButton")
+dragButton.Size = UDim2.new(0, 80, 0, 80)
+dragButton.Position = UDim2.new(1, -100, 1, -100) 
+dragButton.BackgroundColor3 = Color3.fromRGB(30, 140, 255)
+dragButton.Text = "ON"
+dragButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+dragButton.TextScaled = true
+dragButton.Font = Enum.Font.GothamBold
+dragButton.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 40)
+corner.Parent = dragButton
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(100, 200, 255)
+stroke.Thickness = 3
+stroke.Transparency = 0.4
+stroke.Parent = dragButton
+
+local dragging = false
+local dragStart, startPos
+
+dragButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = dragButton.Position
+    end
+end)
+
+dragButton.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        dragButton.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+dragButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+dragButton.MouseButton1Click:Connect(function()
+    running = not running
+    dragButton.Text = running and "ON" or "OFF"
+    dragButton.BackgroundColor3 = running and Color3.fromRGB(30, 140, 255) or Color3.fromRGB(180, 50, 50)
+    
+    StarterGui:SetCore("SendNotification", {
+        Title = running and "自动购买已开启" or "自动购买已关闭";
+        Text = running and "自动购买" or "已暂停";
+        Duration = 2;
+    })
+end)
+
+local function buyItem(num)
+    if not running then return end
+    pcall(function()
+        buyRemote:InvokeServer(itemId, num)
+    end)
+end
+
+task.spawn(function()
+    while task.wait() do
+        if not running then continue end
+        for _, n in ipairs(buyList) do
+            buyItem(n)
+            if delayTime > 0 then task.wait(delayTime) end
+        end
+    end
+end)
+
+StarterGui:SetCore("SendNotification", {
+    Title = "自动购买已启动";
+    Text = "拖动按钮控制开关";
+    Duration = 5;
+})
+
+print("按钮：ON=运行，OFF=停止")
