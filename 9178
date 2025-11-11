@@ -1,0 +1,108 @@
+-- WindUI 示例脚本 - 中文翻译版（纯净版，无任何额外内容）
+-- 原链接：https://raw.githubusercontent.com/Footagesus/WindUI/refs/heads/main/Example.lua
+
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/Library.lua"))()
+
+local Window = WindUI:CreateWindow({
+    Title = "WindUI 示例",
+    Size = UDim2.fromOffset(500, 400),
+    Position = UDim2.fromScale(0.5, 0.5),
+    Draggable = true
+})
+
+local Tab = Window:CreateTab({
+    Name = "主功能",
+    Icon = "rbxassetid://123456789"
+})
+
+Tab:CreateButton({
+    Name = "打印 Hello World",
+    Callback = function()
+        print("你点击了按钮！Hello World!")
+    end
+})
+
+local ToggleState = false
+Tab:CreateToggle({
+    Name = "启用飞行",
+    Default = false,
+    Callback = function(value)
+        ToggleState = value
+        if value then
+            print("飞行已开启")
+        else
+            print("飞行已关闭")
+        end
+    end
+})
+
+Tab:CreateSlider({
+    Name = "调整速度",
+    Min = 16,
+    Max = 200,
+    Default = 50,
+    Increment = 1,
+    Callback = function(value)
+        print("当前速度设置为：" .. value)
+    end
+})
+
+Tab:CreateDropdown({
+    Name = "选择武器",
+    Items = {"刀", "枪", "火箭筒", "光剑"},
+    Default = "刀",
+    Callback = function(selected)
+        print("你选择了武器：" .. selected)
+    end
+})
+
+Tab:CreateInput({
+    Name = "输入玩家名字",
+    Placeholder = "输入目标玩家...",
+    Callback = function(text)
+        if text ~= "" then
+            print("你输入了玩家名：" .. text)
+        end
+    end
+})
+
+Tab:CreateColorpicker({
+    Name = "选择颜色",
+    Default = Color3.fromRGB(255, 100, 100),
+    Callback = function(color)
+        print("你选择了颜色：", color)
+    end
+})
+
+WindUI:Notify({
+    Title = "欢迎使用 WindUI",
+    Content = "这是一个功能演示脚本",
+    Duration = 5
+})
+
+local SettingsTab = Window:CreateTab({
+    Name = "设置",
+    Icon = "rbxassetid://987654321"
+})
+
+SettingsTab:CreateButton({
+    Name = "关闭 UI",
+    Callback = function()
+        WindUI:Destroy()
+    end
+})
+
+SettingsTab:CreateButton({
+    Name = "重新加载 UI",
+    Callback = function()
+        WindUI:Reload()
+    end
+})
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        WindUI:Toggle()
+    end
+end)
+
+print("WindUI 示例脚本已加载！按 Insert 键打开/关闭界面")
