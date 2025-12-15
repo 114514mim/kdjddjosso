@@ -1,0 +1,84 @@
+-- 通用逻辑执行脚本 | 简单按钮 + 自定义逻辑区
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+local player = Players.LocalPlayer
+
+-- 创建 UI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomLogicGUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 250, 0, 80)
+button.Position = UDim2.new(0.5, -125, 0.8, -40)  -- 屏幕下方居中
+button.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Text = "🔴 逻辑关闭\n(点击开启)"
+button.TextScaled = true
+button.Font = Enum.Font.GothamBold
+button.Draggable = true
+button.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = button
+
+-- 状态变量
+local enabled = false
+local connection
+
+-- ==================== 这里放你的逻辑 ====================
+-- 把你想要一直执行的代码写在这里
+local function YourCustomLogic()
+    -- 示例：你的 Slap 逻辑（替换成你自己的）
+    local slapRemote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Slap")
+    local args = {
+        "MARKER",
+        CFrame.new(21.88749122619629, 3.998012065887451, 61.83786392211914, 0.9366133809089661, -0.00000973830174189061, -0.350364625453949, 0.000008447913387499284, 1, -0.000005211352799960878, 0.350364625453949, 0.000001921173179653124, 0.9366133809089661),
+        "Slap"
+    }
+    slapRemote:FireServer(unpack(args))
+    
+    -- 你可以在这里放任何逻辑，比如传送、购买物品、发 Remote 等
+    -- 例如：
+    -- game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 100, 0)
+end
+-- =======================================================
+
+-- 自动循环执行你的逻辑
+local function StartLoop()
+    if connection then connection:Disconnect() end
+    connection = RunService.Heartbeat:Connect(function()
+        if enabled then
+            YourCustomLogic()
+        end
+    end)
+end
+
+-- 按钮点击开关
+button.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    
+    if enabled then
+        button.Text = "🟢 逻辑运行中\n(点击关闭)"
+        button.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        YourCustomLogic()  -- 立即执行一次
+        StartLoop()
+        StarterGui:SetCore("SendNotification", {Title = "脚本", Text = "逻辑已开启！", Duration = 3})
+    else
+        button.Text = "🔴 逻辑关闭\n(点击开启)"
+        button.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        if connection then connection:Disconnect() end
+        StarterGui:SetCore("SendNotification", {Title = "脚本", Text = "逻辑已关闭！", Duration = 3})
+    end
+end)
+
+-- 初始化通知
+StarterGui:SetCore("SendNotification", {
+    Title = "通用逻辑脚本",
+    Text = "加载成功！点击按钮开启/关闭自定义逻辑。",
+    Duration = 5
+})
