@@ -1,0 +1,283 @@
+--[[
+	飞行脚本 - 电脑手机通用版
+	- PC：按 F 切换飞行，WASD 移动，空格上升，Shift 下降
+	- 手机：右下角大按钮切换飞行，左下摇杆移动，右边升降按钮
+	自动检测设备，UI只在手机上显示，PC保持纯键盘无干扰
+]]
+
+local player = game.Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local HRP = character:WaitForChild("HumanoidRootPart")
+
+local flySpeed = 50  -- 飞行速度，可修改
+local flying = false
+
+-- 飞行物理
+local bodyVelocity = Instance.new("BodyVelocity")
+bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+
+local bodyGyro = Instance.new("BodyGyro")
+bodyGyro.MaxTorque = Vector3.new(4000, 4000, 4000)
+bodyGyro.P = 3000
+
+-- GUI根节点
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "通用飞行GUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- 检测是否为手机（触摸设备且无键盘）
+local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local showMobileUI = isMobile
+
+-- PC状态提示（小标签，始终显示）
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0, 200, 0, 50)
+statusLabel.Position = UDim2.new(0, 20, 0, 20)
+statusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+statusLabel.BackgroundTransparency = 0.4
+statusLabel.Text = "飞行：关闭（按 F 切换）"
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.TextScaled = true
+statusLabel.Parent = screenGui
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 10)
+statusCorner.Parent = statusLabel
+
+-- 手机专用UI容器
+local mobileContainer = Instance.new("Frame")
+mobileContainer.Size = UDim2.new(1, 0, 1, 0)
+mobileContainer.BackgroundTransparency = 1
+mobileContainer.Visible = showMobileUI
+mobileContainer.Parent = screenGui
+
+-- 飞行开关按钮（右下角大圆按钮）
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 130, 0, 130)
+toggleButton.Position = UDim2.new(1, -150, 1, -150)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+toggleButton.BackgroundTransparency = 0.3
+toggleButton.Text = "飞行\n关闭"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextScaled = true
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.Parent = mobileContainer
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleButton
+
+-- 手机摇杆（左下）
+local joystickFrame = Instance.new("Frame")
+joystickFrame.Size = UDim2.new(0, 160, 0, 160)
+joystickFrame.Position = UDim2.new(0, 20, 1, -180)
+joystickFrame.BackgroundTransparency = 1
+joystickFrame.Parent = mobileContainer
+
+local joystickBg = Instance.new("Frame")
+joystickBg.Size = UDim2.new(0, 130, 0, 130)
+joystickBg.Position = UDim2.new(0.5, -65, 0.5, -65)
+joystickBg.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+joystickBg.BackgroundTransparency = 0.4
+joystickBg.Parent = joystickFrame
+
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(1, 0)
+bgCorner.Parent = joystickBg
+
+local joystickKnob = Instance.new("Frame")
+joystickKnob.Size = UDim2.new(0, 60, 0, 60)
+joystickKnob.Position = UDim2.new(0.5, -30, 0.5, -30)
+joystickKnob.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+joystickKnob.Parent = joystickBg
+
+local knobCorner = Instance.new("UICorner")
+knobCorner.CornerRadius = UDim.new(1, 0)
+knobCorner.Parent = joystickKnob
+
+-- 升降按钮（右中）
+local upButton = Instance.new("TextButton")
+upButton.Size = UDim2.new(0, 90, 0, 90)
+upButton.Position = UDim2.new(1, -110, 0.5, -120)
+upButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+upButton.BackgroundTransparency = 0.4
+upButton.Text = "上升"
+upButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+upButton.TextScaled = true
+upButton.Font = Enum.Font.GothamBold
+upButton.Parent = mobileContainer
+
+local upCorner = Instance.new("UICorner")
+upCorner.CornerRadius = UDim.new(1, 0)
+upCorner.Parent = upButton
+
+local downButton = Instance.new("TextButton")
+downButton.Size = UDim2.new(0, 90, 0, 90)
+downButton.Position = UDim2.new(1, -110, 0.5, 20)
+downButton.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+downButton.BackgroundTransparency = 0.4
+downButton.Text = "下降"
+downButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+downButton.TextScaled = true
+downButton.Font = Enum.Font.GothamBold
+downButton.Parent = mobileContainer
+
+local downCorner = Instance.new("UICorner")
+downCorner.CornerRadius = UDim.new(1, 0)
+downCorner.Parent = downButton
+
+-- 输入状态
+local moveVector = Vector3.new(0, 0, 0)
+local upPressed = false
+local downPressed = false
+local joystickActive = false
+local joystickDelta = Vector2.new(0, 0)
+
+-- 键盘状态
+local keys = {W = false, A = false, S = false, D = false, Space = false, LeftShift = false}
+
+-- 开始飞行
+local function startFly()
+	flying = true
+	bodyVelocity.Parent = HRP
+	bodyGyro.Parent = HRP
+	humanoid.PlatformStand = true
+	statusLabel.Text = "飞行：开启"
+	if showMobileUI then
+		toggleButton.Text = "飞行\n开启"
+		toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+	end
+end
+
+-- 停止飞行
+local function stopFly()
+	flying = false
+	bodyVelocity.Parent = nil
+	bodyGyro.Parent = nil
+	humanoid.PlatformStand = false
+	moveVector = Vector3.new(0, 0, 0)
+	statusLabel.Text = "飞行：关闭"
+	if showMobileUI then
+		toggleButton.Text = "飞行\n关闭"
+		toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+	end
+end
+
+-- PC: F键切换
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.F then
+		if flying then stopFly() else startFly() end
+	end
+end)
+
+-- 手机: 按钮切换
+if showMobileUI then
+	toggleButton.MouseButton1Click:Connect(function()
+		if flying then stopFly() else startFly() end
+	end)
+end
+
+-- 升降按钮（手机长按）
+if showMobileUI then
+	upButton.MouseButton1Down:Connect(function() upPressed = true end)
+	upButton.MouseButton1Up:Connect(function() upPressed = false end)
+	downButton.MouseButton1Down:Connect(function() downPressed = true end)
+	downButton.MouseButton1Up:Connect(function() downPressed = false end)
+end
+
+-- 手机摇杆
+if showMobileUI then
+	joystickBg.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch then
+			joystickActive = true
+			local function update(pos)
+				local rel = Vector2.new(pos.X - joystickBg.AbsolutePosition.X, pos.Y - joystickBg.AbsolutePosition.Y)
+				local dist = math.min(rel.Magnitude, 65)
+				local dir = rel.Magnitude > 0 and rel.Unit or Vector2.new(0, 0)
+				joystickDelta = dir * (dist / 65)
+				joystickKnob.Position = UDim2.new(0.5, dir.X * dist - 30, 0.5, dir.Y * dist - 30)
+			end
+			update(input.Position)
+			local conn
+			conn = input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					conn:Disconnect()
+					joystickActive = false
+					joystickDelta = Vector2.new(0, 0)
+					TweenService:Create(joystickKnob, TweenInfo.new(0.2), {Position = UDim2.new(0.5, -30, 0.5, -30)}):Play()
+				else
+					update(input.Position)
+				end
+			end)
+		end
+	end)
+end
+
+-- PC键盘输入
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	local k = input.KeyCode.Name
+	if keys[k] ~= nil then keys[k] = true end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	local k = input.KeyCode.Name
+	if keys[k] ~= nil then keys[k] = false end
+end)
+
+-- 角色重生
+player.CharacterAdded:Connect(function(newChar)
+	character = newChar
+	humanoid = newChar:WaitForChild("Humanoid")
+	HRP = newChar:WaitForChild("HumanoidRootPart")
+	stopFly()
+end)
+
+-- 主循环
+RunService.Heartbeat:Connect(function()
+	if not flying then return end
+
+	local cam = workspace.CurrentCamera
+	local look = cam.CFrame.LookVector
+	local right = cam.CFrame.RightVector
+
+	local direction = Vector3.new(0, 0, 0)
+
+	-- 手机摇杆
+	if showMobileUI and joystickActive then
+		direction = direction + look * -joystickDelta.Y
+		direction = direction + right * joystickDelta.X
+	end
+
+	-- 手机升降按钮
+	if showMobileUI then
+		if upPressed then direction = direction + Vector3.new(0, 1, 0) end
+		if downPressed then direction = direction - Vector3.new(0, 1, 0) end
+	end
+
+	-- PC键盘
+	if not showMobileUI then
+		if keys.W then direction = direction + look end
+		if keys.S then direction = direction - look end
+		if keys.A then direction = direction - right end
+		if keys.D then direction = direction + right end
+		if keys.Space then direction = direction + Vector3.new(0, 1, 0) end
+		if keys.LeftShift then direction = direction - Vector3.new(0, 1, 0) end
+	end
+
+	if direction.Magnitude > 0 then
+		direction = direction.Unit * flySpeed
+	end
+
+	bodyVelocity.Velocity = direction
+	bodyGyro.CFrame = cam.CFrame
+end)
