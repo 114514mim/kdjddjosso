@@ -782,6 +782,7 @@ local function C_16()
 	  local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent	
 	  RequestCommand:InvokeServer(";music 121922837560201")	
 	  RequestCommand:InvokeServer(";volume inf")	
+    RequestCommand:InvokeServer(";pitch 0.19")
 	 end)	
 end;
 task.spawn(C_16);
