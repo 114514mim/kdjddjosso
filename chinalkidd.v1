@@ -27,7 +27,7 @@ LMG2L["ImageLabel_2"] = Instance.new("ImageLabel", LMG2L["muhammed_Rc7_1"]);
 LMG2L["ImageLabel_2"]["BorderSizePixel"] = 0;
 LMG2L["ImageLabel_2"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 -- LMG2L["ImageLabel_2"]["ImageContent"] = ;
-LMG2L["ImageLabel_2"]["Image"] = [[rbxassetid://132840071238089]];
+LMG2L["ImageLabel_2"]["Image"] = [[rbxassetid://90575785190604]];
 LMG2L["ImageLabel_2"]["Size"] = UDim2.new(0, 412, 0, 232);
 LMG2L["ImageLabel_2"]["Position"] = UDim2.new(0, 182, 0, 102);
 
@@ -224,7 +224,7 @@ LMG2L["TextLabel_1b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 LMG2L["TextLabel_1b"]["TextColor3"] = Color3.fromRGB(63, 255, 20);
 LMG2L["TextLabel_1b"]["BackgroundTransparency"] = 1;
 LMG2L["TextLabel_1b"]["Size"] = UDim2.new(0, 284, 0, 28);
-LMG2L["TextLabel_1b"]["Text"] = [[small g00byd0lan f3x gui]];
+LMG2L["TextLabel_1b"]["Text"] = [[chinalkidd f3x gui]];
 LMG2L["TextLabel_1b"]["Position"] = UDim2.new(0, 54, 0, 0);
 
 
@@ -510,7 +510,7 @@ local function C_7()
 	    end	
 	   end	
 	  end	
-	  Sky("132840071238089")	
+	  Sky("90575785190604")	
 	  Game.Lighting.Sky:Destroy()	
 	 end)	
 end;
