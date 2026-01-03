@@ -1,10 +1,24 @@
--- 终极合体脚本 | 完整版 (通用区 ESP：高光 + 反隐身 双重效果 + 所有功能完整)
+local VirtualUser = game:GetService('VirtualUser')
+ 
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+ 
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "afk加载好了",
+    Text = "已自动开启afk",
+    Button1 = "好的",
+    Duration = 5
+})
+
+-- 终极合体脚本 | 完整版 (通用区新增穿墙、无限跳、加速开关 + 所有功能完整)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "纸脚本",
+    Name = "终极合体脚本",
     LoadingTitle = "加载中...",
-    LoadingSubtitle = "by 纸飞机yut",
+    LoadingSubtitle = "by Grok",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "UltimateHub",
@@ -18,26 +32,104 @@ local AuthorTab = Window:CreateTab("作者信息", 4483362458)
 
 AuthorTab:CreateParagraph({
     Title = "作者信息",
-    Content = "脚本作者：bilbil_纸飞机yut\B站主页：https://b23.tv/oROqXeB\n"
+    Content = "脚本作者：bilbil zhifaizi yut\nB站主页：https://b23.tv/oROqXeB\n感谢使用！"
 })
 
 AuthorTab:CreateButton({
-    Name = "复制作者B站主页链接",
+    Name = "复制作者 B站主页链接",
     Callback = function()
         setclipboard("https://b23.tv/oROqXeB")
         Rayfield:Notify({Title = "已复制", Content = "B站主页链接已复制到剪贴板！", Duration = 5})
     end
 })
 
--- Tab 2: 通用脚本加载 (ESP 开关：高光 + 反隐身 双重效果)
+-- Tab 2: 通用脚本加载 (新增穿墙、无限跳、加速开关 + ESP)
 local UniversalTab = Window:CreateTab("通用脚本加载", 4483362458)
 
 UniversalTab:CreateParagraph({
     Title = "通用区域说明",
-    Content = "以下所有脚本点击按钮即可加载执行。\nESP 开关：高光 + 强制反隐身 双重效果"
+    Content = "以下所有脚本点击按钮即可加载执行。\n新增：穿墙、无限跳、加速、ESP (高光 + 反隐身)"
 })
 
--- ESP
+-- 穿墙开关 (Noclip)
+local noclipEnabled = false
+local noclipConn = nil
+
+UniversalTab:CreateToggle({
+    Name = "开启穿墙 (Noclip)",
+    CurrentValue = false,
+    Flag = "NoclipToggle",
+    Callback = function(Value)
+        noclipEnabled = Value
+        if noclipEnabled then
+            if noclipConn then noclipConn:Disconnect() end
+            noclipConn = game:GetService("RunService").Stepped:Connect(function()
+                if game.Players.LocalPlayer.Character then
+                    for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+            Rayfield:Notify({Title = "穿墙", Content = "穿墙已开启！", Duration = 5})
+        else
+            if noclipConn then noclipConn:Disconnect() noclipConn = nil end
+            Rayfield:Notify({Title = "穿墙", Content = "穿墙已关闭！", Duration = 5})
+        end
+    end
+})
+
+-- 无限跳开关
+local infJumpEnabled = false
+local infJumpConn = nil
+
+UniversalTab:CreateToggle({
+    Name = "开启无限跳",
+    CurrentValue = false,
+    Flag = "InfJumpToggle",
+    Callback = function(Value)
+        infJumpEnabled = Value
+        if infJumpEnabled then
+            if infJumpConn then infJumpConn:Disconnect() end
+            infJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
+                if infJumpEnabled then
+                    game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+                end
+            end)
+            Rayfield:Notify({Title = "无限跳", Content = "无限跳已开启！按空格多次跳", Duration = 5})
+        else
+            if infJumpConn then infJumpConn:Disconnect() infJumpConn = nil end
+            Rayfield:Notify({Title = "无限跳", Content = "无限跳已关闭！", Duration = 5})
+        end
+    end
+})
+
+-- 加速开关
+local speedEnabled = false
+local originalWalkSpeed = 16
+
+UniversalTab:CreateToggle({
+    Name = "开启加速 (WalkSpeed 100)",
+    CurrentValue = false,
+    Flag = "SpeedToggle",
+    Callback = function(Value)
+        speedEnabled = Value
+        local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            if speedEnabled then
+                originalWalkSpeed = humanoid.WalkSpeed
+                humanoid.WalkSpeed = 100
+                Rayfield:Notify({Title = "加速", Content = "加速已开启！速度 100", Duration = 5})
+            else
+                humanoid.WalkSpeed = originalWalkSpeed
+                Rayfield:Notify({Title = "加速", Content = "加速已关闭！恢复原速度", Duration = 5})
+            end
+        end
+    end
+})
+
+-- ESP 开关 (高光 + 反隐身 双重效果)
 local espEnabled = false
 local highlightTable = {}
 local antiInvisConn = nil
@@ -98,13 +190,13 @@ local function disableAntiInvisibility()
 end
 
 UniversalTab:CreateToggle({
-    Name = "开启 ESP ",
+    Name = "开启 ESP (高光 + 反隐身)",
     CurrentValue = false,
     Flag = "ESPToggle",
     Callback = function(Value)
         espEnabled = Value
         if espEnabled then
-            removeHighlights()  -- 先清除旧的
+            removeHighlights()
             for _, player in pairs(game.Players:GetPlayers()) do
                 if player.Character then
                     createHighlight(player)
@@ -116,7 +208,7 @@ UniversalTab:CreateToggle({
                 end)
             end)
             enableAntiInvisibility()
-            Rayfield:Notify({Title = "ESP", Content = "已开启！", Duration = 5})
+            Rayfield:Notify({Title = "ESP", Content = "已开启！高光 + 反隐身 双重效果", Duration = 5})
         else
             removeHighlights()
             disableAntiInvisibility()
@@ -127,7 +219,7 @@ UniversalTab:CreateToggle({
 
 -- 其他通用脚本按钮
 UniversalTab:CreateButton({
-    Name = "加载 隐身脚本",
+    Name = "加载 Stealth 脚本",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/Stealth%20by%20bilbil%20zhifaizi%20yut"))()
         Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5})
@@ -279,7 +371,7 @@ NaturalDisasterTab:CreateButton({
 
         if antiFallEnabled then
             if game.PlaceId ~= 189707 then
-                Rayfield:Notify({Title = "错误", Content = "当前游戏不是 自然灾害模拟器。！", Duration = 5})
+                Rayfield:Notify({Title = "错误", Content = "当前游戏不是 Natural Disasters Survival！", Duration = 5})
                 antiFallEnabled = false
                 return
             end
@@ -327,7 +419,7 @@ local BuildBoatTab = Window:CreateTab("建船寻宝区域", 4483362458)
 
 BuildBoatTab:CreateParagraph({
     Title = "建船寻宝功能",
-    Content = "• 刷钱脚本\n• 购买圣诞钩爪"
+    Content = "• 刷钱脚本：自动点击 Floppa + 路径传送 + 无碰撞 + 防跌落\n• 关闭开关时自动死亡\n• 购买圣诞钩爪：点击按钮购买"
 })
 
 local moneyFarmEnabled = false
@@ -443,16 +535,16 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 BuildBoatTab:CreateToggle({
-    Name = "开启刷钱",
+    Name = "开启刷钱脚本",
     CurrentValue = false,
     Flag = "MoneyFarmToggle",
     Callback = function(Value)
         if Value then
             startMoneyFarm()
-            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱已开启", Duration = 5})
+            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已开启！重生后自动恢复", Duration = 5})
         else
             stopMoneyFarm()
-            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱已关闭", Duration = 5})
+            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已关闭，并已自动死亡", Duration = 5})
         end
     end
 })
@@ -471,6 +563,7 @@ BuildBoatTab:CreateButton({
 
 Rayfield:Notify({
     Title = "脚本加载完成",
-    Content = "by 纸飞机yut",
+    Content = "通用区已新增穿墙、无限跳、加速开关\n所有功能已完整整合",
     Duration = 10
 })
+
