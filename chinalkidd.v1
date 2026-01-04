@@ -522,7 +522,7 @@ local function C_a()
 	  local ReplicatedStorage = game:GetService("ReplicatedStorage")	
 	  local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent	
 	  RequestCommand:InvokeServer(";r6 all")	
-	  RequestCommand:InvokeServer(";Char all Harkian_G00BYB0LAN")	
+	  RequestCommand:InvokeServer(";Char all chinalkidd")	
 	 end)	
 end;
 task.spawn(C_a);
