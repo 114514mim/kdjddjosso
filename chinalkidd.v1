@@ -27,7 +27,7 @@ LMG2L["ImageLabel_2"] = Instance.new("ImageLabel", LMG2L["muhammed_Rc7_1"]);
 LMG2L["ImageLabel_2"]["BorderSizePixel"] = 0;
 LMG2L["ImageLabel_2"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 -- LMG2L["ImageLabel_2"]["ImageContent"] = ;
-LMG2L["ImageLabel_2"]["Image"] = [[rbxassetid://90575785190604]];
+LMG2L["ImageLabel_2"]["Image"] = [[rbxassetid://135695336057486]];
 LMG2L["ImageLabel_2"]["Size"] = UDim2.new(0, 412, 0, 232);
 LMG2L["ImageLabel_2"]["Position"] = UDim2.new(0, 182, 0, 102);
 
@@ -522,7 +522,7 @@ local function C_a()
 	  local ReplicatedStorage = game:GetService("ReplicatedStorage")	
 	  local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent	
 	  RequestCommand:InvokeServer(";r6 all")	
-	  RequestCommand:InvokeServer(";Char all chinalkidd")	
+	  RequestCommand:InvokeServer(";Char all ifioood")	
 	 end)	
 end;
 task.spawn(C_a);
