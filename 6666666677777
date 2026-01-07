@@ -1,7 +1,3 @@
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
-
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 	local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent
 	RequestCommand:InvokeServer(";btools me")
@@ -315,8 +311,8 @@
 		local sky = serverendpoint:InvokeServer("CreatePart", "Normal", position, workspace)
 
 		makemesh(sky)
-		syncmeshid(sky, "77735500193276")
-		syncmeshtexture(sky, "77735500193276")
+		syncmeshid(sky, "135695336057486")
+		syncmeshtexture(sky, "135695336057486")
 		syncmeshsize(sky, Vector3.new(20000, 20000, 20000))
 		lock(sky, true)
 		name(sky, "U.N")
