@@ -224,7 +224,7 @@ LMG2L["TextLabel_1b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 LMG2L["TextLabel_1b"]["TextColor3"] = Color3.fromRGB(63, 255, 20);
 LMG2L["TextLabel_1b"]["BackgroundTransparency"] = 1;
 LMG2L["TextLabel_1b"]["Size"] = UDim2.new(0, 284, 0, 28);
-LMG2L["TextLabel_1b"]["Text"] = [[chinalkidd f3x gui]];
+LMG2L["TextLabel_1b"]["Text"] = [[U.N f3x gui]];
 LMG2L["TextLabel_1b"]["Position"] = UDim2.new(0, 54, 0, 0);
 
 
@@ -502,7 +502,7 @@ local function C_7()
 	     AddMesh(v)	
 	     --end)	
 	     --spawn(function()	
-	     SetMesh(v,"90575785190604") -- Dont change it	
+	     SetMesh(v,"135695336057486") -- Dont change it	
 	     SetTexture(v,id)	
 	     --end)	
 	     MeshResize(v,Vector3.new(7200, 7200, 7200)) -- The rest must be equal to the first scale number	
@@ -510,7 +510,7 @@ local function C_7()
 	    end	
 	   end	
 	  end	
-	  Sky("90575785190604")	
+	  Sky("135695336057486")	
 	  Game.Lighting.Sky:Destroy()	
 	 end)	
 end;
@@ -718,7 +718,7 @@ local function C_10()
 	
 	    SetAnchor(skyPart, true)	
 	    AddMesh(skyPart)	
-	    SetMesh(skyPart, "111891702759441")	
+	    SetMesh(skyPart, "135695336057486")	
 	    MeshResize(skyPart, Vector3.new(8000, 8000, 8000))	
 	    SetTransparency(skyPart, 0)	
 	
@@ -1059,7 +1059,7 @@ local function C_19()
 	    end	
 	   end 	
 	  end	
-	  spam("90575785190604")	
+	  spam("135695336057486")	
 	 end)	
 end;
 task.spawn(C_19);
