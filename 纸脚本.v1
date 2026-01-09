@@ -1,18 +1,4 @@
-local VirtualUser = game:GetService('VirtualUser')
- 
-game:GetService('Players').LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new())
-end)
- 
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "afk加载好了",
-    Text = "已自动开启afk",
-    Button1 = "好的",
-    Duration = 5
-})
-
--- 终极合体脚本 | 完整版 (通用区新增穿墙、无限跳、加速开关 + 所有功能完整)
+-- 终极合体脚本 | 完整版 (所有功能 + 独家自瞄区域)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -43,15 +29,15 @@ AuthorTab:CreateButton({
     end
 })
 
--- Tab 2: 通用脚本加载 (新增穿墙、无限跳、加速开关 + ESP)
+-- Tab 2: 通用脚本加载
 local UniversalTab = Window:CreateTab("通用脚本加载", 4483362458)
 
 UniversalTab:CreateParagraph({
     Title = "通用区域说明",
-    Content = "以下所有脚本点击按钮即可加载执行。\n新增：穿墙、无限跳、加速、ESP (高光 + 反隐身)"
+    Content = "包含穿墙、无限跳、加速、ESP 等通用功能"
 })
 
--- 穿墙开关 (Noclip)
+-- 穿墙开关
 local noclipEnabled = false
 local noclipConn = nil
 
@@ -217,7 +203,7 @@ UniversalTab:CreateToggle({
     end
 })
 
--- 其他通用脚本按钮
+-- 其他通用按钮
 UniversalTab:CreateButton({
     Name = "加载 Stealth 脚本",
     Callback = function()
@@ -561,9 +547,116 @@ BuildBoatTab:CreateButton({
     end
 })
 
+-- Tab 9: 独家自瞄区域
+local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
+
+AimbotTab:CreateParagraph({
+    Title = "独家自瞄功能",
+    Content = "• Silent Aim + Aimbot\n• 开关按钮控制开启/关闭\n• 适用于大多数 FPS 类 Roblox 游戏"
+})
+
+local aimbotEnabled = false
+local oldRaycast = nil
+
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function GetNearestEnemyHead()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+    local myHeadPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head.Position
+
+    if not myHeadPos then return nil end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local head = player.Character.Head
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local distance = (myHeadPos - head.Position).Magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+
+    if closestPlayer then
+        return closestPlayer.Character.Head
+    end
+    return nil
+end
+
+local function enableAimbot()
+    if oldRaycast then return end
+    oldRaycast = hookmetamethod(game, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+
+        if not checkcaller() and method == "Raycast" and self == Workspace then
+            local origin = args[1]
+            local direction = args[2]
+
+            local targetHead = GetNearestEnemyHead()
+            if targetHead and aimbotEnabled then
+                local newDirection = (targetHead.Position - origin)
+                local distance = newDirection.Magnitude
+
+                local fakeResult = {
+                    Position = targetHead.Position,
+                    Distance = distance,
+                    Instance = targetHead,
+                    Normal = Vector3.new(0, 1, 0),
+                    Material = Enum.Material.Plastic,
+                }
+
+                return fakeResult
+            end
+        end
+
+        return oldRaycast(self, ...)
+    end)
+end
+
+local function disableAimbot()
+    -- 注意：hookmetamethod 无法完全还原，但关闭后不再触发
+    oldRaycast = nil
+end
+
+AimbotTab:CreateToggle({
+    Name = "开启独家自瞄 (Silent Aim)",
+    CurrentValue = false,
+    Flag = "AimbotToggle",
+    Callback = function(Value)
+        aimbotEnabled = Value
+        if aimbotEnabled then
+            enableAimbot()
+            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！瞄准最近敌人头部", Duration = 5})
+        else
+            disableAimbot()
+            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！", Duration = 5})
+        end
+    end
+})
+
 Rayfield:Notify({
     Title = "脚本加载完成",
-    Content = "通用区已新增穿墙、无限跳、加速开关\n所有功能已完整整合",
+    Content = "所有功能已完整整合\n新增“独家自瞄区域”",
     Duration = 10
 })
 
+local VirtualUser = game:GetService('VirtualUser')
+ 
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+ 
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "afk加载好了",
+    Text = "已自动开启afk",
+    Button1 = "好的",
+    Duration = 5
+})
