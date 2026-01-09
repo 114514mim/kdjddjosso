@@ -1,4 +1,4 @@
--- 终极合体脚本 | 完整版 (所有功能 + 独家自瞄区域)
+-- 终极合体脚本 | 真正最终完整版 (所有功能 + 自动防挂机 + 修复自瞄)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -13,109 +13,85 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
+-- 自动防挂机 AFK (注入即加载)
+local VirtualUser = game:GetService('VirtualUser')
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "afk加载好了",
+    Text = "已自动开启afk",
+    Button1 = "好的",
+    Duration = 5
+})
+
 -- Tab 1: 作者信息
 local AuthorTab = Window:CreateTab("作者信息", 4483362458)
-
-AuthorTab:CreateParagraph({
-    Title = "作者信息",
-    Content = "脚本作者：bilbil zhifaizi yut\nB站主页：https://b23.tv/oROqXeB\n感谢使用！"
-})
-
-AuthorTab:CreateButton({
-    Name = "复制作者 B站主页链接",
-    Callback = function()
-        setclipboard("https://b23.tv/oROqXeB")
-        Rayfield:Notify({Title = "已复制", Content = "B站主页链接已复制到剪贴板！", Duration = 5})
-    end
-})
+AuthorTab:CreateParagraph({Title = "作者信息", Content = "脚本作者：bilbil zhifaizi yut\nB站主页：https://b23.tv/oROqXeB\n感谢使用！"})
+AuthorTab:CreateButton({Name = "复制作者 B站主页链接", Callback = function() setclipboard("https://b23.tv/oROqXeB") Rayfield:Notify({Title = "已复制", Content = "链接已复制到剪贴板！", Duration = 5}) end})
 
 -- Tab 2: 通用脚本加载
 local UniversalTab = Window:CreateTab("通用脚本加载", 4483362458)
+UniversalTab:CreateParagraph({Title = "通用区域", Content = "包含穿墙、无限跳、加速、ESP 等"})
 
-UniversalTab:CreateParagraph({
-    Title = "通用区域说明",
-    Content = "包含穿墙、无限跳、加速、ESP 等通用功能"
-})
-
--- 穿墙开关
+-- 穿墙
 local noclipEnabled = false
 local noclipConn = nil
-
-UniversalTab:CreateToggle({
-    Name = "开启穿墙 (Noclip)",
-    CurrentValue = false,
-    Flag = "NoclipToggle",
-    Callback = function(Value)
-        noclipEnabled = Value
-        if noclipEnabled then
-            if noclipConn then noclipConn:Disconnect() end
-            noclipConn = game:GetService("RunService").Stepped:Connect(function()
-                if game.Players.LocalPlayer.Character then
-                    for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
-                    end
+UniversalTab:CreateToggle({Name = "开启穿墙 (Noclip)", CurrentValue = false, Callback = function(Value)
+    noclipEnabled = Value
+    if noclipEnabled then
+        if noclipConn then noclipConn:Disconnect() end
+        noclipConn = game:GetService("RunService").Stepped:Connect(function()
+            if game.Players.LocalPlayer.Character then
+                for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
                 end
-            end)
-            Rayfield:Notify({Title = "穿墙", Content = "穿墙已开启！", Duration = 5})
-        else
-            if noclipConn then noclipConn:Disconnect() noclipConn = nil end
-            Rayfield:Notify({Title = "穿墙", Content = "穿墙已关闭！", Duration = 5})
-        end
+            end
+        end)
+        Rayfield:Notify({Title = "穿墙", Content = "已开启！", Duration = 5})
+    else
+        if noclipConn then noclipConn:Disconnect() noclipConn = nil end
+        Rayfield:Notify({Title = "穿墙", Content = "已关闭！", Duration = 5})
     end
-})
+end})
 
--- 无限跳开关
+-- 无限跳
 local infJumpEnabled = false
 local infJumpConn = nil
-
-UniversalTab:CreateToggle({
-    Name = "开启无限跳",
-    CurrentValue = false,
-    Flag = "InfJumpToggle",
-    Callback = function(Value)
-        infJumpEnabled = Value
-        if infJumpEnabled then
-            if infJumpConn then infJumpConn:Disconnect() end
-            infJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
-                if infJumpEnabled then
-                    game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-                end
-            end)
-            Rayfield:Notify({Title = "无限跳", Content = "无限跳已开启！按空格多次跳", Duration = 5})
-        else
-            if infJumpConn then infJumpConn:Disconnect() infJumpConn = nil end
-            Rayfield:Notify({Title = "无限跳", Content = "无限跳已关闭！", Duration = 5})
-        end
+UniversalTab:CreateToggle({Name = "开启无限跳", CurrentValue = false, Callback = function(Value)
+    infJumpEnabled = Value
+    if infJumpEnabled then
+        if infJumpConn then infJumpConn:Disconnect() end
+        infJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
+            if infJumpEnabled then game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping") end
+        end)
+        Rayfield:Notify({Title = "无限跳", Content = "已开启！按空格多次跳", Duration = 5})
+    else
+        if infJumpConn then infJumpConn:Disconnect() infJumpConn = nil end
+        Rayfield:Notify({Title = "无限跳", Content = "已关闭！", Duration = 5})
     end
-})
+end})
 
--- 加速开关
+-- 加速
 local speedEnabled = false
 local originalWalkSpeed = 16
-
-UniversalTab:CreateToggle({
-    Name = "开启加速 (WalkSpeed 100)",
-    CurrentValue = false,
-    Flag = "SpeedToggle",
-    Callback = function(Value)
-        speedEnabled = Value
-        local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            if speedEnabled then
-                originalWalkSpeed = humanoid.WalkSpeed
-                humanoid.WalkSpeed = 100
-                Rayfield:Notify({Title = "加速", Content = "加速已开启！速度 100", Duration = 5})
-            else
-                humanoid.WalkSpeed = originalWalkSpeed
-                Rayfield:Notify({Title = "加速", Content = "加速已关闭！恢复原速度", Duration = 5})
-            end
+UniversalTab:CreateToggle({Name = "开启加速 (WalkSpeed 100)", CurrentValue = false, Callback = function(Value)
+    speedEnabled = Value
+    local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        if speedEnabled then
+            originalWalkSpeed = humanoid.WalkSpeed
+            humanoid.WalkSpeed = 100
+            Rayfield:Notify({Title = "加速", Content = "已开启！速度 100", Duration = 5})
+        else
+            humanoid.WalkSpeed = originalWalkSpeed
+            Rayfield:Notify({Title = "加速", Content = "已关闭！恢复原速度", Duration = 5})
         end
     end
-})
+end})
 
--- ESP 开关 (高光 + 反隐身 双重效果)
+-- ESP (高光 + 反隐身)
 local espEnabled = false
 local highlightTable = {}
 local antiInvisConn = nil
@@ -131,9 +107,7 @@ local function createHighlight(player)
     highlight.OutlineTransparency = 0
     highlight.Adornee = player.Character
 
-    if player.Character then
-        highlight.Parent = player.Character
-    end
+    if player.Character then highlight.Parent = player.Character end
 
     player.CharacterAdded:Connect(function(char)
         highlight.Adornee = char
@@ -144,9 +118,7 @@ local function createHighlight(player)
 end
 
 local function removeHighlights()
-    for _, highlight in pairs(highlightTable) do
-        highlight:Destroy()
-    end
+    for _, highlight in pairs(highlightTable) do highlight:Destroy() end
     highlightTable = {}
 end
 
@@ -158,12 +130,8 @@ local function enableAntiInvisibility()
                 if plrs ~= game.Players.LocalPlayer and plrs.Character then
                     for _, obj in pairs(plrs.Character:GetDescendants()) do
                         if obj:IsA("BasePart") then
-                            if obj.Name ~= "hitbox" and obj.Name ~= "HumanoidRootPart" then
-                                obj.Transparency = 0
-                            end
-                        elseif obj:IsA("Beam") then
-                            obj.Enabled = true
-                        end
+                            if obj.Name ~= "hitbox" and obj.Name ~= "HumanoidRootPart" then obj.Transparency = 0 end
+                        elseif obj:IsA("Beam") then obj.Enabled = true end
                     end
                 end
             end
@@ -175,158 +143,54 @@ local function disableAntiInvisibility()
     if antiInvisConn then antiInvisConn:Disconnect() antiInvisConn = nil end
 end
 
-UniversalTab:CreateToggle({
-    Name = "开启 ESP (高光 + 反隐身)",
-    CurrentValue = false,
-    Flag = "ESPToggle",
-    Callback = function(Value)
-        espEnabled = Value
-        if espEnabled then
-            removeHighlights()
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player.Character then
-                    createHighlight(player)
-                end
-            end
-            game.Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function()
-                    createHighlight(player)
-                end)
-            end)
-            enableAntiInvisibility()
-            Rayfield:Notify({Title = "ESP", Content = "已开启！高光 + 反隐身 双重效果", Duration = 5})
-        else
-            removeHighlights()
-            disableAntiInvisibility()
-            Rayfield:Notify({Title = "ESP", Content = "已关闭！", Duration = 5})
-        end
+UniversalTab:CreateToggle({Name = "开启 ESP (高光 + 反隐身)", CurrentValue = false, Callback = function(Value)
+    espEnabled = Value
+    if espEnabled then
+        removeHighlights()
+        for _, player in pairs(game.Players:GetPlayers()) do if player.Character then createHighlight(player) end end
+        game.Players.PlayerAdded:Connect(function(player) player.CharacterAdded:Connect(function() createHighlight(player) end) end)
+        enableAntiInvisibility()
+        Rayfield:Notify({Title = "ESP", Content = "已开启！高光 + 反隐身 双重效果", Duration = 5})
+    else
+        removeHighlights()
+        disableAntiInvisibility()
+        Rayfield:Notify({Title = "ESP", Content = "已关闭！", Duration = 5})
     end
-})
+end})
 
 -- 其他通用按钮
-UniversalTab:CreateButton({
-    Name = "加载 Stealth 脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/Stealth%20by%20bilbil%20zhifaizi%20yut"))()
-        Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5})
-    end
-})
-
-UniversalTab:CreateButton({
-    Name = "加载 Delta 自定义图标",
-    Callback = function()
-        getgenv().image = "77694975974567"
-        getgenv().sidebar_settings  = "86514272233336"
-        getgenv().sidebar_scripthub = "81336437484712"
-        getgenv().sidebar_home = "70601561680786"
-        getgenv().sidebar_executor = "77105040222682"
-        getgenv().sidebar_console  = "107685407615094"
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/CustomDelta.lua'))()
-        Rayfield:Notify({Title = "Delta", Content = "已加载！", Duration = 5})
-    end
-})
-
-UniversalTab:CreateButton({
-    Name = "加载连点器脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/make%20in%20china%20bilbil%20%E7%BA%B8%E9%A3%9E%E6%9C%BAyut"))()
-        Rayfield:Notify({Title = "连点器", Content = "已加载！", Duration = 5})
-    end
-})
-
-UniversalTab:CreateButton({
-    Name = "加载少羽F3X脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-synb-56505"))()
-        Rayfield:Notify({Title = "少羽F3X", Content = "已加载！", Duration = 5})
-    end
-})
-
-UniversalTab:CreateButton({
-    Name = "加载后门扫描器脚本",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/Its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script'))()
-        Rayfield:Notify({Title = "后门扫描器", Content = "已加载！", Duration = 5})
-    end
-})
-
-UniversalTab:CreateButton({
-    Name = "加载飞行脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/eeeeeeqqaszsssddd"))()
-        Rayfield:Notify({Title = "飞行脚本", Content = "已加载！", Duration = 5})
-    end
-})
+UniversalTab:CreateButton({Name = "加载 Stealth 脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/Stealth%20by%20bilbil%20zhifaizi%20yut"))() Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "加载 Delta 自定义图标", Callback = function() getgenv().image = "77694975974567" getgenv().sidebar_settings = "86514272233336" getgenv().sidebar_scripthub = "81336437484712" getgenv().sidebar_home = "70601561680786" getgenv().sidebar_executor = "77105040222682" getgenv().sidebar_console = "107685407615094" loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/CustomDelta.lua'))() Rayfield:Notify({Title = "Delta", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "加载连点器脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/make%20in%20china%20bilbil%20%E7%BA%B8%E9%A3%9E%E6%9C%BAyut"))() Rayfield:Notify({Title = "连点器", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "加载少羽F3X脚本", Callback = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-synb-56505"))() Rayfield:Notify({Title = "少羽F3X", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "加载后门扫描器脚本", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script'))() Rayfield:Notify({Title = "后门扫描器", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "加载飞行脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/eeeeeeqqaszsssddd"))() Rayfield:Notify({Title = "飞行脚本", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 3: 新 Slap 脚本
 local SlapTab = Window:CreateTab("新 Slap 脚本", 4483362458)
-
-SlapTab:CreateButton({
-    Name = "点击加载新 Slap 脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/aaaaaaappppiii"))()
-        Rayfield:Notify({Title = "新 Slap", Content = "已加载执行！", Duration = 5})
-    end
-})
+SlapTab:CreateButton({Name = "点击加载新 Slap 脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/aaaaaaappppiii"))() Rayfield:Notify({Title = "新 Slap", Content = "已加载执行！", Duration = 5}) end})
 
 -- Tab 4: infyiff 脚本
 local InfyiffTab = Window:CreateTab("infyiff 脚本", 4483362458)
-
-InfyiffTab:CreateButton({
-    Name = "加载 SimpleSpy V3",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))()
-        Rayfield:Notify({Title = "SimpleSpy", Content = "已加载！", Duration = 5})
-    end
-})
-
-InfyiffTab:CreateButton({
-    Name = "加载 Infinite Yield",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))()
-        Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5})
-    end
-})
+InfyiffTab:CreateButton({Name = "加载 SimpleSpy V3", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))() Rayfield:Notify({Title = "SimpleSpy", Content = "已加载！", Duration = 5}) end})
+InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))() Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 5: 监狱人生脚本
 local PrisonTab = Window:CreateTab("监狱人生脚本", 4483362458)
-
-PrisonTab:CreateButton({
-    Name = "加载监狱人生脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))()
-        Rayfield:Notify({Title = "监狱人生", Content = "已加载！", Duration = 5})
-    end
-})
+PrisonTab:CreateButton({Name = "加载监狱人生脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))() Rayfield:Notify({Title = "监狱人生", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
-
-local LogicInput = LogicTab:CreateInput({
-    Name = "逻辑代码",
-    PlaceholderText = "-- 写你的代码",
-    RemoveTextAfterFocusLost = false,
-    Flag = "CustomCode",
-    Callback = function() end
-})
-
-local LogicToggle = LogicTab:CreateToggle({
-    Name = "开启自定义逻辑",
-    CurrentValue = false,
-    Flag = "LogicOn",
-    Callback = function(Value) end
-})
-
+local LogicInput = LogicTab:CreateInput({Name = "逻辑代码", PlaceholderText = "-- 写你的代码", RemoveTextAfterFocusLost = false, Flag = "CustomCode", Callback = function() end})
+local LogicToggle = LogicTab:CreateToggle({Name = "开启自定义逻辑", CurrentValue = false, Flag = "LogicOn", Callback = function(Value) end})
 local customEnabled = false
 local customConn
-
 local function RunCustom()
     local code = LogicInput.CurrentValue or ""
     if code == "" then return end
     local f, err = loadstring(code)
     if f then pcall(f) else Rayfield:Notify({Title = "错误", Content = err, Duration = 5}) end
 end
-
 LogicToggle.Callback = function(Value)
     customEnabled = Value
     if customEnabled then
@@ -341,105 +205,63 @@ end
 
 -- Tab 7: 自然灾害区域
 local NaturalDisasterTab = Window:CreateTab("自然灾害区域", 4483362458)
-
-NaturalDisasterTab:CreateButton({
-    Name = "加载黑洞脚本",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/9898898"))()
-        Rayfield:Notify({Title = "黑洞脚本", Content = "已加载！", Duration = 5})
-    end
-})
-
-NaturalDisasterTab:CreateButton({
-    Name = "切换防跌落伤害",
-    Callback = function()
-        antiFallEnabled = not antiFallEnabled
-
-        if antiFallEnabled then
-            if game.PlaceId ~= 189707 then
-                Rayfield:Notify({Title = "错误", Content = "当前游戏不是 Natural Disasters Survival！", Duration = 5})
-                antiFallEnabled = false
-                return
+NaturalDisasterTab:CreateButton({Name = "加载黑洞脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/9898898"))() Rayfield:Notify({Title = "黑洞脚本", Content = "已加载！", Duration = 5}) end})
+NaturalDisasterTab:CreateButton({Name = "切换防跌落伤害", Callback = function()
+    antiFallEnabled = not antiFallEnabled
+    if antiFallEnabled then
+        if game.PlaceId ~= 189707 then Rayfield:Notify({Title = "错误", Content = "当前游戏不是 Natural Disasters Survival！", Duration = 5}) antiFallEnabled = false return end
+        local lp = game.Players.LocalPlayer
+        local hb = game:GetService("RunService").Heartbeat
+        local rsd = game:GetService("RunService").RenderStepped
+        local zero = Vector3.zero
+        local function protect(char)
+            local root = char:WaitForChild("HumanoidRootPart")
+            if root then
+                local con
+                con = hb:Connect(function()
+                    if not antiFallEnabled or not root.Parent then con:Disconnect() return end
+                    local vel = root.AssemblyLinearVelocity
+                    root.AssemblyLinearVelocity = zero
+                    rsd:Wait()
+                    root.AssemblyLinearVelocity = vel
+                end)
+                antiFallConnection = con
             end
-
-            local lp = game.Players.LocalPlayer
-            local hb = game:GetService("RunService").Heartbeat
-            local rsd = game:GetService("RunService").RenderStepped
-            local zero = Vector3.zero
-
-            local function protect(char)
-                local root = char:WaitForChild("HumanoidRootPart")
-                if root then
-                    local con
-                    con = hb:Connect(function()
-                        if not antiFallEnabled or not root.Parent then
-                            con:Disconnect()
-                            return
-                        end
-                        local vel = root.AssemblyLinearVelocity
-                        root.AssemblyLinearVelocity = zero
-                        rsd:Wait()
-                        root.AssemblyLinearVelocity = vel
-                    end)
-                    antiFallConnection = con
-                end
-            end
-
-            protect(lp.Character)
-            characterAddedConnection = lp.CharacterAdded:Connect(protect)
-
-            Rayfield:Notify({Title = "防跌落伤害", Content = "已开启", Duration = 3})
-        else
-            if antiFallConnection then antiFallConnection:Disconnect() end
-            if characterAddedConnection then characterAddedConnection:Disconnect() end
-            antiFallConnection = nil
-            characterAddedConnection = nil
-
-            Rayfield:Notify({Title = "防跌落伤害", Content = "已关闭", Duration = 3})
         end
+        protect(lp.Character)
+        characterAddedConnection = lp.CharacterAdded:Connect(protect)
+        Rayfield:Notify({Title = "防跌落伤害", Content = "已开启", Duration = 3})
+    else
+        if antiFallConnection then antiFallConnection:Disconnect() end
+        if characterAddedConnection then characterAddedConnection:Disconnect() end
+        antiFallConnection = nil
+        characterAddedConnection = nil
+        Rayfield:Notify({Title = "防跌落伤害", Content = "已关闭", Duration = 3})
     end
-})
+end})
 
 -- Tab 8: 建船寻宝区域
 local BuildBoatTab = Window:CreateTab("建船寻宝区域", 4483362458)
-
-BuildBoatTab:CreateParagraph({
-    Title = "建船寻宝功能",
-    Content = "• 刷钱脚本：自动点击 Floppa + 路径传送 + 无碰撞 + 防跌落\n• 关闭开关时自动死亡\n• 购买圣诞钩爪：点击按钮购买"
-})
-
+BuildBoatTab:CreateParagraph({Title = "建船寻宝功能", Content = "• 刷钱脚本：自动点击 Floppa + 路径传送 + 无碰撞 + 防跌落\n• 关闭开关时自动死亡\n• 购买圣诞钩爪：点击按钮购买"})
 local moneyFarmEnabled = false
 local noclipConn = nil
 local antiFallBV = nil
 local floppaLoop = nil
 local pathLoop = nil
-
-local positions = {
-    Vector3.new(-40, 35, 1371), Vector3.new(-61, 33, 2140),
-    Vector3.new(-76, 41, 2909), Vector3.new(-87, 42, 3678),
-    Vector3.new(-41, 48, 4450), Vector3.new(-88, 54, 5220),
-    Vector3.new(-63, 49, 5990), Vector3.new(-83, 63, 6759),
-    Vector3.new(-64, 51, 7530), Vector3.new(-99, 49, 8298),
-    Vector3.new(-120, 179, 9132), Vector3.new(-56, -359, 9496)
-}
-
+local positions = {Vector3.new(-40, 35, 1371), Vector3.new(-61, 33, 2140), Vector3.new(-76, 41, 2909), Vector3.new(-87, 42, 3678), Vector3.new(-41, 48, 4450), Vector3.new(-88, 54, 5220), Vector3.new(-63, 49, 5990), Vector3.new(-83, 63, 6759), Vector3.new(-64, 51, 7530), Vector3.new(-99, 49, 8298), Vector3.new(-120, 179, 9132), Vector3.new(-56, -359, 9496)}
 local function enableNoclip()
     if noclipConn then noclipConn:Disconnect() end
     noclipConn = game:GetService("RunService").Stepped:Connect(function()
         if game.Players.LocalPlayer.Character then
             for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
+                if part:IsA("BasePart") then part.CanCollide = false end
             end
         end
     end)
 end
-
 local function disableNoclip()
     if noclipConn then noclipConn:Disconnect() noclipConn = nil end
 end
-
 local function preventFalling(hrp)
     if antiFallBV then antiFallBV:Destroy() end
     antiFallBV = Instance.new("BodyVelocity")
@@ -447,11 +269,9 @@ local function preventFalling(hrp)
     antiFallBV.Velocity = Vector3.new(0, 0, 0)
     antiFallBV.Parent = hrp
 end
-
 local function allowFalling()
     if antiFallBV then antiFallBV:Destroy() antiFallBV = nil end
 end
-
 local function startFloppaClicker()
     if floppaLoop then return end
     floppaLoop = task.spawn(function()
@@ -461,9 +281,7 @@ local function startFloppaClicker()
                     local floppa = workspace:FindFirstChild("Floppa") or workspace:FindFirstChildWhichIsA("Model", true)
                     if floppa then
                         for _, detector in pairs(floppa:GetDescendants()) do
-                            if detector:IsA("ClickDetector") then
-                                fireclickdetector(detector)
-                            end
+                            if detector:IsA("ClickDetector") then fireclickdetector(detector) end
                         end
                     end
                 end)
@@ -472,103 +290,63 @@ local function startFloppaClicker()
         end
     end)
 end
-
 local function startPathLoop()
     if pathLoop then return end
     pathLoop = task.spawn(function()
         while moneyFarmEnabled do
             local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             local hrp = char:WaitForChild("HumanoidRootPart")
-
             enableNoclip()
             preventFalling(hrp)
-
             for _, pos in ipairs(positions) do
                 if not moneyFarmEnabled then break end
                 game:GetService("TweenService"):Create(hrp, TweenInfo.new(1.5, Enum.EasingStyle.Linear), {CFrame = CFrame.new(pos)}):Play()
                 task.wait(1.8)
             end
-
             task.wait(8)
         end
         disableNoclip()
         allowFalling()
     end)
 end
-
 local function startMoneyFarm()
     moneyFarmEnabled = true
     startFloppaClicker()
     startPathLoop()
 end
-
 local function stopMoneyFarm()
     moneyFarmEnabled = false
     disableNoclip()
     allowFalling()
-
     local char = game.Players.LocalPlayer.Character
-    if char and char:FindFirstChild("Humanoid") then
-        char.Humanoid.Health = 0
-    end
+    if char and char:FindFirstChild("Humanoid") then char.Humanoid.Health = 0 end
 end
-
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    if moneyFarmEnabled then
-        task.wait(1)
-        startMoneyFarm()
-    end
+    if moneyFarmEnabled then task.wait(1) startMoneyFarm() end
 end)
+BuildBoatTab:CreateToggle({Name = "开启刷钱脚本", CurrentValue = false, Flag = "MoneyFarmToggle", Callback = function(Value)
+    if Value then startMoneyFarm() Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已开启！重生后自动恢复", Duration = 5}) else stopMoneyFarm() Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已关闭，并已自动死亡", Duration = 5}) end
+end})
+BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
+    local args = {915766549, "Product"}
+    workspace:WaitForChild("PromptRobuxEvent"):InvokeServer(unpack(args))
+    Rayfield:Notify({Title = "建船寻宝", Content = "已尝试购买圣诞钩爪！", Duration = 5})
+end})
 
-BuildBoatTab:CreateToggle({
-    Name = "开启刷钱脚本",
-    CurrentValue = false,
-    Flag = "MoneyFarmToggle",
-    Callback = function(Value)
-        if Value then
-            startMoneyFarm()
-            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已开启！重生后自动恢复", Duration = 5})
-        else
-            stopMoneyFarm()
-            Rayfield:Notify({Title = "建船寻宝", Content = "刷钱脚本已关闭，并已自动死亡", Duration = 5})
-        end
-    end
-})
-
-BuildBoatTab:CreateButton({
-    Name = "购买圣诞钩爪",
-    Callback = function()
-        local args = {
-            915766549,
-            "Product"
-        }
-        workspace:WaitForChild("PromptRobuxEvent"):InvokeServer(unpack(args))
-        Rayfield:Notify({Title = "建船寻宝", Content = "已尝试购买圣诞钩爪！", Duration = 5})
-    end
-})
-
--- Tab 9: 独家自瞄区域
+-- Tab 9: 独家自瞄区域 (点击按钮切换，修复关闭bug)
 local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
-
-AimbotTab:CreateParagraph({
-    Title = "独家自瞄功能",
-    Content = "• Silent Aim + Aimbot\n• 开关按钮控制开启/关闭\n• 适用于大多数 FPS 类 Roblox 游戏"
-})
-
+AimbotTab:CreateParagraph({Title = "独家自瞄功能", Content = "• Silent Aim + Aimbot\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"})
 local aimbotEnabled = false
 local oldRaycast = nil
-
+local originalRaycast = nil
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-
 local function GetNearestEnemyHead()
     local closestPlayer = nil
     local closestDistance = math.huge
     local myHeadPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head.Position
-
     if not myHeadPos then return nil end
-
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
             local head = player.Character.Head
@@ -582,28 +360,23 @@ local function GetNearestEnemyHead()
             end
         end
     end
-
-    if closestPlayer then
-        return closestPlayer.Character.Head
-    end
+    if closestPlayer then return closestPlayer.Character.Head end
     return nil
 end
-
 local function enableAimbot()
     if oldRaycast then return end
-    oldRaycast = hookmetamethod(game, "__namecall", function(self, ...)
+    originalRaycast = getrawmetatable(game).__namecall
+    setreadonly(getrawmetatable(game), false)
+    getrawmetatable(game).__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
         local args = {...}
-
-        if not checkcaller() and method == "Raycast" and self == Workspace then
+        if not checkcaller() and method == "Raycast" and self == Workspace and aimbotEnabled then
             local origin = args[1]
             local direction = args[2]
-
             local targetHead = GetNearestEnemyHead()
-            if targetHead and aimbotEnabled then
+            if targetHead then
                 local newDirection = (targetHead.Position - origin)
                 local distance = newDirection.Magnitude
-
                 local fakeResult = {
                     Position = targetHead.Position,
                     Distance = distance,
@@ -611,52 +384,32 @@ local function enableAimbot()
                     Normal = Vector3.new(0, 1, 0),
                     Material = Enum.Material.Plastic,
                 }
-
                 return fakeResult
             end
         end
-
-        return oldRaycast(self, ...)
+        return originalRaycast(self, ...)
     end)
+    setreadonly(getrawmetatable(game), true)
+    oldRaycast = true
 end
-
 local function disableAimbot()
-    -- 注意：hookmetamethod 无法完全还原，但关闭后不再触发
-    oldRaycast = nil
-end
-
-AimbotTab:CreateToggle({
-    Name = "开启独家自瞄 (Silent Aim)",
-    CurrentValue = false,
-    Flag = "AimbotToggle",
-    Callback = function(Value)
-        aimbotEnabled = Value
-        if aimbotEnabled then
-            enableAimbot()
-            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！瞄准最近敌人头部", Duration = 5})
-        else
-            disableAimbot()
-            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！", Duration = 5})
-        end
+    if oldRaycast then
+        setreadonly(getrawmetatable(game), false)
+        getrawmetatable(game).__namecall = originalRaycast
+        setreadonly(getrawmetatable(game), true)
+        oldRaycast = nil
+        originalRaycast = nil
     end
-})
+end
+AimbotTab:CreateButton({Name = "切换独家自瞄 (Silent Aim)", Callback = function()
+    aimbotEnabled = not aimbotEnabled
+    if aimbotEnabled then
+        enableAimbot()
+        Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！瞄准最近敌人头部", Duration = 5})
+    else
+        disableAimbot()
+        Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！已完全还原", Duration = 5})
+    end
+end})
 
-Rayfield:Notify({
-    Title = "脚本加载完成",
-    Content = "所有功能已完整整合\n新增“独家自瞄区域”",
-    Duration = 10
-})
-
-local VirtualUser = game:GetService('VirtualUser')
- 
-game:GetService('Players').LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new())
-end)
- 
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "afk加载好了",
-    Text = "已自动开启afk",
-    Button1 = "好的",
-    Duration = 5
-})
+Rayfield:Notify({Title = "脚本加载完成", Content = "所有功能已完整整合\n自动防挂机已开启\n独家自瞄已修复", Duration = 10})
