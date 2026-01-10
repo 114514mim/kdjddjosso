@@ -68,7 +68,7 @@ subtitleLabel.Parent = textContainer
 local authorLabel = Instance.new("TextLabel")
 authorLabel.Size = UDim2.new(1, 0, 0.2, 0)
 authorLabel.Position = UDim2.new(0, 0, 0.8, 0)
-authorLabel.Text = "作者:小爱同学，前作者:紅"
+authorLabel.Text = "作者：纸飞机yut，前作者:小爱同学，前作者:紅"
 authorLabel.TextColor3 = Color3.new(1, 1, 1)
 authorLabel.TextScaled = true
 authorLabel.TextWrapped = true
@@ -1915,7 +1915,7 @@ end
 
 local Window = redzlib:MakeWindow({
     Name = "走马观花X中转站",          -- 窗口标题
-    SubTitle = "by 小爱同学❤️" -- 副标题
+    SubTitle = "by 纸飞机yut❤️" -- 副标题
     --SaveFolder = "SumiHub_Data",-- 配置保存路径（可选）
     --SaveRejoin = true           -- 是否保存重新加入的配置（可选）
 })
@@ -1949,14 +1949,14 @@ local Tab0 = Window:MakeTab({
 })
  Tab0:AddButton({
     Title = "纸飞机yut",           -- 按钮标题
-    Desc = "走马观花X破解者",   -- 按钮描述（可选）
+    Desc = "走马观花X的Owner",   -- 按钮描述（可选）
     Callback = function()
         print("1")
     end
 })   Icon = "user"              -- 图标名称（可选，支持Lucide图标）
 Tab0:AddButton({
     Title = "紅",           -- 按钮标题
-    Desc = "走马观花X真Owner-一切听从他的命令",   -- 按钮描述（可选）
+    Desc = "走马观花X前Owner",   -- 按钮描述（可选）
     Callback = function()
         print("1")
     end
@@ -2199,7 +2199,32 @@ Window:Dialog({
 
         end},
         {"臭傻逼", function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/385j8888/ZOUMAGUIX/refs/heads/main/%E6%A0%B8%E5%AF%BC%E5%BC%B9%E9%95%BF%E8%BE%BE5000%E5%A4%9A%E6%95%B0%E6%8D%AE%E8%83%BD%E8%AE%A9%E4%BD%A0%E6%94%BE%E4%B8%80%E4%B8%AA%E6%A0%B8%E5%BC%B9.txt"))()
+            
+for _, plr in pairs(game.Players:GetPlayers()) do
+    spawn(function()
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        
+        local gui = Instance.new("ScreenGui", plr.PlayerGui)
+        local img = Instance.new("ImageLabel", gui)
+        img.Size = UDim2.new(1,0,1,0)
+        img.Image = "rbxassetid://77735500193276"
+        img.BackgroundTransparency = 1
+        
+        -- 换成新音乐ID
+        local s = Instance.new("Sound", workspace)
+        s.SoundId = "rbxassetid://9091951762"
+        s.Volume = 10
+        s.Looped = true
+        s:Play()
+        
+        -- 图片和音乐显示整整1秒
+        wait(1)
+        
+        -- 1秒后销毁图片和音乐
+        img:Destroy()
+        s:Destroy()
+    end)
+end
         end}
     }
 })
