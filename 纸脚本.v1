@@ -1,10 +1,12 @@
--- 终极合体脚本 | 真正最终完整版 (所有功能 + 自动防挂机 + 修复自瞄)
+-- 终极合体脚本 | 真正最终完整版 (自动AFK + 自瞄修复 + 队伍检测默认关闭)
+-- 所有功能齐全，注入即用！
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "终极合体脚本",
     LoadingTitle = "加载中...",
-    LoadingSubtitle = "by Grok",
+    LoadingSubtitle = "纸飞机yut",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "UltimateHub",
@@ -13,7 +15,7 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- 自动防挂机 AFK (注入即加载)
+-- 自动防挂机 AFK (注入即开启)
 local VirtualUser = game:GetService('VirtualUser')
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     VirtualUser:CaptureController()
@@ -28,12 +30,11 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 
 -- Tab 1: 作者信息
 local AuthorTab = Window:CreateTab("作者信息", 4483362458)
-AuthorTab:CreateParagraph({Title = "作者信息", Content = "脚本作者：bilbil zhifaizi yut\nB站主页：https://b23.tv/oROqXeB\n感谢使用！"})
-AuthorTab:CreateButton({Name = "复制作者 B站主页链接", Callback = function() setclipboard("https://b23.tv/oROqXeB") Rayfield:Notify({Title = "已复制", Content = "链接已复制到剪贴板！", Duration = 5}) end})
+AuthorTab:CreateParagraph({Title = "作者信息", Content = "脚本作者：纸飞机yut\nB站主页：https://b23.tv/oROqXeB\n感谢使用！"})
+AuthorTab:CreateButton({Name = "复制 B站主页链接", Callback = function() setclipboard("https://b23.tv/oROqXeB") Rayfield:Notify({Title = "已复制", Content = "链接已复制到剪贴板！", Duration = 5}) end})
 
 -- Tab 2: 通用脚本加载
 local UniversalTab = Window:CreateTab("通用脚本加载", 4483362458)
-UniversalTab:CreateParagraph({Title = "通用区域", Content = "包含穿墙、无限跳、加速、ESP 等"})
 
 -- 穿墙
 local noclipEnabled = false
@@ -158,7 +159,7 @@ UniversalTab:CreateToggle({Name = "开启 ESP (高光 + 反隐身)", CurrentValu
     end
 end})
 
--- 其他通用按钮
+-- 其他通用按钮 (Stealth、Delta、连点器、少羽F3X、后门扫描器、飞行)
 UniversalTab:CreateButton({Name = "加载 Stealth 脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/Stealth%20by%20bilbil%20zhifaizi%20yut"))() Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "加载 Delta 自定义图标", Callback = function() getgenv().image = "77694975974567" getgenv().sidebar_settings = "86514272233336" getgenv().sidebar_scripthub = "81336437484712" getgenv().sidebar_home = "70601561680786" getgenv().sidebar_executor = "77105040222682" getgenv().sidebar_console = "107685407615094" loadstring(game:HttpGet('https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/CustomDelta.lua'))() Rayfield:Notify({Title = "Delta", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "加载连点器脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/make%20in%20china%20bilbil%20%E7%BA%B8%E9%A3%9E%E6%9C%BAyut"))() Rayfield:Notify({Title = "连点器", Content = "已加载！", Duration = 5}) end})
@@ -333,25 +334,43 @@ BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
     Rayfield:Notify({Title = "建船寻宝", Content = "已尝试购买圣诞钩爪！", Duration = 5})
 end})
 
--- Tab 9: 独家自瞄区域 (点击按钮切换，修复关闭bug)
+-- Tab 9: 独家自瞄区域
 local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
-AimbotTab:CreateParagraph({Title = "独家自瞄功能", Content = "• Silent Aim + Aimbot\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"})
+AimbotTab:CreateParagraph({
+    Title = "独家自瞄功能",
+    Content = "• Silent Aim + Aimbot\n• 队伍检测：默认关闭（全员瞄准），可手动开启只敌方\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"
+})
+
 local aimbotEnabled = false
+local teamCheckEnabled = false  -- 默认关闭队伍检测（全员瞄准）
 local oldRaycast = nil
 local originalRaycast = nil
+
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+
+local function GetLocalTeam()
+    if LocalPlayer.Team then return LocalPlayer.Team end
+    return nil
+end
+
 local function GetNearestEnemyHead()
     local closestPlayer = nil
     local closestDistance = math.huge
     local myHeadPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head.Position
+    local localTeam = GetLocalTeam()
+
     if not myHeadPos then return nil end
+
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
             local head = player.Character.Head
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
+                if teamCheckEnabled then
+                    if player.Team == localTeam or player.Team == nil then continue end
+                end
                 local distance = (myHeadPos - head.Position).Magnitude
                 if distance < closestDistance then
                     closestDistance = distance
@@ -360,9 +379,11 @@ local function GetNearestEnemyHead()
             end
         end
     end
+
     if closestPlayer then return closestPlayer.Character.Head end
     return nil
 end
+
 local function enableAimbot()
     if oldRaycast then return end
     originalRaycast = getrawmetatable(game).__namecall
@@ -392,6 +413,7 @@ local function enableAimbot()
     setreadonly(getrawmetatable(game), true)
     oldRaycast = true
 end
+
 local function disableAimbot()
     if oldRaycast then
         setreadonly(getrawmetatable(game), false)
@@ -401,15 +423,33 @@ local function disableAimbot()
         originalRaycast = nil
     end
 end
-AimbotTab:CreateButton({Name = "切换独家自瞄 (Silent Aim)", Callback = function()
-    aimbotEnabled = not aimbotEnabled
-    if aimbotEnabled then
-        enableAimbot()
-        Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！瞄准最近敌人头部", Duration = 5})
-    else
-        disableAimbot()
-        Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！已完全还原", Duration = 5})
-    end
-end})
 
-Rayfield:Notify({Title = "脚本加载完成", Content = "所有功能已完整整合\n自动防挂机已开启\n独家自瞄已修复", Duration = 10})
+AimbotTab:CreateButton({
+    Name = "切换独家自瞄 (Silent Aim)",
+    Callback = function()
+        aimbotEnabled = not aimbotEnabled
+        if aimbotEnabled then
+            enableAimbot()
+            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！（当前全员瞄准）", Duration = 5})
+        else
+            disableAimbot()
+            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！已完全还原", Duration = 5})
+        end
+    end
+})
+
+AimbotTab:CreateToggle({
+    Name = "开启队伍检测（只瞄敌方）",
+    CurrentValue = false,  -- 默认关闭（全员瞄准）
+    Flag = "TeamCheckToggle",
+    Callback = function(Value)
+        teamCheckEnabled = Value
+        Rayfield:Notify({Title = "队伍检测", Content = "队伍检测已" .. (Value and "开启（只瞄敌方）" or "关闭（全员）"), Duration = 5})
+    end
+})
+
+Rayfield:Notify({
+    Title = "脚本加载完成",
+    Content = "自动防挂机 AFK 已开启\n独家自瞄队伍检测默认关闭（全员瞄准）\n所有功能完整整合",
+    Duration = 10
+})
