@@ -14,7 +14,13 @@ designed using localmaze gui creator
 
 local LMG2L = {};
 
-LMG2L["ScreenGui_1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+local lp = game.Players.LocalPlayer
+if not lp then return end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "ScreenGui_1"
+gui.ResetOnSpawn = false
+gui.Parent = lp.PlayerGui
 LMG2L["ScreenGui_1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
 
 
