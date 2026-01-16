@@ -50,7 +50,7 @@ up.Size = UDim2.new(0, 44, 0, 28)
 
 up.Font = Enum.Font.SourceSans
 
-up.Text = "W GÓRE"
+up.Text = "上升"
 
 up.TextColor3 = Color3.fromRGB(0, 0, 0)
 
@@ -68,7 +68,7 @@ down.Size = UDim2.new(0, 44, 0, 28)
 
 down.Font = Enum.Font.SourceSans
 
-down.Text = "W DÓŁ"
+down.Text = "下升"
 
 down.TextColor3 = Color3.fromRGB(0, 0, 0)
 
