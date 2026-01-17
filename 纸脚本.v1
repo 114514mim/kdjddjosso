@@ -465,26 +465,30 @@ Night99Tab:CreateButton({
 
 -- 收集木头功能
 local collectingLogs = false
-local collectThread = nil
 
 Night99Tab:CreateButton({
     Name = "收集木头到背包",
     Callback = function()
---  for i = 1, _cishu do
-      local Players = game:GetService("Players")
-      local ReplicatedStorage = game:GetService("ReplicatedStorage")
-      local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
+        local player = Players.LocalPlayer
+        local inventory = player:FindFirstChild("Inventory")
 
-      local player = Players.LocalPlayer
-      local inventory = player.Inventory
-
-      if inventory then
-         for _, item in pairs(inventory:GetChildren()) do
-           for _, itemm in ipairs(workspace.Items:GetChildren()) do
-             if itemm.Name=="Log" then
-                RequestBagStoreItem:InvokeServer(item, itemm)
-             end
-           end
-         end
-      end
-   end)
+        if inventory then
+            for _, item in pairs(inventory:GetChildren()) do
+                for _, obj in ipairs(workspace:WaitForChild("Items"):GetChildren()) do
+                    if obj.Name == "Log" then
+                        pcall(function()
+                            RequestBagStoreItem:InvokeServer(item, obj)
+                        end)
+                        task.wait(0.05) -- 防止瞬间调用过快
+                    end
+                end
+            end
+            Rayfield:Notify({Title = "收集木头", Content = "已尝试收集完成", Duration = 3})
+        else
+            Rayfield:Notify({Title = "收集木头", Content = "背包 Inventory 未加载", Duration = 3})
+        end
+    end
+})
