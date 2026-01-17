@@ -470,67 +470,35 @@ local collectThread = nil
 Night99Tab:CreateButton({
     Name = "收集木头到背包",
     Callback = function()
-        if collectingLogs then
-            if collectThread then
-                task.cancel(collectThread)
-                collectThread = nil
-            end
-            collectingLogs = false
-            return
-        end
+--  for i = 1, _cishu do
+      local Players = game:GetService("Players")
+      local ReplicatedStorage = game:GetService("ReplicatedStorage")
+      local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
 
-        collectingLogs = true
-        collectThread = task.spawn(function()
-            while collectingLogs do
-                local Players = game:GetService("Players")
-                local ReplicatedStorage = game:GetService("ReplicatedStorage")
-                local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
+      local player = Players.LocalPlayer
+      local inventory = player.Inventory
 
-                local player = Players.LocalPlayer
-                local inventory = player:FindFirstChild("Inventory")
+      if inventory then
+         for _, item in pairs(inventory:GetChildren()) do
+           for _, itemm in ipairs(workspace.Items:GetChildren()) do
+             if itemm.Name=="Log" then
+                RequestBagStoreItem:InvokeServer(item, itemm)
+             end
+           end
+         end
+      end
+      
+      task.wait(0.1)
+  --    if inventory then
+         for _, item in pairs(inventory:GetChildren()) do
+                local args = {
+                	item,
+                	workspace:WaitForChild("Items"):WaitForChild("Log"),
+                	true
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem"):FireServer(unpack(args))
 
-                if inventory then
-                    for _, item in pairs(inventory:GetChildren()) do
-                        local workspaceItems = workspace:FindFirstChild("Items")
-                        if workspaceItems then
-                            for _, itemm in ipairs(workspaceItems:GetChildren()) do
-                                if itemm.Name == "Log" and collectingLogs then
-                                    pcall(function()
-                                        RequestBagStoreItem:InvokeServer(item, itemm)
-                                    end)
-                                end
-                            end
-                        end
-                    end
-                end
-                task.wait(0.1)
-            end
-        })
-
-        local Players = game:GetService("Players")
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
-
-        local player = Players.LocalPlayer
-        local inventory = player:FindFirstChild("Inventory")
-
-        if not inventory then
-            return
-        end
-
-        local workspaceItems = workspace:FindFirstChild("Items")
-        if not workspaceItems then
-            return
-        end
-
-        for _, item in pairs(inventory:GetChildren()) do
-            for _, logItem in ipairs(workspaceItems:GetChildren()) do
-                if logItem.Name == "Log" then
-                    pcall(function()
-                        RequestBagStoreItem:InvokeServer(item, logItem)
-                    end)
-                end
-            end
-        end
-    end
-})
+         end
+    --  end
+ -- end
+end)
