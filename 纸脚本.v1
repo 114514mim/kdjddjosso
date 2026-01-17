@@ -453,7 +453,7 @@ local Night99Tab = Window:CreateTab("99个夜晚区域", 4483362458)
 
 -- 锁血功能
 Night99Tab:CreateButton({
-    Name = "99个夜晚锁血",
+    Name = "锁血",
     Callback = function()
         local args = {
             [1] = -999999999999
