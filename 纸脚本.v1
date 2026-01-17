@@ -460,13 +460,6 @@ Night99Tab:CreateButton({
         }
         
         game:GetService("ReplicatedStorage").RemoteEvents.DamagePlayer:FireServer(unpack(args))
-        
-        Rayfield:Notify({
-            Title = "99个夜晚锁血",
-            Content = "锁血已应用！",
-            Duration = 5,
-            Image = 4483362458
-        })
     end
 })
 
@@ -482,12 +475,6 @@ Night99Tab:CreateButton({
                 collectThread = nil
             end
             collectingLogs = false
-            Rayfield:Notify({
-                Title = "收集木头",
-                Content = "已停止收集木头！",
-                Duration = 5,
-                Image = 4483362458
-            })
             return
         end
         
@@ -500,7 +487,6 @@ Night99Tab:CreateButton({
             local player = Players.LocalPlayer
             
             while collectingLogs do
-                -- 等待玩家有角色
                 if not player.Character then
                     task.wait(1)
                     continue
@@ -509,33 +495,23 @@ Night99Tab:CreateButton({
                 local inventory = player:FindFirstChild("Inventory")
                 
                 if inventory then
-                    -- 获取所有背包物品
                     for _, item in pairs(inventory:GetChildren()) do
-                        -- 查找场景中的木头
                         local workspaceItems = workspace:FindFirstChild("Items")
                         if workspaceItems then
                             for _, logItem in ipairs(workspaceItems:GetChildren()) do
                                 if logItem.Name == "Log" and collectingLogs then
-                                    -- 尝试将木头存入背包
                                     pcall(function()
                                         RequestBagStoreItem:InvokeServer(item, logItem)
                                     end)
-                                    task.wait(0.1) -- 防止过快操作
+                                    task.wait(0.1)
                                 end
                             end
                         end
                     end
                 end
                 
-                task.wait(0.5) -- 扫描间隔
+                task.wait(0.5)
             end
-        })
-        
-        Rayfield:Notify({
-            Title = "收集木头",
-            Content = "开始收集木头到背包！再次点击停止",
-            Duration = 5,
-            Image = 4483362458
         })
     end
 })
@@ -551,48 +527,22 @@ Night99Tab:CreateButton({
         local inventory = player:FindFirstChild("Inventory")
         
         if not inventory then
-            Rayfield:Notify({
-                Title = "错误",
-                Content = "未找到背包！",
-                Duration = 5,
-                Image = 4483362458
-            })
             return
         end
         
         local workspaceItems = workspace:FindFirstChild("Items")
         if not workspaceItems then
-            Rayfield:Notify({
-                Title = "错误",
-                Content = "未找到物品区域！",
-                Duration = 5,
-                Image = 4483362458
-            })
             return
         end
         
-        local collected = 0
         for _, item in pairs(inventory:GetChildren()) do
             for _, logItem in ipairs(workspaceItems:GetChildren()) do
                 if logItem.Name == "Log" then
                     pcall(function()
                         RequestBagStoreItem:InvokeServer(item, logItem)
-                        collected = collected + 1
                     end)
                 end
             end
         end
-        
-        Rayfield:Notify({
-            Title = "收集完成",
-            Content = string.format("已尝试收集 %d 个木头！", collected),
-            Duration = 5,
-            Image = 4483362458
-        })
     end
-})
-
-Night99Tab:CreateParagraph({
-    Title = "功能说明",
-    Content = "锁血功能：点击应用锁血效果\n收集木头：持续收集木头到背包\n立即收集：一次性收集所有木头"
 })
