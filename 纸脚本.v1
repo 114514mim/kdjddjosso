@@ -487,4 +487,18 @@ Night99Tab:CreateButton({
            end
          end
       end
-     end
+      
+      task.wait(0.1)
+  --    if inventory then
+         for _, item in pairs(inventory:GetChildren()) do
+                local args = {
+                	item,
+                	workspace:WaitForChild("Items"):WaitForChild("Log"),
+                	true
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem"):FireServer(unpack(args))
+
+         end
+    --  end
+ -- end
+end)
