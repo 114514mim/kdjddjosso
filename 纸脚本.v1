@@ -462,6 +462,7 @@ Night99Tab:CreateButton({
         game:GetService("ReplicatedStorage").RemoteEvents.DamagePlayer:FireServer(unpack(args))
     end
 })
+
 -- 收集木头功能
 local collectingLogs = false
 local collectThread = nil
