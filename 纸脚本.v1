@@ -506,12 +506,7 @@ Night99Tab:CreateButton({
                 task.wait(0.1)
             end
         })
-    end
-})
 
-Night99Tab:CreateButton({
-    Name = "立即收集一次木头",
-    Callback = function()
         local Players = game:GetService("Players")
         local ReplicatedStorage = game:GetService("ReplicatedStorage")
         local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
