@@ -448,8 +448,22 @@ AimbotTab:CreateToggle({
     end
 })
 
-Rayfield:Notify({
-    Title = "脚本加载完成",
-    Content = "自动防挂机 AFK 已开启\n独家自瞄队伍检测默认关闭（全员瞄准）\n所有功能完整整合",
-    Duration = 10
+-- Tab 10: 99个夜晚区域 
+local Night99Tab = Window:CreateTab("99个夜晚区域", 4483362458)
+Night99Tab:CreateButton({
+    Name = "加载99个夜晚无敌锁血脚本",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/99day.无敌"))()
+        Rayfield:Notify({
+            Title = "99个夜晚无敌",
+            Content = "无敌锁血脚本已加载！",
+            Duration = 5,
+            Image = 4483362458
+        })
+    end
+})
+
+Night99Tab:CreateParagraph({
+    Title = "功能说明",
+    Content = "点击按钮加载99个夜晚无敌锁血脚本"
 })
