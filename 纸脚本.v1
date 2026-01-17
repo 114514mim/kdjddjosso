@@ -458,7 +458,7 @@ Night99Tab:CreateButton({
         local args = {
             [1] = -999999999999
         }
-        
+
         game:GetService("ReplicatedStorage").RemoteEvents.DamagePlayer:FireServer(unpack(args))
     end
 })
@@ -466,6 +466,7 @@ Night99Tab:CreateButton({
 -- 收集木头功能
 local collectingLogs = false
 local collectThread = nil
+
 Night99Tab:CreateButton({
     Name = "收集木头到背包",
     Callback = function()
@@ -477,40 +478,32 @@ Night99Tab:CreateButton({
             collectingLogs = false
             return
         end
-        
+
         collectingLogs = true
         collectThread = task.spawn(function()
-            local Players = game:GetService("Players")
-            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
-            
-            local player = Players.LocalPlayer
-            
             while collectingLogs do
-                if not player.Character then
-                    task.wait(1)
-                    continue
-                end
-                
+                local Players = game:GetService("Players")
+                local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
+
+                local player = Players.LocalPlayer
                 local inventory = player:FindFirstChild("Inventory")
-                
+
                 if inventory then
                     for _, item in pairs(inventory:GetChildren()) do
                         local workspaceItems = workspace:FindFirstChild("Items")
                         if workspaceItems then
-                            for _, logItem in ipairs(workspaceItems:GetChildren()) do
-                                if logItem.Name == "Log" and collectingLogs then
+                            for _, itemm in ipairs(workspaceItems:GetChildren()) do
+                                if itemm.Name == "Log" and collectingLogs then
                                     pcall(function()
-                                        RequestBagStoreItem:InvokeServer(item, logItem)
+                                        RequestBagStoreItem:InvokeServer(item, itemm)
                                     end)
-                                    task.wait(0.1)
                                 end
                             end
                         end
                     end
                 end
-                
-                task.wait(0.5)
+                task.wait(0.1)
             end
         })
     end
@@ -522,19 +515,19 @@ Night99Tab:CreateButton({
         local Players = game:GetService("Players")
         local ReplicatedStorage = game:GetService("ReplicatedStorage")
         local RequestBagStoreItem = ReplicatedStorage.RemoteEvents.RequestBagStoreItem
-        
+
         local player = Players.LocalPlayer
         local inventory = player:FindFirstChild("Inventory")
-        
+
         if not inventory then
             return
         end
-        
+
         local workspaceItems = workspace:FindFirstChild("Items")
         if not workspaceItems then
             return
         end
-        
+
         for _, item in pairs(inventory:GetChildren()) do
             for _, logItem in ipairs(workspaceItems:GetChildren()) do
                 if logItem.Name == "Log" then
