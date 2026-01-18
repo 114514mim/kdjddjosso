@@ -1,0 +1,131 @@
+local TextChatService = game:GetService("TextChatService")
+
+task.wait(0.5)
+
+local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+if channel then
+    local success, err = pcall(function()
+        channel:SendAsync(";time 24")
+    end)
+
+    if success then
+        -- 等一会，确保消息已经发出
+        task.wait(0.3)
+    else
+        warn("说话失败:", err)
+    end
+end
+
+-- F3X 天空盒一键更换脚本
+local player = game.Players.LocalPlayer
+
+-- 1. 定位F3X工具
+local function getSyncTool()
+    local tool
+    for _, v in pairs(player:GetDescendants()) do
+        if v.Name == "SyncAPI" then
+            tool = v.Parent
+            break
+        end
+    end
+    if not tool then
+        for _, v in pairs(game.ReplicatedStorage:GetDescendants()) do
+            if v.Name == "SyncAPI" then
+                tool = v.Parent
+                break
+            end
+        end
+    end
+    return tool
+end
+
+-- 2. 调用F3X命令
+local function runSync(args)
+    local tool = getSyncTool()
+    if tool and tool.SyncAPI and tool.SyncAPI.ServerEndpoint then
+        tool.SyncAPI.ServerEndpoint:InvokeServer(unpack(args))
+    end
+end
+
+-- 3. 封装F3X功能
+local function SetAnchor(part, boolean)
+    runSync({"SyncAnchor", { { ["Part"] = part, ["Anchored"] = boolean } }})
+end
+local function CreatePart(cf, parent)
+    runSync({"CreatePart", "Normal", cf, parent})
+end
+local function AddMesh(part)
+    runSync({"CreateMeshes", { { ["Part"] = part } }})
+end
+local function SetMesh(part, meshid)
+    runSync({"SyncMesh", { { ["Part"] = part, ["MeshId"] = "rbxassetid://" .. meshid } }})
+end
+local function SetTexture(part, texid)
+    runSync({"SyncMesh", { { ["Part"] = part, ["TextureId"] = "rbxassetid://" .. texid } }})
+end
+local function MeshResize(part, size)
+    runSync({"SyncMesh", { { ["Part"] = part, ["Scale"] = size } }})
+end
+
+-- 4. 核心天空更换函数 (使用你的贴图ID)
+local function createSky(texId)
+    texId = tostring(texId)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local cf = hrp.CFrame
+    local skyPos = cf.Position + Vector3.new(0, 6, 0)
+    
+    -- 查找已存在的天空盒
+    local existingSky = nil
+    for _, v in workspace:GetDescendants() do
+        if v.Name == "Skybox" and v:IsA("BasePart") then
+            existingSky = v
+            break
+        end
+    end
+    
+    if existingSky then
+        -- 更新现有天空盒
+        SetTexture(existingSky, texId)
+        print("✅ 天空盒贴图已更新为 ID: " .. texId)
+    else
+        -- 创建新天空盒
+        CreatePart(CFrame.new(skyPos), workspace)
+        task.wait(0.2)
+        
+        local newPart = nil
+        for _, v in workspace:GetDescendants() do
+            if v:IsA("BasePart") and v.Parent == workspace then
+                local distance = (v.Position - skyPos).Magnitude
+                if distance < 5 then
+                    newPart = v
+                    v.Name = "Skybox"
+                    break
+                end
+            end
+        end
+        
+        if newPart then
+            SetAnchor(newPart, true)
+            AddMesh(newPart)
+            SetMesh(newPart, "111891702759441") -- 球形网格
+            SetTexture(newPart, texId)
+            MeshResize(newPart, Vector3.new(8000, 8000, 8000))
+            print("✅ 新天空盒已创建！贴图ID: " .. texId)
+        end
+    end
+end
+
+-- 5. 脚本启动 - 直接使用你的贴图ID
+task.spawn(function()
+    -- 等待角色加载
+    if not player.Character then
+        player.CharacterAdded:Wait()
+    end
+    task.wait(1)
+    
+    -- 应用你的贴图ID
+    createSky("77735500193276")
+    
+    print("🎯 F3X天空盒已自动应用，贴图ID: 77735500193276")
+end)
