@@ -1,0 +1,115 @@
+local TextChatService = game:GetService("TextChatService")
+
+task.wait(0.5)
+
+local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+if channel then
+    local success, err = pcall(function()
+        channel:SendAsync(";btools")
+    end)
+
+    if success then
+        -- 等一会，确保消息已经发出
+        task.wait(0.3)
+    else
+        warn("说话失败:", err)
+    end
+end
+
+--// ===== Services =====
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+--// ===== UI =====
+local gui = Instance.new("ScreenGui")
+gui.Name = "RepoLoaderUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 320, 0, 535)
+frame.Position = UDim2.new(0.5, -160, 0.5, -265)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "GitHub Script Loader"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(155,0,255)
+
+--// ===== Button Maker =====
+local function makeButton(text, y)
+    local b = Instance.new("TextButton", frame)
+    b.Size = UDim2.new(1, -40, 0, 45)
+    b.Position = UDim2.new(0, 20, 0, y)
+    b.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    b.Text = text
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 16
+    b.TextColor3 = Color3.fromRGB(255,255,255)
+    b.AutoButtonColor = true
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    return b
+end
+
+--// ===== Buttons (names updated) =====
+local btn1 = makeButton("▶ joh hone (r6)", 50)
+local btn2 = makeButton("▶ 镰刀恶魔 (r6)", 105)
+local btn3 = makeButton("▶ 锤子 (r6)", 160)
+local btn4 = makeButton("▶ U.N 的领域", 215)
+local btn5 = makeButton("▶ 鸭子", 270)
+local btn6 = makeButton("▶ 天空 U.N 图标", 325)
+local btn7 = makeButton("▶ 马里奥蘑菇跌落", 380)
+local btn8 = makeButton("▶ 天空盒子", 435)
+local btn9 = makeButton("▶ 贴图", 490) -- new one
+
+--// ===== Raw Links =====
+local URLS = {
+    oi      = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/oi",
+    io      = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/io",
+    f3x     = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/f3x%E9%94%A4%E5%AD%90",
+    un      = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/U.N%20home",
+    s67     = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/67",
+    po      = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/po",
+    mario   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/Mario",
+    iop     = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/iop",
+    spam    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/spam"
+}
+
+--// ===== 防重复执行 =====
+local running = {
+    oi=false, io=false, f3x=false, un=false,
+    s67=false, po=false, mario=false, iop=false, spam=false
+}
+
+local function run(key)
+    if running[key] then return end
+    running[key] = true
+
+    task.spawn(function()
+        local ok, err = pcall(function()
+            loadstring(game:HttpGet(URLS[key]))()
+        end)
+        if not ok then
+            warn(key.." 执行失败：", err)
+        end
+        running[key] = false
+    end)
+end
+
+--// ===== Buttons Connect =====
+btn1.MouseButton1Click:Connect(function() run("oi") end)
+btn2.MouseButton1Click:Connect(function() run("io") end)
+btn3.MouseButton1Click:Connect(function() run("f3x") end)
+btn4.MouseButton1Click:Connect(function() run("un") end)
+btn5.MouseButton1Click:Connect(function() run("s67") end)
+btn6.MouseButton1Click:Connect(function() run("po") end)
+btn7.MouseButton1Click:Connect(function() run("mario") end)
+btn8.MouseButton1Click:Connect(function() run("iop") end)
+btn9.MouseButton1Click:Connect(function() run("spam") end)
