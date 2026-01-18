@@ -339,68 +339,10 @@
 		makerealmbase()
 	end
 
-	realm()
-
-	RequestCommand:InvokeServer(";res all")
-	wait(0.3)
-	RequestCommand:InvokeServer(";r6 all")
-     RequestCommand:InvokeServer(";m Team UnethicalNetwork LOL") 
-     RequestCommand:InvokeServer(";serverHint team U.N is join") 
-     RequestCommand:InvokeServer(";char all Unethical_Network")
-     RequestCommand:InvokeServer(";time 7")
-	wait(0.7)
-
--- 在更新位置生成大型ifioood人物
-local player = game.Players.LocalPlayer
-local tool
-
--- 查找F3X工具
-for _, v in player:GetDescendants() do
-    if v.Name == "SyncAPI" then tool = v.Parent end
-end
-if not tool then
-    for _, v in game.ReplicatedStorage:GetDescendants() do
-        if v.Name == "SyncAPI" then tool = v.Parent end
-    end
-end
-
-local remote = tool.SyncAPI.ServerEndpoint
-
-function _(args) remote:InvokeServer(unpack(args)) end
-
--- 核心F3X功能函数
-function SetAnchor(part, boolean)
-    _({"SyncAnchor", {{["Part"] = part, ["Anchored"] = boolean}}})
-end
-function CreatePart(cf)
-    _({"CreatePart", "Normal", cf, workspace})
-end
-function Resize(part, size, cf)
-    _({"SyncResize", {{["Part"] = part, ["CFrame"] = cf, ["Size"] = size}}})
-end
-function AddMesh(part)
-    _({"CreateMeshes", {{["Part"] = part}}})
-end
-function SetMesh(part, meshid)
-    _({"SyncMesh", {{["Part"] = part, ["MeshId"] = "rbxassetid://" .. meshid}}})
-end
-function SetTexture(part, texid)
-    _({"SyncMesh", {{["Part"] = part, ["TextureId"] = "rbxassetid://" .. texid}}})
-end
-function MeshResize(part, size)
-    _({"SyncMesh", {{["Part"] = part, ["Scale"] = size}}})
-end
-function SetName(part, stringg)
-    _({"SetName", {part}, stringg})
-end
-function SetCollision(part, boolean)
-    _({"SyncCollision", {{["Part"] = part, ["CanCollide"] = boolean}}})
-end
-
 -- ==================== 在更新位置生成大型ifioood人物 ====================
 -- 使用更新后的坐标
 local x = 36.83
-local y = 56.61
+local y = 51.61
 local z = -71.48
 local spawnPosition = Vector3.new(x, y, z)
 
@@ -443,12 +385,18 @@ for _, v in workspace:GetDescendants() do
         sound.PlayOnRemove = true
         sound:Destroy()
         
-        print("✅ 大型ifioood已生成在更新位置")
-        print("  位置：X: " .. x .. " Y: " .. y .. " Z: " .. z)
-        print("  尺寸：50x50x30（大型）")
-        print("  网格缩放：0.5倍")
-        print("  已锚定：不会掉落")
-        print("  有碰撞：可以交互")
         break
     end
 end
+
+	realm()
+
+	RequestCommand:InvokeServer(";res all")
+	wait(0.3)
+	RequestCommand:InvokeServer(";r6 all")
+     RequestCommand:InvokeServer(";m Team UnethicalNetwork LOL") 
+     RequestCommand:InvokeServer(";serverHint team U.N is join") 
+     RequestCommand:InvokeServer(";char all Unethical_Network")
+     RequestCommand:InvokeServer(";time 7")
+	wait(0.7)
+
