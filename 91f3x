@@ -1,0 +1,89 @@
+--// ===== Services =====
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+--// ===== UI =====
+local gui = Instance.new("ScreenGui")
+gui.Name = "RepoLoaderUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 320, 0, 425)
+frame.Position = UDim2.new(0.5, -160, 0.5, -212)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "GitHub Script Loader"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(155,0,255)
+
+--// ===== Button Maker =====
+local function makeButton(text, y)
+    local b = Instance.new("TextButton", frame)
+    b.Size = UDim2.new(1, -40, 0, 45)
+    b.Position = UDim2.new(0, 20, 0, y)
+    b.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    b.Text = text
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 16
+    b.TextColor3 = Color3.fromRGB(255,255,255)
+    b.AutoButtonColor = true
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    return b
+end
+
+local btn1 = makeButton("▶ 执行 oi", 50)
+local btn2 = makeButton("▶ 执行 io", 105)
+local btn3 = makeButton("▶ 执行 f3x 锤子", 160)
+local btn4 = makeButton("▶ 执行 U.N home", 215)
+local btn5 = makeButton("▶ 执行 67", 270)
+local btn6 = makeButton("▶ 执行 po", 325)
+local btn7 = makeButton("▶ 执行 Mario", 380)
+
+--// ===== Raw Links =====
+local URLS = {
+    oi    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/oi",
+    io    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/io",
+    f3x   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/f3x%E9%94%A4%E5%AD%90",
+    un    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/U.N%20home",
+    s67   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/67",
+    po    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/po",
+    mario = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/Mario"
+}
+
+--// ===== 防重复执行 =====
+local running = {
+    oi=false, io=false, f3x=false, un=false, s67=false, po=false, mario=false
+}
+
+local function run(key)
+    if running[key] then return end
+    running[key] = true
+
+    task.spawn(function()
+        local ok, err = pcall(function()
+            loadstring(game:HttpGet(URLS[key]))()
+        end)
+        if not ok then
+            warn(key.." 执行失败：", err)
+        end
+        running[key] = false
+    end)
+end
+
+--// ===== 按钮绑定 =====
+btn1.MouseButton1Click:Connect(function() run("oi") end)
+btn2.MouseButton1Click:Connect(function() run("io") end)
+btn3.MouseButton1Click:Connect(function() run("f3x") end)
+btn4.MouseButton1Click:Connect(function() run("un") end)
+btn5.MouseButton1Click:Connect(function() run("s67") end)
+btn6.MouseButton1Click:Connect(function() run("po") end)
+btn7.MouseButton1Click:Connect(function() run("mario") end)
