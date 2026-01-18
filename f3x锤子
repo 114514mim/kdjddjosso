@@ -5,7 +5,7 @@ task.wait(0.5)
 local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
 if channel then
     local success, err = pcall(function()
-        channel:SendAsync(";r6")
+        channel:SendAsync(";btools")
     end)
 
     if success then
