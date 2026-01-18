@@ -1,7 +1,24 @@
+local TextChatService = game:GetService("TextChatService")
+
+task.wait(0.5)
+
+local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+if channel then
+    local success, err = pcall(function()
+        channel:SendAsync(";btools")
+    end)
+
+    if success then
+        -- 等一会，确保消息已经发出
+        task.wait(0.3)
+    else
+        warn("说话失败:", err)
+    end
+end
+
 --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 ]]
-
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
