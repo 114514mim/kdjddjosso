@@ -1,0 +1,178 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ContentProvider = game:GetService("ContentProvider")
+local SoundService = game:GetService("SoundService")
+
+local player = Players.LocalPlayer
+
+-- Find F3X
+local function getf3x()
+    local backpack = player.Backpack
+    for _, v in ipairs(backpack:GetChildren()) do
+        if v:FindFirstChild("SyncAPI") then return v end
+    end
+    for _, v in ipairs(player.Character:GetChildren()) do
+        if v:FindFirstChild("SyncAPI") then return v end
+    end
+    return nil
+end
+
+local f3x = getf3x()
+if not f3x then 
+    warn("where yo btools at?") 
+    return 
+end
+
+local serverendpoint = f3x.SyncAPI.ServerEndpoint
+
+-- Settings
+local DUCK_NAME = "EpicDuckOrbit_" .. player.Name
+local TITLE = player.Name .. "'s Duck"
+local radius = 3
+local heightOffset = 0
+local speed = 2.3
+local duckScale = Vector3.new(2.2, 2.2, 2.2)
+local duckSize = Vector3.new(1, 1, 1)
+
+local duckPart = nil
+local connection = nil
+local quackSound = nil
+
+local function cleanupOldDuck()
+    local oldDuck = workspace:FindFirstChild(DUCK_NAME)
+    if oldDuck and serverendpoint then
+        serverendpoint:InvokeServer("Remove", { [1] = oldDuck })
+    end
+    duckPart = nil
+    if quackSound then quackSound:Destroy() end
+end
+
+local function createDuck()
+    cleanupOldDuck()
+    
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local hrp = character.HumanoidRootPart
+    local initialCFrame = hrp.CFrame * CFrame.new(0, heightOffset, radius)
+    
+    -- Create server-side part (VISIBLE TO ALL!)
+    local createdPart = serverendpoint:InvokeServer("CreatePart", "Normal", initialCFrame, workspace)
+    if not createdPart then return end
+    duckPart = createdPart
+    
+    serverendpoint:InvokeServer("SetName", { [1] = duckPart }, DUCK_NAME)
+    
+    -- Properties
+    serverendpoint:InvokeServer("SyncResize", { { Part = duckPart, CFrame = duckPart.CFrame, Size = duckSize } })
+    serverendpoint:InvokeServer("SyncMaterial", { { Part = duckPart, Material = Enum.Material.Plastic, Transparency = 0 } })
+    serverendpoint:InvokeServer("SyncColor", { { Part = duckPart, Color = Color3.new(1, 1, 1) } })
+    serverendpoint:InvokeServer("SyncCollision", { { Part = duckPart, CanCollide = false } })
+    serverendpoint:InvokeServer("SyncAnchor", { { Part = duckPart, Anchored = true } })
+    serverendpoint:InvokeServer("SetLocked", { [1] = duckPart }, true)
+    
+    -- Epic Duck Mesh
+    serverendpoint:InvokeServer("CreateMeshes", { { Part = duckPart } })
+    serverendpoint:InvokeServer("SyncMesh", { 
+        { 
+            Part = duckPart, 
+            MeshId = "rbxassetid://9419831",
+            TextureId = "rbxassetid://9419827",
+            Scale = duckScale 
+        } 
+    })
+    
+    task.wait(0.5)  -- Replication wait
+    
+    -- === YELLOW SPARKLES ===
+    local sparkles = Instance.new("Sparkles")
+    sparkles.SparkleColor = Color3.fromRGB(255, 255, 0)
+    sparkles.Enabled = true
+    sparkles.Parent = duckPart
+    
+
+    quackSound = Instance.new("Sound")
+    quackSound.SoundId = "rbxassetid://0"  
+    quackSound.Volume = 0.6
+    quackSound.RollOffMode = Enum.RollOffMode.Linear
+    quackSound.Parent = duckPart
+    
+    -- === HEAD TITLE ===
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Name = "DuckHeadTitle"
+    billboardGui.Size = UDim2.new(0, 220, 0, 45)
+    billboardGui.StudsOffset = Vector3.new(0, 1.6, 1.1)
+    billboardGui.AlwaysOnTop = true
+    billboardGui.LightInfluence = 0
+    billboardGui.Parent = duckPart
+    
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = TITLE
+    textLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextSize = 26
+    textLabel.Parent = billboardGui
+    
+    ContentProvider:PreloadAsync({duckPart})
+    
+    
+end
+
+local function startOrbit()
+    if connection then connection:Disconnect() end
+    
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") or not duckPart then return end
+    
+    local humanoidRootPart = character.HumanoidRootPart
+    
+    connection = RunService.RenderStepped:Connect(function()
+        if not humanoidRootPart.Parent or not duckPart or not duckPart.Parent then return end
+        
+        local time = tick()
+        local angle = time * speed
+        
+        local offset = Vector3.new(math.cos(angle) * radius, heightOffset, math.sin(angle) * radius)
+        local position = humanoidRootPart.Position + offset
+        
+        local lookDirection = humanoidRootPart.CFrame.LookVector
+        local targetPos = position + lookDirection
+        local duckCFrame = CFrame.lookAt(position, targetPos)
+        
+        -- Little bob up/down + QUACK on bob!
+        local bobHeight = math.sin(time * 4) * 0.4
+        duckCFrame = CFrame.new(duckCFrame.Position + Vector3.new(0, bobHeight, 0), targetPos)
+        
+        -- QUACK SOUND every full orbit cycle
+        if math.abs(bobHeight) > 0.35 and quackSound then
+            quackSound:Play()
+        end
+        
+        duckPart.CFrame = duckCFrame
+    end)
+end
+
+player.CharacterAdded:Connect(function()
+    task.wait(1.5)
+    createDuck()
+    task.wait(0.5)
+    startOrbit()
+end)
+
+if player.Character then
+    createDuck()
+    task.wait(0.5)
+    startOrbit()
+end
+
+print("epik")
+print("orbit duck skiddd ")
