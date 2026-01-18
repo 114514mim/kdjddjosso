@@ -1,0 +1,110 @@
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local tool
+
+-- 查找F3X工具
+for _, v in player:GetDescendants() do
+    if v.Name == "SyncAPI" then tool = v.Parent end
+end
+if not tool then
+    for _, v in game.ReplicatedStorage:GetDescendants() do
+        if v.Name == "SyncAPI" then tool = v.Parent end
+    end
+end
+
+local remote = tool.SyncAPI.ServerEndpoint
+
+function _(args) remote:InvokeServer(unpack(args)) end
+
+-- 核心F3X功能函数
+function SetAnchor(part, boolean)
+    _({"SyncAnchor", {{["Part"] = part, ["Anchored"] = boolean}}})
+end
+function CreatePart(cf)
+    _({"CreatePart", "Normal", cf, workspace})
+end
+function Resize(part, size, cf)
+    _({"SyncResize", {{["Part"] = part, ["CFrame"] = cf, ["Size"] = size}}})
+end
+function AddMesh(part)
+    _({"CreateMeshes", {{["Part"] = part}}})
+end
+function SetMesh(part, meshid)
+    _({"SyncMesh", {{["Part"] = part, ["MeshId"] = "rbxassetid://" .. meshid}}})
+end
+function SetTexture(part, texid)
+    _({"SyncMesh", {{["Part"] = part, ["TextureId"] = "rbxassetid://" .. texid}}})
+end
+function MeshResize(part, size)
+    _({"SyncMesh", {{["Part"] = part, ["Scale"] = size}}})
+end
+function SetName(part, stringg)
+    _({"SetName", {workspace.Part}, stringg})
+end
+function SetCollision(part, boolean)
+    _({"SyncCollision", {{["Part"] = part, ["CanCollide"] = boolean}}})
+end
+
+-- 主循环：创建下雨效果
+local function createRain()
+    while true do
+        task.wait(0.01) -- 生成间隔（值越小生成越快）
+        if player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+            local hrpcf = player.Character.HumanoidRootPart.CFrame
+            local x, z = hrpcf.x, hrpcf.z
+            local randint = math.random(-600, 600)
+            local randint2 = math.random(-600, 600)
+            local xloc, zloc = randint + x, randint2 + z
+            local baseHeight = player.Character.HumanoidRootPart.CFrame.y + 400
+
+            spawn(function()
+                CreatePart(CFrame.new(math.floor(xloc), math.random(baseHeight, baseHeight + 400), math.floor(zloc)))
+                for _, v in workspace:GetDescendants() do
+                    if v.Name == "Part" and v.Parent == workspace and v.CFrame.x == math.floor(xloc) and v.CFrame.z == math.floor(zloc) then
+                        SetName(v, "ITS RAINING MEN!")
+                        SetAnchor(v, false) -- 不锚定，使其下落
+                        AddMesh(v)
+                        Resize(v, Vector3.new(50, 50, 30), v.CFrame)
+                        MeshResize(v, Vector3.new(0.5, 0.5, 0.5))
+                        SetMesh(v, "1347582902") -- 自定义网格ID
+                        SetTexture(v, "136244369348699") -- 自定义贴图ID
+                        SetCollision(v, false) -- 无碰撞
+                        v.Orientation = Vector3.new(0, 0, 0)
+
+                        -- 声音效果（可选）
+                        local sound = Instance.new("Sound", v)
+                        sound.SoundId = "rbxassetid://153752123"
+                        sound.Volume = 0 -- 原脚本音量设为0，可调高
+                        sound.PlayOnRemove = true
+                        sound:Destroy()
+                    end
+                end
+            end)
+        else
+            task.wait(1)
+        end
+    end
+end
+
+-- 可选：创建天空盒（原脚本的一部分）
+function createSky(id)
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local cf = hrp.CFrame
+    CreatePart(CFrame.new(cf.Position + Vector3.new(0, 6, 0)))
+    for _, v in workspace:GetDescendants() do
+        if v:IsA("BasePart") and v.CFrame.Position == cf.Position + Vector3.new(0, 6, 0) then
+            SetAnchor(v, true)
+            AddMesh(v)
+            SetMesh(v, "14832966960")
+            SetTexture(v, id)
+            MeshResize(v, Vector3.new(0, 0, 0))
+        end
+    end
+end
+
+-- 自动执行
+task.spawn(function()
+    task.wait(1) -- 等待游戏稳定
+    -- createSky("95921788891849") -- 可选的天空盒，贴图ID可替换
+    createRain() -- 开始下雨
+end)
