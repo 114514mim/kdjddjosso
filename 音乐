@@ -1,0 +1,11 @@
+-- 获取 HDAdmin 的 RequestCommand
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent
+
+-- 音乐播放函数
+local function playMusic()
+    RequestCommand:InvokeServer(";music 121922837560201 ;volume inf ;pitch 0.2")
+end
+
+-- 执行播放
+playMusic()
