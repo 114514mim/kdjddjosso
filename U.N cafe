@@ -508,5 +508,109 @@ end
     wait(2)  
     RequestCommand:InvokeServer(";respawn all")  
     wait(0.8)  
-    RequestCommand:InvokeServer(";music 1846575559 ;volume inf")
-    RequestCommand:InvokeServer(";m Welcome to U.N coffee！")
+    RequestCommand:InvokeServer(";music 1846575559 ;volume inf")                                                    wait(2)                                                                                             -- 在指定位置生成正常大小转向后方的ifioood人物
+local player = game.Players.LocalPlayer
+local tool
+
+-- 查找F3X工具
+for _, v in player:GetDescendants() do
+    if v.Name == "SyncAPI" then tool = v.Parent end
+end
+if not tool then
+    for _, v in game.ReplicatedStorage:GetDescendants() do
+        if v.Name == "SyncAPI" then tool = v.Parent end
+    end
+end
+
+local remote = tool.SyncAPI.ServerEndpoint
+
+function _(args) remote:InvokeServer(unpack(args)) end
+
+-- 核心F3X功能函数
+function SetAnchor(part, boolean)
+    _({"SyncAnchor", {{["Part"] = part, ["Anchored"] = boolean}}})
+end
+function CreatePart(cf)
+    _({"CreatePart", "Normal", cf, workspace})
+end
+function Resize(part, size, cf)
+    _({"SyncResize", {{["Part"] = part, ["CFrame"] = cf, ["Size"] = size}}})
+end
+function AddMesh(part)
+    _({"CreateMeshes", {{["Part"] = part}}})
+end
+function SetMesh(part, meshid)
+    _({"SyncMesh", {{["Part"] = part, ["MeshId"] = "rbxassetid://" .. meshid}}})
+end
+function SetTexture(part, texid)
+    _({"SyncMesh", {{["Part"] = part, ["TextureId"] = "rbxassetid://" .. texid}}})
+end
+function MeshResize(part, size)
+    _({"SyncMesh", {{["Part"] = part, ["Scale"] = size}}})
+end
+function SetName(part, stringg)
+    _({"SetName", {part}, stringg})
+end
+function SetCollision(part, boolean)
+    _({"SyncCollision", {{["Part"] = part, ["CanCollide"] = boolean}}})
+end
+
+-- ==================== 在指定位置生成正常大小转向后方的ifioood人物 ====================
+-- 使用指定坐标
+local x = -19.80
+local y = 379.95
+local z = 48.44
+
+-- 创建CFrame：位置 + 转向后方（绕Y轴旋转180度）
+local spawnPosition = Vector3.new(x, y, z)
+local spawnCFrame = CFrame.new(spawnPosition) * CFrame.Angles(0, math.rad(180), 0)  -- 转向后方
+
+CreatePart(spawnCFrame)
+
+task.wait(0.1)
+
+-- 查找并配置部件
+for _, v in workspace:GetDescendants() do
+    if v.Name == "Part" and v.Parent == workspace and (v.Position - spawnPosition).Magnitude < 1 then
+        -- 设置名称
+        SetName(v, "ifioood")
+        
+        -- 设置为锚定，不会掉落
+        SetAnchor(v, true)
+        
+        -- 添加网格
+        AddMesh(v)
+        
+        -- 使用正常大小（类似Roblox人物大小）
+        Resize(v, Vector3.new(2, 6, 1), v.CFrame)  -- 正常人大小（宽2，高6，厚1）
+        
+        -- 相应调整网格大小，使其看起来像正常人
+        MeshResize(v, Vector3.new(0.04, 0.04, 0.04))  -- 正常大小缩放
+        
+        -- 设置网格和贴图
+        SetMesh(v, "1347582902")
+        SetTexture(v, "136244369348699")
+        
+        -- 设置为有碰撞
+        SetCollision(v, true)
+        
+        -- 设置方向：转向后方（已通过CFrame设置）
+        v.Orientation = Vector3.new(0, 180, 0)  -- Y轴旋转180度，面向后方
+        
+        -- 可选声音效果
+        local sound = Instance.new("Sound", v)
+        sound.SoundId = "rbxassetid://153752123"
+        sound.Volume = 0
+        sound.PlayOnRemove = true
+        sound:Destroy()
+        
+        print("✅ 正常大小ifioood已生成在指定位置并转向后方")
+        print("  位置：X: " .. x .. " Y: " .. y .. " Z: " .. z)
+        print("  尺寸：2x6x1（正常人大小）")
+        print("  网格缩放：0.04倍")
+        print("  方向：面向后方（Y轴180度）")
+        print("  已锚定：不会掉落")
+        print("  有碰撞：可以交互")
+        break
+    end
+end
