@@ -1,0 +1,813 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+
+
+local soundlist = {
+	HardHit1 = "rbxassetid://565207203",
+	HardHit2 = "rbxassetid://541909913",
+	HardHit3 = "rbxassetid://541909983",
+	WeakHit1 = "rbxassetid://558642292",
+	WeakHit2 = "rbxassetid://541907812",
+	Slice1 = "rbxassetid://260429964",
+	Slice2 = "rbxassetid://260430015",
+	Explosion1 = "rbxassetid://138186576",
+	Explosion2 = "rbxassetid://157878578",
+	Woosh1 = "rbxassetid://541909867",
+	Woosh2 = "rbxassetid://541909763"
+}
+function swait(t)
+	if t then
+		for i = 0, t do
+			game:GetService('RunService').Stepped:wait(0)
+		end
+	else
+		game:GetService('RunService').Stepped:wait(0)
+	end
+	return true
+end
+function soundeffect(id, volume, speed, parent, forcewait)
+	local func = function()
+		local s = Instance.new('Sound')
+		s.Name = "SoundEffect"
+		s.Volume = volume
+		s.PlaybackSpeed = speed
+		s.SoundId = id
+		s.Looped = false
+		s.Parent = parent
+		s:Play()
+		repeat wait() until not s.Playing
+		s:Destroy()
+	end
+	if forcewait then
+		func()
+	else
+		spawn(func)
+	end
+end
+local RunService = game:GetService("RunService")
+function specialsound(id, volume, speed, parent, starts, ends)
+	local func = function()
+		local s = LoadLibrary("RbxUtility").Create("Sound")()
+		s.Name = "SoundEffect"
+		s.Volume = volume
+		s.PlaybackSpeed = speed
+		s.SoundId = id
+		s.TimePosition = starts
+		s.Looped = false
+		s.Parent = parent
+		s:Play()
+		repeat swait() until s.TimePosition >= ends
+		s:Destroy()
+	end
+	spawn(func)
+end
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = game.Players.LocalPlayer
+local char = player.Character
+local tool
+u=game:GetService("UserInputService")
+for i,v in player:GetDescendants() do
+    if v.Name == "SyncAPI" then
+        tool = v.Parent
+    end
+end
+for i,v in game.ReplicatedStorage:GetDescendants() do
+    if v.Name == "SyncAPI" then
+        tool = v.Parent
+    end
+end
+
+remote = tool.SyncAPI.ServerEndpoint
+
+function _(args)
+spawn(function()
+    return remote:InvokeServer(unpack(args))
+end)
+end
+
+function CreatePart(cf,parent)
+    local args = {
+        [1] = "CreatePart",
+        [2] = "Normal",
+        [3] = cf,
+        [4] = parent
+    }
+    return _(args)
+end
+
+function MovePart(part,cf)
+    local args = {
+        [1] = "SyncMove",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["CFrame"] = cf
+            }
+        }
+    }
+    _(args)
+end
+
+function Resize(part,size,cf)
+    local args = {
+        [1] = "SyncResize",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["CFrame"] = cf,
+                ["Size"] = size
+            }
+        }
+    }
+    _(args)
+end
+
+function SetTrans(part,int)
+    local args = {
+        [1] = "SyncMaterial",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["Transparency"] = int
+            }
+        }
+    }
+    _(args)
+end
+
+function Setmate(part,int)
+    local args = {
+        [1] = "SyncMaterial",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["Material"] = int
+            }
+        }
+    }
+    _(args)
+end
+
+function Color(part,color)
+    local args = {
+        [1] = "SyncColor",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["Color"] = color,
+                ["UnionColoring"] = false
+            }
+        }
+    }
+    _(args)
+end
+  function SetAnchor(boolean,part)
+        local args = {
+            [1] = "SyncAnchor",
+            [2] = {
+                [1] = {
+                    ["Part"] = part,
+                    ["Anchored"] = boolean
+                }
+            }
+        }
+        _(args)
+    end
+function DestroyPart(part)
+    local args = {
+        [1] = "Remove",
+        [2] = {
+            [1] = part
+        }
+    }
+    _(args)
+end
+
+function SetAnchor(boolean,part)
+    local args = {
+        [1] = "SyncAnchor",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["Anchored"] = boolean
+            }
+        }
+    }
+    _(args)
+end
+
+function SetCollision(part,boolean)
+    local args = {
+        [1] = "SyncCollision",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["CanCollide"] = boolean
+            }
+        }
+    }
+    _(args)
+end
+
+function AddMesh(part)
+    local args = {
+        [1] = "CreateMeshes",
+        [2] = {
+            [1] = {
+                ["Part"] = part
+            }
+        }
+    }
+    _(args)
+end
+
+function SetMesh(part,meshid)
+    local args = {
+        [1] = "SyncMesh",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["MeshId"] = "rbxassetid://"..meshid
+            }
+        }
+    }
+    _(args)
+end
+   function SpawnDecal(part,side)
+        local args = {
+            [1] = "CreateTextures",
+            [2] = {
+                [1] = {
+                    ["Part"] = part,
+                    ["Face"] = side,
+                    ["TextureType"] = "Decal"
+                }
+            }
+        }
+
+        _(args)
+    end
+    function AddDecal(part,asset,side)
+        local args = {
+            [1] = "SyncTexture",
+            [2] = {
+                [1] = {
+                    ["Part"] = part,
+                    ["Face"] = side,
+                    ["TextureType"] = "Decal",
+                    ["Texture"] = "rbxasset://".. asset
+                }
+            }
+        }
+        _(args)
+    end
+    function MeshResize(part,size)
+        local args = {
+            [1] = "SyncMesh",
+            [2] = {
+                [1] = {
+                    ["Part"] = part,
+                    ["Scale"] = size
+                }
+            }
+        }
+        _(args)
+    end
+function Weld(part1,part2,lead)
+    local args = {
+        [1] = "CreateWelds",
+        [2] = {
+            [1] = part1,
+            [2] = part2
+        },
+        [3] = lead
+    }
+    _(args)
+end
+    function SetName(part, stringg)
+        local args = {
+            [1] = "SetName",
+            [2] = {
+                [1] = part
+            },
+            [3] = stringg
+        }
+
+        _(args)
+    end
+function light(part)
+spawn(function()
+    if not part or not part:IsA("BasePart") then
+        return
+    end
+    spawn(function()
+        local createArgs = {
+            "CreateLights",
+            {
+                {
+                    Part = part,
+                    LightType = "PointLight"
+                }
+            }
+        }   
+        local syncArgs = {
+            "SyncLighting",
+            {
+                {
+                    Part = part,
+                    LightType = "PointLight",
+                    Color = Color3.fromRGB(255, 155, 0),
+                    Brightness = 20,
+                    Range = 2,
+                }
+            }
+        } 
+        spawn(function()
+            _(createArgs)
+        end)      
+        spawn(function()
+            _(syncArgs)
+        end)    
+        task.wait()
+        if part and part.Parent then
+            for i, v in ipairs(part:GetDescendants()) do
+                if v:IsA("PointLight") then
+                    spawn(function()
+                        DestroyPart(v)
+                    end)
+                end
+            end
+        end
+    end)
+end)
+end
+
+	local function blood(part) 
+    local argsCreate = {
+        [1] = "CreateDecorations",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["DecorationType"] = "Smoke"
+            }
+        }
+    }
+    local argsSync = {
+        [1] = "SyncDecorate",
+        [2] = {
+            [1] = {
+                ["Part"] = part,
+                ["DecorationType"] = "Smoke",
+                ["Size"] = 3,
+                ["RiseVelocity"] = 0,
+                ["Opacity"] = 1,
+                ["Color"] = Color3.fromRGB(60000, 0, 0)
+            } 
+        } 
+    }
+    spawn(function()
+    _(argsCreate)
+    end)
+    spawn(function()
+    _(argsSync)
+    end)
+end
+function KillTarget(target)
+    if target and target.Character then
+        local head = target.Character:FindFirstChild("Head")
+        if head then
+            local args = {
+                [1] = "SetLocked",
+                [2] = { [1] = head },
+                [3] = false
+            }
+            _(args)
+            spawn(function()
+            blood(target.Character.Torso)
+            end)
+            local args2 = {
+                [1] = "Remove",
+                [2] = { [1] = head }
+            }
+            _(args2)
+        end
+    end
+end
+    for i,v in char:GetDescendants() do
+        if v:IsA("BasePart") then
+            spawn(function()
+            SetTrans(v,1)
+            end)
+        end
+    end
+    for i,v in char:GetDescendants() do
+        if v:IsA("Decal") then
+            spawn(function()
+            DestroyPart(v)
+            end)
+        end
+    end
+rightArm=char["Right Arm"]
+
+
+    cf=CFrame.new()
+local larm = char["Left Arm"]
+local rarm = char["Right Arm"]
+local lleg = char["Left Leg"]
+local rleg = char["Right Leg"]
+local trs= char.Torso
+local hd = char.Head
+
+nlarm = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+nrarm = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+nlleg = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+nrleg = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+ntrs = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+nhd = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+
+
+spawn(function()
+Resize(nlarm, larm.Size, larm.CFrame)
+end)
+spawn(function()
+Resize(nrarm, rarm.Size, rarm.CFrame)
+end)
+spawn(function()
+Resize(nlleg, lleg.Size, lleg.CFrame)
+end)
+spawn(function()
+Resize(nrleg, rleg.Size, rleg.CFrame)
+end)
+spawn(function()
+Resize(ntrs, trs.Size, trs.CFrame)
+end)
+spawn(function()
+Resize(nhd, hd.Size, hd.CFrame)
+end)
+
+
+spawn(function()
+Color(nlarm, Color3.fromRGB(255, 255, 255))
+end)
+spawn(function()
+Color(nrarm, Color3.fromRGB(255, 255, 255))
+end)
+spawn(function()
+Color(nlleg, Color3.fromRGB(0, 0, 0))
+end)
+spawn(function()
+Color(nrleg, Color3.fromRGB(0, 0, 0))
+end)
+spawn(function()
+Color(ntrs, Color3.fromRGB(155, 155, 155))
+end)
+spawn(function()
+Color(nhd, Color3.fromRGB(255, 255, 255))
+end)
+
+spawn(function()
+SetCollision(nlarm, false)
+end)
+spawn(function()
+SetCollision(nrarm, false)
+end)
+spawn(function()
+SetCollision(nlleg, false)
+end)
+spawn(function()
+SetCollision(nrleg, false)
+end)
+spawn(function()
+SetCollision(ntrs, false)
+end)
+spawn(function()
+SetCollision(nhd, false)
+end)
+
+spawn(function()
+AddMesh(nhd)
+end)
+spawn(function()
+SpawnDecal(nhd,Enum.NormalId.Front)
+end)
+spawn(function()
+AddDecal(nhd,"textures/face.png",Enum.NormalId.Front)
+end)
+spawn(function()
+MeshResize(nhd, Vector3.new(1.3,1.3,1.3))
+end)
+
+spawn(function()
+AddMesh(nlarm)
+end)
+spawn(function()
+SetMesh(nlarm,"127739625807358")
+end)
+
+
+spawn(function()
+AddMesh(nrarm)
+end)
+spawn(function()
+SetMesh(nrarm,"127739625807358")
+end)
+spawn(function()
+AddMesh(ntrs)
+end)
+spawn(function()
+SetMesh(ntrs,"2027989253")
+end)
+spawn(function()
+AddMesh(nlleg)
+end)
+spawn(function()
+SetMesh(nlleg,"127739625807358")
+end)
+spawn(function()
+AddMesh(nrleg)
+end)
+
+spawn(function()
+SetMesh(nrleg,"127739625807358")
+end)
+
+spawn(function()
+--[[ credits to blue2spooky for the animations ]]--
+local plr = game.Players.LocalPlayer
+local char = plr.Character
+
+local humanoid = char:FindFirstChild("Humanoid")
+local torso = char:FindFirstChild("Torso")
+local head = char.Head
+local ra = char:FindFirstChild("Right Arm")
+local la = char:FindFirstChild("Left Arm")
+local rl = char:FindFirstChild("Right Leg")
+local ll = char:FindFirstChild("Left Leg")
+local rs = torso:FindFirstChild("Right Shoulder")
+local ls = torso:FindFirstChild("Left Shoulder")
+local rh = torso:FindFirstChild("Right Hip")
+local lh = torso:FindFirstChild("Left Hip")
+local neck = torso:FindFirstChild("Neck")
+local rj = char:FindFirstChild("HumanoidRootPart"):FindFirstChild("RootJoint")
+local anim = char:FindFirstChild("Animate")
+if anim then
+    anim:Destroy()
+end
+
+local rm = Instance.new("Weld", torso)
+rm.C0 = CFrame.new(1.5, 0.5, 0)
+rm.C1 = CFrame.new(0, 0.5, 0)
+rm.Part0 = torso
+rm.Part1 = ra
+
+local lm = Instance.new("Weld", torso)
+lm.C0 = CFrame.new(-1.5, 0.5, 0)
+lm.C1 = CFrame.new(0, 0.5, 0)
+lm.Part0 = torso
+lm.Part1 = la
+
+local rlegm = Instance.new("Motor", torso)
+rlegm.C0 = CFrame.new(0.5, -1, 0)
+rlegm.C1 = CFrame.new(0, 1, 0)
+rlegm.Part0 = torso
+rlegm.Part1 = rl
+rlegm.Name = "Right Hip"
+
+local llegm = Instance.new("Motor", torso)
+llegm.C0 = CFrame.new(-0.5, -1, 0)
+llegm.C1 = CFrame.new(0, 1, 0)
+llegm.Part0 = torso
+llegm.Part1 = ll
+llegm.Name = "Left Hip"
+
+neck.C0 = CFrame.new(0, 1, 0)
+neck.C1 = CFrame.new(0, -0.5, 0)
+rj.C0 = CFrame.new(0, -1, 0)
+rj.C1 = CFrame.new(0, -1, 0)
+
+
+local rsc0 = rm.C0
+local lsc0 = lm.C0
+local neckc0 = neck.C0
+local rootc0 = rj.C0
+local llc0 = llegm.C0
+local rlc0 = rlegm.C0
+
+local speed = 0.4
+local angle = 0
+local anglespeed = 0
+local mvmnt = 0
+local rootpart = char:FindFirstChild("HumanoidRootPart")
+local camera = workspace.CurrentCamera
+function clerp(c1, c2, al)
+    local com1 = {c1.X, c1.Y, c1.Z, c1:toEulerAnglesXYZ()}
+    local com2 = {c2.X, c2.Y, c2.Z, c2:toEulerAnglesXYZ()}
+    for i,v in pairs(com1) do 
+        com1[i] = v + (com2[i] - v) * al
+    end
+    return CFrame.new(com1[1], com1[2], com1[3]) * CFrame.Angles(select(4, unpack(com1)))
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    angle = (angle % 100) + anglespeed / 10
+    mvmnt = math.pi * math.sin(math.pi * 2 / 100 * (angle * 10))
+    
+    local rscf = rsc0
+    local lscf = lsc0
+    local rlcf = rlc0
+    local llcf = llc0
+    local rjcf = rootc0
+    local ncf = neckc0
+    
+    local rayz = Ray.new(rootpart.Position, Vector3.new(0, -4.1, 0))
+    local hitz, enz = workspace:FindPartOnRay(rayz, char)
+    
+    ncf = neckc0 * CFrame.Angles(camera.CoordinateFrame.lookVector.y, 0, 0)
+    
+    rscf = rsc0 * CFrame.new(-.55, 0, .35) * CFrame.Angles(camera.CoordinateFrame.lookVector.y + math.pi/2, 0, 0)
+    lscf = lsc0 * CFrame.new(.85, 0, -.65) * CFrame.Angles(camera.CoordinateFrame.lookVector.y + math.pi/2, 0, math.rad(45))
+    if not hitz then
+        ncf = neckc0 * CFrame.Angles(math.pi/18, 0, 0)
+        rscf = rsc0 * CFrame.new(-.45, 0, -.75) * CFrame.Angles(math.pi/5 + math.pi/18, 0, math.rad(-70))
+        lscf = lsc0 * CFrame.new(.35, 0, 0) * CFrame.Angles(math.pi/3.5 + math.pi/18, 0, 0)
+        rjcf = rootc0 * CFrame.Angles(-math.pi/32, 0, 0)
+        rlcf = rlc0 * CFrame.new(0, 0.7, -0.5) * CFrame.Angles(-math.pi/14, 0, 0)
+        llcf = llc0 * CFrame.Angles(-math.pi/20, 0, 0)
+    elseif humanoid.Sit then
+        ncf = neckc0 * CFrame.Angles(0, 0, 0)
+        rjcf = rootc0 * CFrame.new(0, -.2, 0)
+        rlcf = rlc0 * CFrame.Angles(math.pi/2, 0, math.rad(7.5))
+        llcf = llc0 * CFrame.Angles(math.pi/2, 0, -math.rad(7.5))
+    elseif Vector3.new(torso.Velocity.x, 0, torso.Velocity.z).magnitude <= 2 then
+        rjcf = rootc0
+        rlcf = rlc0 * CFrame.Angles(-math.rad(.5), 0, math.rad(1.5))
+        llcf = llc0 * CFrame.Angles(math.rad(1.5), 0, -math.rad(1.5))
+    elseif Vector3.new(torso.Velocity.x, 0, torso.Velocity.z).magnitude <= 20 then
+        anglespeed = 2
+        rjcf = rootc0
+        rlcf = rlc0 * CFrame.Angles(math.sin(-angle) * .65, 0, math.rad(.5))
+        llcf = llc0 * CFrame.Angles(math.sin(angle) * .65, 0, -math.rad(.5))
+    elseif Vector3.new(torso.Velocity.x, 0, torso.Velocity.z).magnitude >= 20 then
+        anglespeed = 2.7
+        ncf = neckc0 * CFrame.Angles(math.pi/18, 0, 0)
+        rscf = rsc0 * CFrame.new(-.45, 0, -.75) * CFrame.Angles(math.pi/5 + math.pi/18, 0, math.rad(-70))
+        lscf = lsc0 * CFrame.new(.35, 0, 0) * CFrame.Angles(math.pi/3.5 + math.pi/18, 0, 0)
+        rjcf = rootc0 * CFrame.new(0, 0, 0) * CFrame.Angles(-math.pi/18, math.sin(angle) * .1, math.sin(angle) * .045)
+        rlcf = rlc0 * CFrame.new(0, .3 + -math.cos(-angle) * .3, -.2 + math.sin(angle) * 0.25) * CFrame.Angles(-math.pi/18 + math.sin(-angle) * 1.3, 0, math.rad(.5))
+        llcf = llc0 * CFrame.new(0, .3 - -math.cos(angle) * .3, -.05 - math.sin(angle) * 0.25) * CFrame.Angles(-math.pi/18 + math.sin(angle) * 1.3, 0, -math.rad(.5))
+    end
+   
+    rm.C0 = clerp(rm.C0, rscf, speed)
+    lm.C0 = clerp(lm.C0, lscf, speed)
+    rj.C0 = clerp(rj.C0, rjcf, speed)
+    rlegm.C0 = clerp(rlegm.C0, rlcf, speed)
+    llegm.C0 = clerp(llegm.C0, llcf, speed)
+    neck.C0 = clerp(neck.C0, ncf, speed)
+end)
+end)
+
+    for i,v in char:GetDescendants() do
+        if v:IsA("BasePart") then
+            spawn(function()
+            SetAnchor(false,v)
+            end)
+        end
+    end
+r=Instance.new
+
+local ak = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+
+spawn(function()
+    Resize(ak, Vector3.new(0.3,1.45,5.05), CFrame.new())
+end)
+spawn(function()
+    SetName(ak,'AK-47')
+end)
+    spawn(function()
+    SetCollision(ak, false)
+end)
+    spawn(function()
+    Color(ak, Color3.new(0,0,0))
+end)
+    spawn(function()
+    AddMesh(ak)
+end)
+    spawn(function()
+    SetMesh(ak, "6951907418")
+end)
+   spawn(function()
+    MeshResize(ak,Vector3.new(0.1,0.1,0.1))
+end)
+
+function e()
+task.spawn(function()
+MovePart(nlarm, larm.CFrame)
+end)
+task.spawn(function()
+MovePart(nrarm, rarm.CFrame)
+end)
+task.spawn(function()
+MovePart(nlleg, lleg.CFrame)
+end)
+task.spawn(function()
+MovePart(nrleg, rleg.CFrame)
+end)
+task.spawn(function()
+MovePart(ntrs, trs.CFrame)
+end)
+task.spawn(function()
+MovePart(nhd, hd.CFrame)
+end)
+task.spawn(function()
+MovePart(ak, rarm.CFrame * CFrame.new(0,-1,-0.25) * CFrame.Angles(math.rad(270),math.rad(-180),0))
+        end)
+end
+
+function FireLaser()
+    local sounds = {
+        {17.49,17.981267708586},
+        {17.490114626798,17.755552823579},
+        {18,18.465876732586707476}
+    }
+    local ids = sounds[math.random(#sounds)]
+    
+    spawn(function()
+    s=r('Sound',ak)
+    s.SoundId='rbxassetid://1174337926'
+    s.Volume=3
+    s:Play()
+    wait(5)
+    s:Destroy()
+    end)
+
+    local laserPart = remote:InvokeServer("CreatePart","Normal",cf,workspace)
+    
+    spawn(function()
+        Setmate(laserPart, "Neon")
+end)
+    spawn(function()
+        SetCollision(laserPart, false)
+end)
+
+    local mouse = player:GetMouse()
+    local start = ak.Position + Vector3.new(0.5,0,-0.5)
+    local endp = mouse.Hit.p
+    
+    local ignoreList = {char, ak, nlarm, nrarm, nlleg, nrleg, ntrs, nhd}
+    
+    local ray = Ray.new(start, (endp-start).unit * 999)
+    local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, ignoreList)
+    local mag = (start-position).magnitude + 2
+
+    spawn(function()
+        Resize(laserPart, Vector3.new(0.1,0.1,mag), CFrame.new())
+end)
+    spawn(function()
+        MovePart(laserPart, CFrame.new(start, position) * CFrame.new(0,0,-mag/2))
+    end)
+
+    spawn(function()
+        Color(laserPart, Color3.new(1,1,0))
+    end)
+
+    spawn(function()
+        for i = 1,10 do
+    spawn(function()
+            SetTrans(laserPart, i/10)
+end)
+            wait(0.05)
+        end
+    spawn(function()
+        DestroyPart(laserPart)
+end)
+    end)
+
+    spawn(function()
+        if hit then
+            local humanoid = hit.Parent:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                local playerHit = game.Players:GetPlayerFromCharacter(hit.Parent)
+                if playerHit then
+                    KillTarget(playerHit)
+                end
+            end
+        end
+    end)
+end
+
+local mouse = player:GetMouse()
+u.TouchTap:Connect(function(gameProccessed, input)
+if not gameProccessed then return end
+if not char then return end
+if char.Humanoid.Health == 0 then return end
+  spawn(function()
+    FireLaser()
+   end)
+  spawn(function()
+  light(ak)
+  end)
+end)
+
+RunService.Heartbeat:Connect(e)
