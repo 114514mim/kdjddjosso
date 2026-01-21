@@ -9,8 +9,8 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 500, 0, 340)
-frame.Position = UDim2.new(0.5, -250, 0.5, -170)
+frame.Size = UDim2.new(0, 500, 0, 400)
+frame.Position = UDim2.new(0.5, -250, 0.5, -200)
 frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -53,7 +53,8 @@ local URLS = {
     unrain  = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/U.N%20rain",
     uncafe  = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/U.N%20cafe",
     music   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/%E9%9F%B3%E4%B9%90",
-    mage    = "https://pastefy.app/4drqoWDS/raw"
+    mage    = "https://pastefy.app/4drqoWDS/raw",
+    ak47    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/ak47"
 }
 
 --// ===== 防重复执行 =====
@@ -76,13 +77,13 @@ local function run(key)
     end)
 end
 
---// ===== Buttons（3 列自动排列）=====
+--// ===== Buttons（3 列排列）=====
 local buttonNames = {
     "▶ joh hone (r6)","▶ 镰刀恶魔 (r6)","▶ 锤子 (r6)",
     "▶ U.N 的领域","▶ 鸭子","▶ 天空 U.N 图标",
     "▶ 马里奥蘑菇跌落","▶ 天空盒子","▶ 贴图",
     "▶ U.N rain","▶ U.N咖啡厅","▶ 音乐",
-    "▶ 大魔法师"
+    "▶ 大魔法师","▶ AK47(r6)"
 }
 
 local buttonKeys = {
@@ -90,7 +91,7 @@ local buttonKeys = {
     "un","s67","po",
     "mario","iop","spam",
     "unrain","uncafe","music",
-    "mage"
+    "mage","ak47"
 }
 
 local buttons = {}
@@ -126,7 +127,7 @@ toggleBtn.MouseButton1Click:Connect(function()
             b.Visible = false
         end
     else
-        frame.Size = UDim2.new(0,500,0,340)
+        frame.Size = UDim2.new(0,500,0,400)
         title.Visible = true
         for _,b in pairs(buttons) do
             b.Visible = true
