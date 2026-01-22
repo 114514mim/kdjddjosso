@@ -54,7 +54,8 @@ local URLS = {
     uncafe  = "https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/U.N%20cafe",
     music   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/%E9%9F%B3%E4%B9%90",
     mage    = "https://pastefy.app/4drqoWDS/raw",
-    ak47    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/ak47"
+    ak47    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/ak47",
+    earth   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/banana"
 }
 
 --// ===== 防重复执行 =====
@@ -83,7 +84,7 @@ local buttonNames = {
     "▶ U.N 的领域","▶ 鸭子","▶ 天空 U.N 图标",
     "▶ 马里奥蘑菇跌落","▶ 天空盒子","▶ 贴图",
     "▶ U.N rain","▶ U.N咖啡厅","▶ 音乐",
-    "▶ 大魔法师","▶ AK47(r6)"
+    "▶ 大魔法师","▶ AK47(r6)","▶ 地球"
 }
 
 local buttonKeys = {
@@ -91,7 +92,7 @@ local buttonKeys = {
     "un","s67","po",
     "mario","iop","spam",
     "unrain","uncafe","music",
-    "mage","ak47"
+    "mage","ak47","earth"
 }
 
 local buttons = {}
