@@ -1,0 +1,182 @@
+--==================================================
+-- Services
+--==================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Player = Players.LocalPlayer
+local char = Player.Character or Player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+--==================================================
+-- Get F3X
+--==================================================
+local function getF3X()
+	for _, v in ipairs(Player.Backpack:GetChildren()) do
+		if v:FindFirstChild("SyncAPI") then
+			return v
+		end
+	end
+	for _, v in ipairs(char:GetChildren()) do
+		if v:FindFirstChild("SyncAPI") then
+			return v
+		end
+	end
+end
+
+local f3x = getF3X()
+if not f3x then
+	warn("F3X not found")
+	return
+end
+
+local remote = f3x.SyncAPI.ServerEndpoint
+local function _(args)
+	remote:InvokeServer(unpack(args))
+end
+
+--==================================================
+-- GUI
+--==================================================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LaserGUI"
+screenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local textbox = Instance.new("TextBox")
+textbox.Size = UDim2.new(0,200,0,30)
+textbox.Position = UDim2.new(0,50,0,50)
+textbox.PlaceholderText = "选择地球在哪个玩家头上"
+textbox.Parent = screenGui
+
+local onBtn = Instance.new("TextButton")
+onBtn.Size = UDim2.new(0,120,0,30)
+onBtn.Position = UDim2.new(0,50,0,90)
+onBtn.Text = "激活激光"
+onBtn.Parent = screenGui
+
+local offBtn = Instance.new("TextButton")
+offBtn.Size = UDim2.new(0,120,0,30)
+offBtn.Position = UDim2.new(0,180,0,90)
+offBtn.Text = "关闭激光"
+offBtn.Parent = screenGui
+
+--==================================================
+-- Create Part Above Head
+--==================================================
+local part = remote:InvokeServer("CreatePart","Normal",hrp.CFrame * CFrame.new(0,5,0),workspace)
+
+_( {"SyncResize", {{ Part = part, CFrame = part.CFrame, Size = Vector3.new(2,2,2) }}})
+_( {"SyncAnchor", {{ Part = part, Anchored = true }}})
+_( {"SyncCollision", {{ Part = part, CanCollide = false }}})
+_( {"SyncColor", {{ Part = part, Color = Color3.new(1,1,1), UnionColoring = false }}})
+_( {"SyncMaterial", {{ Part = part, Material = Enum.Material.SmoothPlastic, Transparency = 0 }}})
+
+-- Mesh
+_( {"CreateMeshes", {{ Part = part }}})
+_( {"SyncMesh", {{ Part = part, MeshId = "rbxassetid://11334953700", Scale = Vector3.new(4,4,4) }}})
+
+-- Texture
+_( {"CreateTextures", {{ Part = part, Face = Enum.NormalId.Top, TextureType = "Decal" }}})
+_( {"SyncTexture", {{ Part = part, Face = Enum.NormalId.Top, TextureType = "Decal", Texture = "rbxassetid://11334953807" }}})
+
+--==================================================
+-- Variables
+--==================================================
+local rot = 0
+local targetPlayer = nil
+local laserPart = nil
+local laserActive = false
+
+--==================================================
+-- Create / Remove Laser
+--==================================================
+local function createLaser()
+	if not targetPlayer or not targetPlayer.Character then return end
+	if laserPart then
+		_( {"Remove", {{ laserPart }}} )
+	end
+
+	local startPos = part.Position
+	local targetHead = targetPlayer.Character:FindFirstChild("Head")
+	if not targetHead then return end
+	local distance = (targetHead.Position - startPos).Magnitude
+
+	laserPart = remote:InvokeServer("CreatePart","Normal",CFrame.new(startPos, targetHead.Position),workspace)
+	_( {"SyncResize", {{ Part = laserPart, CFrame = laserPart.CFrame, Size = Vector3.new(0.2,0.2,distance) }}} )
+	_( {"SyncAnchor", {{ Part = laserPart, Anchored = true }}} )
+	_( {"SyncCollision", {{ Part = laserPart, CanCollide = false }}} )
+	_( {"SyncMaterial", {{ Part = laserPart, Material = Enum.Material.Neon }}} )
+	_( {"SyncColor", {{ Part = laserPart, Color = Color3.new(1,0,0), UnionColoring = false }}} )
+end
+
+local function removeLaser()
+	if laserPart then
+		_( {"Remove", {{ laserPart }}} )
+		laserPart = nil
+	end
+	targetPlayer = nil
+	laserActive = false
+end
+
+--==================================================
+-- Follow Head + Rotate + Laser
+--==================================================
+RunService.RenderStepped:Connect(function(dt)
+	if not hrp or not hrp.Parent then return end
+	rot += dt * 1.5
+	local cf = hrp.CFrame * CFrame.new(0,5,0) * CFrame.Angles(0,rot,0)
+	_( {"SyncMove", {{ Part = part, CFrame = cf }}})
+
+	if laserActive and targetPlayer and targetPlayer.Character then
+		local targetHead = targetPlayer.Character:FindFirstChild("Head")
+		if targetHead then
+			-- Move head slightly down only if laser active
+			local headCF = targetHead.CFrame * CFrame.Angles(-0.2,0,0)
+			_( {"SyncMove", {{ Part = targetHead, CFrame = headCF }}} )
+
+			-- Create or update laser
+			if not laserPart then
+				createLaser()
+			else
+				local distance = (targetHead.Position - part.Position).Magnitude
+				local laserCF = CFrame.new(part.Position, targetHead.Position) * CFrame.new(0,0,-distance/2)
+				_( {"SyncResize", {{ Part = laserPart, CFrame = laserCF, Size = Vector3.new(0.2,0.2,distance) }}} )
+			end
+		end
+	end
+end)
+
+--==================================================
+-- Remove laser if player dies
+--==================================================
+RunService.Heartbeat:Connect(function()
+	if targetPlayer then
+		local humanoid = targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid")
+		if not humanoid or humanoid.Health <= 0 then
+			removeLaser()
+		end
+	end
+end)
+
+--==================================================
+-- Button actions
+--==================================================
+local function findPlayerByPartialName(part)
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr.Name:lower():sub(1,#part) == part:lower() then
+			return plr
+		end
+	end
+end
+
+onBtn.MouseButton1Click:Connect(function()
+	local namePart = textbox.Text
+	local plr = findPlayerByPartialName(namePart)
+	if plr then
+		targetPlayer = plr
+		laserActive = true
+	end
+end)
+
+offBtn.MouseButton1Click:Connect(function()
+	removeLaser()
+end)
