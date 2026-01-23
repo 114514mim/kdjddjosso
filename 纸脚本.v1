@@ -1,5 +1,8 @@
 -- 终极合体脚本 | 真正最终完整版 (自动AFK + 自瞄修复 + 队伍检测默认关闭)
 -- 所有功能齐全，注入即用！
+pcall(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/hm5650/ACR/refs/heads/main/Acr", true))()
+end)
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
