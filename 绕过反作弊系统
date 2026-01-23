@@ -1,22 +1,11 @@
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()  - visit my website xonez.pl The strength of Poland
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Next1x/Nextix./main/UniversalACBypass"))()  
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/aguinidgerald-cell/Bypass-logic-/refs/heads/main/Bypass%20logic"))()
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 game.Players.LocalPlayer.PlayerScripts.QuitsAntiCheatChecker:Destroy()game.Players.LocalPlayer.PlayerScripts.QuitsAntiCheatLocal:Destroy()game.StarterPlayer.StarterPlayerScripts.QuitsAntiCheatChecker:Destroy()game.StarterPlayer.StarterPlayerScripts.QuitsAntiCheatLocal:Destroy()
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 game.Players.LocalPlayer.PlayerScripts.QuitsAntiCheatChecker:Destroy()game.Players.LocalPlayer.PlayerScripts.QuitsAntiCheatLocal:Destroy()game.StarterPlayer.StarterPlayerScripts.QuitsAntiCheatChecker:Destroy()game.StarterPlayer.StarterPlayerScripts.QuitsAntiCheatLocal:Destroy()
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 local _0x1=function(s)local r=""for i=1,#s,2 do r=r..string.char(tonumber(s:sub(i,i+1),16))end return r end
 local _0xL={_0x1("53637265656e477569"),_0x1("436f7265477569"),_0x1("4672616d65"),_0x1("546578744c6162656c"),_0x1("53746172746572477569"),_0x1("53656e644e6f74696669636174696f6e")}
 repeat task.wait() until game:IsLoaded()
@@ -29,9 +18,7 @@ for _,v in pairs(getgc())do if type(v)=="function" and islclosure(v)then local c
 for _,o in pairs(getgc(true))do if type(o)=="table"then local d=rawget(o,"Detected")if d and type(d)=="function"then hookfunction(d,function()return true end)end local k=rawget(o,"Kill")if k and type(k)=="function"then hookfunction(k,function()end)end local dc=rawget(o,"Disconnect")if dc and type(dc)=="function"then hookfunction(dc,function()end)end end end
 end)
 game:GetService(_0xL[5]):SetCore(_0xL[6],{Title="FREEkey Hub",Text="Bypass Successful | Made by FREEkey",Duration=5})
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Pixeluted/adoniscries/main/Source.lua'))()
 
 pcall(function()
