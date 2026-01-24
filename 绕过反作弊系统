@@ -1,3 +1,18 @@
-pcall(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hm5650/ACR/refs/heads/main/Acr", true))()
+-- 这是一个典型的 Hook 示例（仅在支持此功能的执行器上有效）
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    -- 拦截 Kick 方法
+    if tostring(method) == "Kick" or tostring(method) == "kick" then
+        warn("拦截了一次 Kick 尝试: " .. tostring(args[1]))
+        return nil -- 返回空，让服务器以为执行成功但实际什么都没发生
+    end
+
+    return oldNamecall(self, ...)
 end)
+setreadonly(mt, true)
