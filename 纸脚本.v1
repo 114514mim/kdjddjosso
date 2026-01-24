@@ -1,7 +1,3 @@
-pcall(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/绕过反作弊系统"))()
-end)
-
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -167,6 +163,7 @@ UniversalTab:CreateButton({Name = "加载连点器脚本", Callback = function()
 UniversalTab:CreateButton({Name = "加载少羽F3X脚本", Callback = function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-synb-56505"))() Rayfield:Notify({Title = "少羽F3X", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "加载后门扫描器脚本", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script'))() Rayfield:Notify({Title = "后门扫描器", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "加载飞行脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/eeeeeeqqaszsssddd"))() Rayfield:Notify({Title = "飞行脚本", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "绕过大多数游戏反作弊", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/绕过反作弊系统"))() Rayfield:Notify({Title = "绕过大多数游戏反作弊脚本", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 3: 新 Slap 脚本
 local SlapTab = Window:CreateTab("新 Slap 脚本", 4483362458)
@@ -176,6 +173,7 @@ SlapTab:CreateButton({Name = "点击加载新 Slap 脚本", Callback = function(
 local InfyiffTab = Window:CreateTab("infyiff 脚本", 4483362458)
 InfyiffTab:CreateButton({Name = "加载 SimpleSpy V3", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))() Rayfield:Notify({Title = "SimpleSpy", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))() Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5}) end})
+InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 5: 监狱人生脚本
 local PrisonTab = Window:CreateTab("监狱人生脚本", 4483362458)
