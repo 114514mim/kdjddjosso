@@ -1,5 +1,6 @@
 --// ===== Services =====
 local Players = game:GetService("Players")
+local TextChatService = game:GetService("TextChatService")
 local player = Players.LocalPlayer
 
 --// ===== UI =====
@@ -55,7 +56,11 @@ local URLS = {
     music   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/%E9%9F%B3%E4%B9%90",
     mage    = "https://pastefy.app/4drqoWDS/raw",
     ak47    = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/ak47",
-    earth   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/banana"
+    earth   = "https://raw.githubusercontent.com/114514mim/kdjddjosso/main/banana",
+
+    cloud   = "https://raw.githubusercontent.com/projectbl1ssofficialenterprise/Bl1ss-gui/refs/heads/main/Rc7_Cloud_F3X_v2.txt",
+    nds     = "https://raw.githubusercontent.com/projectbl1ssofficialenterprise/Bl1ss-gui/refs/heads/main/nds.txt",
+    slap    = "https://raw.githubusercontent.com/projectbl1ssofficialenterprise/Bl1ss-gui/refs/heads/main/slap%20tower.txt"
 }
 
 --// ===== 防重复执行 =====
@@ -78,13 +83,15 @@ local function run(key)
     end)
 end
 
---// ===== Buttons（3 列排列）=====
+--// ===== Buttons（3 列）=====
 local buttonNames = {
     "▶ joh hone (r6)","▶ 镰刀恶魔 (r6)","▶ 锤子 (r6)",
     "▶ U.N 的领域","▶ 鸭子","▶ 天空 U.N 图标",
     "▶ 马里奥蘑菇跌落","▶ 天空盒子","▶ 贴图",
     "▶ U.N rain","▶ U.N咖啡厅","▶ 音乐",
-    "▶ 大魔法师","▶ AK47(r6)","▶ 地球"
+    "▶ 大魔法师","▶ AK47(r6)","▶ 地球",
+    "▶ R6 ALL","▶ 获得 F3X","▶ 云朵",
+    "▶ 自然灾害模拟器","▶ 不知名地图"
 }
 
 local buttonKeys = {
@@ -92,7 +99,9 @@ local buttonKeys = {
     "un","s67","po",
     "mario","iop","spam",
     "unrain","uncafe","music",
-    "mage","ak47","earth"
+    "mage","ak47","earth",
+    "R6ALL","GETF3X","cloud",
+    "nds","slap"
 }
 
 local buttons = {}
@@ -101,9 +110,35 @@ for i = 1, #buttonNames do
     local row = math.floor((i-1) / 3)
     local b = makeButton(buttonNames[i], frame)
     b.Position = UDim2.new(0, 20 + col*160, 0, 50 + row*60)
+
     b.MouseButton1Click:Connect(function()
-        run(buttonKeys[i])
+        local key = buttonKeys[i]
+
+        if key == "R6ALL" then
+            local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+            if channel then
+                pcall(function()
+                    channel:SendAsync(";r6 all")
+                end)
+            end
+            return
+        end
+
+        if key == "GETF3X" then
+            local char = player.Character or player.CharacterAdded:Wait()
+            for _, v in ipairs(player.Backpack:GetChildren()) do
+                if v:FindFirstChild("SyncAPI") then return end
+            end
+            for _, v in ipairs(char:GetChildren()) do
+                if v:FindFirstChild("SyncAPI") then return end
+            end
+            warn("F3X not found")
+            return
+        end
+
+        run(key)
     end)
+
     table.insert(buttons, b)
 end
 
@@ -124,14 +159,10 @@ toggleBtn.MouseButton1Click:Connect(function()
     if collapsed then
         frame.Size = UDim2.new(0,120,0,50)
         title.Visible = false
-        for _,b in pairs(buttons) do
-            b.Visible = false
-        end
+        for _,b in pairs(buttons) do b.Visible = false end
     else
         frame.Size = UDim2.new(0,500,0,400)
         title.Visible = true
-        for _,b in pairs(buttons) do
-            b.Visible = true
-        end
+        for _,b in pairs(buttons) do b.Visible = true end
     end
 end)
