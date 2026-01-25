@@ -601,7 +601,7 @@ Night99Tab:CreateToggle({
 -- 被遗弃区域整合版
 local ts = window:Tab("被遗弃区域")
 local tsSection = ts:Section("功能", true)
-local Night99Tab = Window:CreateTab("被遗弃区域", 4483362458)
+local tsSection = Window:CreateTab("99个夜晚区域", 4483362458)
 
 -- 无限耐力 (杀手用)
 local jjump = false
