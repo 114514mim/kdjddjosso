@@ -606,9 +606,7 @@ local state = {
     espKillers = false,
     espSurvivors = false,
     espItems = false,
-    espGenerators = false,
-    autoFix = false,
-    noDebuff = false
+    espGenerators = false
 }
 
 -- ========= 无限体力 =========
@@ -617,11 +615,15 @@ AbandonedTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         state.infiniteStamina = Value
-        spawn(function()
+        task.spawn(function()
             while state.infiniteStamina do
-                local area = workspace:FindFirstChild("AbandonedArea")
-                if area then
-                    local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+                local success, sprintModule = pcall(function()
+                    local area = workspace:FindFirstChild("AbandonedArea")
+                    if area then
+                        return require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+                    end
+                end)
+                if success and sprintModule then
                     sprintModule.MinStamina = -100000
                 end
                 task.wait(5)
@@ -636,7 +638,7 @@ AbandonedTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         state.espKillers = Value
-        spawn(function()
+        task.spawn(function()
             while state.espKillers do
                 local killers = workspace.Players:FindFirstChild("Killers")
                 if killers then
@@ -662,7 +664,7 @@ AbandonedTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         state.espSurvivors = Value
-        spawn(function()
+        task.spawn(function()
             while state.espSurvivors do
                 local survivors = workspace.Players:FindFirstChild("Survivors")
                 if survivors then
@@ -688,7 +690,7 @@ AbandonedTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         state.espItems = Value
-        spawn(function()
+        task.spawn(function()
             while state.espItems do
                 local area = workspace:FindFirstChild("AbandonedArea")
                 if area and area:FindFirstChild("Ingame") then
@@ -714,7 +716,7 @@ AbandonedTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         state.espGenerators = Value
-        spawn(function()
+        task.spawn(function()
             local function ESPGenerator(model, color)
                 if not workspace:FindFirstChild("GeneratorESPFolder") then
                     local folder = Instance.new("Folder")
@@ -733,110 +735,18 @@ AbandonedTab:CreateToggle({
                 end
             end
 
-            while state.espGenerators do  
-                local area = workspace:FindFirstChild("AbandonedArea")  
-                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then  
-                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do  
-                        if v:IsA("Model") and v.Name=="Generator" then  
-                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)  
-                            ESPGenerator(v,color)  
-                        end  
-                    end  
-                end  
-                task.wait(2)  
-            end  
-        end)  
-    end
-})
-
--- ========= 自动修电机 =========
-local fixInterval = 5
-AbandonedTab:CreateTextbox({
-    Name = "修机间隔(秒)",
-    PlaceholderText = "输入秒数",
-    Flag = "FixTime",
-    Callback = function(val) fixInterval = tonumber(val) or 5 end
-})
-AbandonedTab:CreateToggle({
-    Name = "自动修电机",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.autoFix = Value
-        spawn(function()
-            while state.autoFix do
-                task.wait(fixInterval)
+            while state.espGenerators do
                 local area = workspace:FindFirstChild("AbandonedArea")
                 if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
-                    local closestGen, closestDist
-                    local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
-                    if playerPos then
-                        for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
-                            if gen:IsA("Model") and gen.Name=="Generator" and gen.Progress.Value<100 then
-                                local dist = (gen.Main.Position - playerPos).Magnitude
-                                if not closestDist or dist < closestDist then
-                                    closestDist = dist
-                                    closestGen = gen
-                                end
-                            end
-                        end
-                        if closestGen and closestGen:FindFirstChild("Remotes") and closestGen.Remotes:FindFirstChild("RE") then
-                            closestGen.Remotes.RE:FireServer()
+                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do
+                        if v:IsA("Model") and v.Name=="Generator" and v:FindFirstChild("Progress") then
+                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)
+                            ESPGenerator(v,color)
                         end
                     end
                 end
+                task.wait(2)
             end
         end)
-    end
-})
-
--- ========= 免眩晕 / 免减速 =========
-AbandonedTab:CreateToggle({
-    Name = "免眩晕/免减速",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.noDebuff = Value
-        local TARGET_SPEED = 20
-        local wsConn, debuffConns = nil, {}
-
-        local function clearDebuffs(humanoid)  
-            if not humanoid then return end  
-            humanoid.WalkSpeed = TARGET_SPEED  
-            if wsConn then wsConn:Disconnect() end  
-            wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()  
-                humanoid.WalkSpeed = TARGET_SPEED  
-            end)  
-            local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}  
-            for _, name in ipairs(debuffNames) do  
-                local obj = humanoid:FindFirstChild(name)  
-                if obj and not debuffConns[name] then  
-                    obj.Value = false  
-                    debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()  
-                        obj.Value = false  
-                    end)  
-                end  
-            end  
-        end  
-
-        player.CharacterAdded:Connect(function(newChar)  
-            local humanoid = newChar:WaitForChild("Humanoid")  
-            if state.noDebuff then clearDebuffs(humanoid) end  
-        end)  
-
-        spawn(function()  
-            while state.noDebuff do  
-                local char = player.Character  
-                if char then  
-                    local humanoid = char:FindFirstChild("Humanoid")  
-                    clearDebuffs(humanoid)  
-                end  
-                task.wait(0.1)  
-            end  
-            -- 停止时恢复默认  
-            local char = player.Character  
-            if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = 16 end  
-            if wsConn then wsConn:Disconnect() end  
-            for _, conn in pairs(debuffConns) do conn:Disconnect() end  
-            debuffConns = {}  
-        end)  
     end
 })
