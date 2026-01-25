@@ -598,155 +598,209 @@ Night99Tab:CreateToggle({
     end
 })
 
--- Tab 10: 被遗弃区域
+-- Tab: 被遗弃区域
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
-local player = game.Players.LocalPlayer
-local state = {
+local abandonedState = {
     infiniteStamina = false,
+    killerInfiniteStamina = false,
     espKillers = false,
     espSurvivors = false,
     espItems = false,
-    espGenerators = false
+    espGenerators = false,
+    autoRepair = false,
+    noDebuff = false,
 }
 
--- ========= 无限体力 =========
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- ========================= 无限体力 =========================
+local function setStamina()
+    local success, sprintModule = pcall(function()
+        return require(ReplicatedStorage.Systems.Character.Game.Sprinting)
+    end)
+    if success and sprintModule then
+        if abandonedState.infiniteStamina then
+            sprintModule.StaminaLossDisabled = true
+        else
+            sprintModule.StaminaLossDisabled = false
+        end
+        if abandonedState.killerInfiniteStamina then
+            sprintModule.MinStamina = -1e6
+        else
+            sprintModule.MinStamina = 0
+        end
+    end
+end
+
+spawn(function()
+    while true do
+        setStamina()
+        task.wait(0.5)
+    end
+end)
+
+Players.LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    setStamina()
+end)
+
 AbandonedTab:CreateToggle({
     Name = "无限体力",
     CurrentValue = false,
     Callback = function(Value)
-        state.infiniteStamina = Value
-        task.spawn(function()
-            while state.infiniteStamina do
-                local success, sprintModule = pcall(function()
-                    local area = workspace:FindFirstChild("AbandonedArea")
-                    if area then
-                        return require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
-                    end
-                end)
-                if success and sprintModule then
-                    sprintModule.MinStamina = -100000
-                end
-                task.wait(5)
-            end
-        end)
+        abandonedState.infiniteStamina = Value
+        setStamina()
+        Rayfield:Notify({Title="无限体力", Content=(Value and "已开启" or "已关闭"), Duration=3})
     end
 })
 
--- ========= 透视杀手 =========
 AbandonedTab:CreateToggle({
-    Name = "透视杀手",
+    Name = "杀手无限体力",
     CurrentValue = false,
     Callback = function(Value)
-        state.espKillers = Value
-        task.spawn(function()
-            while state.espKillers do
-                local killers = workspace.Players:FindFirstChild("Killers")
-                if killers then
-                    for _, model in ipairs(killers:GetChildren()) do
-                        if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
-                            local hl = Instance.new("Highlight")
-                            hl.FillColor = Color3.fromRGB(255,0,0)
-                            hl.OutlineColor = Color3.fromRGB(255,255,0)
-                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                            hl.Parent = model
+        abandonedState.killerInfiniteStamina = Value
+        setStamina()
+        Rayfield:Notify({Title="杀手无限体力", Content=(Value and "已开启" or "已关闭"), Duration=3})
+    end
+})
+
+-- ========================= 免疫 Debuff =========================
+local debuffConn
+AbandonedTab:CreateToggle({
+    Name = "免疫 Debuff",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.noDebuff = Value
+        if debuffConn then debuffConn:Disconnect() debuffConn = nil end
+        if Value then
+            debuffConn = RunService.Heartbeat:Connect(function()
+                local char = LocalPlayer.Character
+                if not char then return end
+                for _, child in pairs(char:GetChildren()) do
+                    if child:IsA("ValueBase") and child.Name:lower():find("debuff") then
+                        pcall(function() child:Destroy() end)
+                    end
+                end
+            end)
+        end
+        Rayfield:Notify({Title="免疫 Debuff", Content=(Value and "已开启" or "已关闭"), Duration=3})
+    end
+})
+
+-- ========================= ESP =========================
+local espConnections = {}
+local function startESP(namePart, color)
+    -- 初始遍历
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj.Name:lower():find(namePart:lower()) and not obj:FindFirstChild("ESP_HL") then
+            local hl = Instance.new("Highlight")
+            hl.Name = "ESP_HL"
+            hl.FillColor = color
+            hl.OutlineColor = Color3.new(1,1,1)
+            hl.FillTransparency = 0.5
+            hl.OutlineTransparency = 0
+            hl.Adornee = obj
+            hl.Parent = obj
+        end
+    end
+    -- 动态监听新对象
+    table.insert(espConnections, workspace.DescendantAdded:Connect(function(obj)
+        if obj:IsA("Model") and obj.Name:lower():find(namePart:lower()) and not obj:FindFirstChild("ESP_HL") then
+            local hl = Instance.new("Highlight")
+            hl.Name = "ESP_HL"
+            hl.FillColor = color
+            hl.OutlineColor = Color3.new(1,1,1)
+            hl.FillTransparency = 0.5
+            hl.OutlineTransparency = 0
+            hl.Adornee = obj
+            hl.Parent = obj
+        end
+    end))
+end
+
+local function stopESP()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        local hl = obj:FindFirstChild("ESP_HL")
+        if hl then hl:Destroy() end
+    end
+    for _, conn in pairs(espConnections) do conn:Disconnect() end
+    espConnections = {}
+end
+
+AbandonedTab:CreateToggle({
+    Name = "ESP 杀手",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.espKillers = Value
+        if Value then startESP("Killer", Color3.fromRGB(255,0,0)) else stopESP() end
+    end
+})
+
+AbandonedTab:CreateToggle({
+    Name = "ESP 幸存者",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.espSurvivors = Value
+        if Value then startESP("Survivor", Color3.fromRGB(0,255,0)) else stopESP() end
+    end
+})
+
+AbandonedTab:CreateToggle({
+    Name = "ESP 物品",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.espItems = Value
+        if Value then startESP("Item", Color3.fromRGB(0,0,255)) else stopESP() end
+    end
+})
+
+AbandonedTab:CreateToggle({
+    Name = "ESP 发电机",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.espGenerators = Value
+        if Value then startESP("Generator", Color3.fromRGB(255,255,0)) else stopESP() end
+    end
+})
+
+-- ========================= 自动修机 =========================
+local autoRepairConn
+local repairInterval = 1 -- 秒
+AbandonedTab:CreateToggle({
+    Name = "自动修机",
+    CurrentValue = false,
+    Callback = function(Value)
+        abandonedState.autoRepair = Value
+        if autoRepairConn then autoRepairConn:Disconnect() autoRepairConn = nil end
+        if Value then
+            autoRepairConn = RunService.Heartbeat:Connect(function()
+                if not abandonedState.autoRepair then return end
+                local char = LocalPlayer.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+                local hrp = char.HumanoidRootPart
+                local closestGen
+                for _, gen in pairs(workspace:FindFirstChild("Generators") or {}:GetChildren()) do
+                    if gen:FindFirstChild("Main") and gen:FindFirstChild("Remotes") then
+                        local dist = (gen.Main.Position - hrp.Position).Magnitude
+                        if dist <= 30 then
+                            closestGen = gen
+                            break
                         end
                     end
                 end
-                task.wait(2)
-            end
-        end)
+                if closestGen then
+                    pcall(function()
+                        closestGen.Remotes.RE:FireServer()
+                    end)
+                end
+                task.wait(repairInterval)
+            end)
+        end
+        Rayfield:Notify({Title="自动修机", Content=(Value and "已开启" or "已关闭"), Duration=3})
     end
 })
 
--- ========= 透视幸存者 =========
-AbandonedTab:CreateToggle({
-    Name = "透视幸存者",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.espSurvivors = Value
-        task.spawn(function()
-            while state.espSurvivors do
-                local survivors = workspace.Players:FindFirstChild("Survivors")
-                if survivors then
-                    for _, model in ipairs(survivors:GetChildren()) do
-                        if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
-                            local hl = Instance.new("Highlight")
-                            hl.FillColor = Color3.fromRGB(0,255,0)
-                            hl.OutlineColor = Color3.fromRGB(255,255,0)
-                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                            hl.Parent = model
-                        end
-                    end
-                end
-                task.wait(2)
-            end
-        end)
-    end
-})
-
--- ========= 透视物品 =========
-AbandonedTab:CreateToggle({
-    Name = "透视物品",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.espItems = Value
-        task.spawn(function()
-            while state.espItems do
-                local area = workspace:FindFirstChild("AbandonedArea")
-                if area and area:FindFirstChild("Ingame") then
-                    for _, instance in ipairs(area.Ingame:GetDescendants()) do
-                        if (instance:IsA("Tool") or instance:IsA("Part")) and not instance:FindFirstChildOfClass("Highlight") then
-                            local hl = Instance.new("Highlight")
-                            hl.FillColor = Color3.fromRGB(255,255,0)
-                            hl.OutlineColor = Color3.fromRGB(255,165,0)
-                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                            hl.Parent = instance
-                        end
-                    end
-                end
-                task.wait(2)
-            end
-        end)
-    end
-})
-
--- ========= 透视电机 =========
-AbandonedTab:CreateToggle({
-    Name = "透视电机",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.espGenerators = Value
-        task.spawn(function()
-            local function ESPGenerator(model, color)
-                if not workspace:FindFirstChild("GeneratorESPFolder") then
-                    local folder = Instance.new("Folder")
-                    folder.Name = "GeneratorESPFolder"
-                    folder.Parent = workspace
-                end
-                local folder = workspace:FindFirstChild("GeneratorESPFolder")
-                if not folder:FindFirstChild(model.Name) then
-                    local hl = Instance.new("Highlight")
-                    hl.Name = model.Name
-                    hl.FillColor = color
-                    hl.OutlineColor = Color3.new(1,1,1)
-                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                    hl.Adornee = model
-                    hl.Parent = folder
-                end
-            end
-
-            while state.espGenerators do
-                local area = workspace:FindFirstChild("AbandonedArea")
-                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
-                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do
-                        if v:IsA("Model") and v.Name=="Generator" and v:FindFirstChild("Progress") then
-                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)
-                            ESPGenerator(v,color)
-                        end
-                    end
-                end
-                task.wait(2)
-            end
-        end)
-    end
-})
+Rayfield:Notify({Title="被遗弃区域", Content="功能已加载完成！", Duration=5})
