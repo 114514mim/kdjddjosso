@@ -598,7 +598,7 @@ Night99Tab:CreateToggle({
     end
 })
 
--- 被遗弃区域完整版（独立功能按钮）
+-- 被遗弃区域完整版（修复版）
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
 local player = game.Players.LocalPlayer
 
@@ -612,22 +612,26 @@ local state = {
     noDebuff = false
 }
 
--- ========= 无限体力 =========
+-- 无限体力
 AbandonedTab:CreateToggle({Name="无限体力", CurrentValue=false, Callback=function(Value)
     state.infiniteStamina = Value
     spawn(function()
         while state.infiniteStamina do
             local area = workspace:FindFirstChild("AbandonedArea")
             if area then
-                local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
-                sprintModule.MinStamina = -100000
+                local ok, sprintModule = pcall(function()
+                    return require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+                end)
+                if ok and sprintModule then
+                    sprintModule.MinStamina = -100000
+                end
             end
             task.wait(5)
         end
     end)
 end})
 
--- ========= 透视杀手 =========
+-- 透视杀手
 AbandonedTab:CreateToggle({Name="透视杀手", CurrentValue=false, Callback=function(Value)
     state.espKillers = Value
     spawn(function()
@@ -649,7 +653,7 @@ AbandonedTab:CreateToggle({Name="透视杀手", CurrentValue=false, Callback=fun
     end)
 end})
 
--- ========= 透视幸存者 =========
+-- 透视幸存者
 AbandonedTab:CreateToggle({Name="透视幸存者", CurrentValue=false, Callback=function(Value)
     state.espSurvivors = Value
     spawn(function()
@@ -671,7 +675,7 @@ AbandonedTab:CreateToggle({Name="透视幸存者", CurrentValue=false, Callback=
     end)
 end})
 
--- ========= 透视物品 =========
+-- 透视物品
 AbandonedTab:CreateToggle({Name="透视物品", CurrentValue=false, Callback=function(Value)
     state.espItems = Value
     spawn(function()
@@ -693,7 +697,7 @@ AbandonedTab:CreateToggle({Name="透视物品", CurrentValue=false, Callback=fun
     end)
 end})
 
--- ========= 透视电机 =========
+-- 透视电机
 AbandonedTab:CreateToggle({Name="透视电机", CurrentValue=false, Callback=function(Value)
     state.espGenerators = Value
     spawn(function()
@@ -710,7 +714,7 @@ AbandonedTab:CreateToggle({Name="透视电机", CurrentValue=false, Callback=fun
                 hl.FillColor = color
                 hl.OutlineColor = Color3.new(1,1,1)
                 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.Adornee = model
+                hl.Adornee = model:FindFirstChild("Main") or model.PrimaryPart
                 hl.Parent = folder
             end
         end
@@ -719,7 +723,7 @@ AbandonedTab:CreateToggle({Name="透视电机", CurrentValue=false, Callback=fun
             local area = workspace:FindFirstChild("AbandonedArea")
             if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
                 for _, v in ipairs(area.Ingame.Map:GetChildren()) do
-                    if v:IsA("Model") and v.Name=="Generator" then
+                    if v:IsA("Model") and v.Name=="Generator" and v:FindFirstChild("Progress") then
                         local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)
                         ESPGenerator(v,color)
                     end
@@ -730,11 +734,12 @@ AbandonedTab:CreateToggle({Name="透视电机", CurrentValue=false, Callback=fun
     end)
 end})
 
--- ========= 自动修电机（独立开关） =========
+-- 自动修电机
 local fixInterval = 5
 AbandonedTab:CreateTextbox({Name="修机间隔(秒)", PlaceholderText="输入秒数", Flag="FixTime", Callback=function(val)
     fixInterval = tonumber(val) or 5
 end})
+
 AbandonedTab:CreateToggle({Name="自动修电机", CurrentValue=false, Callback=function(Value)
     state.autoFix = Value
     spawn(function()
@@ -744,74 +749,73 @@ AbandonedTab:CreateToggle({Name="自动修电机", CurrentValue=false, Callback=
             if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
                 local closestGen, closestDist
                 local playerPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
-                if not playerPos then continue end
-                for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
-                    if gen:IsA("Model") and gen.Name=="Generator" and gen.Progress.Value<100 then
-                        local dist = (gen.Main.Position - playerPos).Magnitude
-                        if not closestDist or dist < closestDist then
-                            closestDist = dist
-                            closestGen = gen
+                if playerPos then
+                    for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
+                        if gen:IsA("Model") and gen.Name=="Generator" and gen:FindFirstChild("Progress") and gen.Progress.Value<100 and gen:FindFirstChild("Main") then
+                            local dist = (gen.Main.Position - playerPos).Magnitude
+                            if not closestDist or dist < closestDist then
+                                closestDist = dist
+                                closestGen = gen
+                            end
                         end
                     end
-                end
-                if closestGen then
-                    closestGen.Remotes.RE:FireServer()
+                    if closestGen and closestGen:FindFirstChild("Remotes") and closestGen.Remotes:FindFirstChild("RE") then
+                        closestGen.Remotes.RE:FireServer()
+                    end
                 end
             end
         end
     end)
 end})
 
--- ========= 免眩晕 / 免减速（独立开关） =========
+-- 免眩晕 / 免减速
 AbandonedTab:CreateToggle({Name="免眩晕/免减速", CurrentValue=false, Callback=function(Value)
     state.noDebuff = Value
-    spawn(function()
-        local TARGET_SPEED = 20
-        local wsConn, charConn, debuffConns = nil, nil, {}
-        local function clearDebuffs(humanoid)
+    local TARGET_SPEED = 20
+    local wsConn, debuffConns = nil, {}
+
+    local function clearDebuffs(humanoid)
+        if not humanoid then return end
+        humanoid.WalkSpeed = TARGET_SPEED
+        if wsConn then wsConn:Disconnect() end
+        wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
             humanoid.WalkSpeed = TARGET_SPEED
-            if wsConn then wsConn:Disconnect() end
-            wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                humanoid.WalkSpeed = TARGET_SPEED
-            end)
-            -- 清理常见眩晕状态
-            local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}
-            for _, name in ipairs(debuffNames) do
-                local obj = humanoid:FindFirstChild(name)
-                if obj and not debuffConns[name] then
+        end)
+        local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}
+        for _, name in ipairs(debuffNames) do
+            local obj = humanoid:FindFirstChild(name)
+            if obj and not debuffConns[name] then
+                obj.Value = false
+                debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()
                     obj.Value = false
-                    debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()
-                        obj.Value = false
-                    end)
-                end
+                end)
             end
         end
+    end
 
-        if not charConn then
-            charConn = player.CharacterAdded:Connect(function(newChar)
-                local humanoid = newChar:WaitForChild("Humanoid")
-                clearDebuffs(humanoid)
-            end)
+    -- CharacterAdded 时绑定
+    player.CharacterAdded:Connect(function(newChar)
+        local humanoid = newChar:WaitForChild("Humanoid")
+        if state.noDebuff then
+            clearDebuffs(humanoid)
         end
+    end)
 
+    spawn(function()
         while state.noDebuff do
             local char = player.Character
             if char then
                 local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    clearDebuffs(humanoid)
-                end
+                clearDebuffs(humanoid)
             end
-            task.wait(0.05)
+            task.wait(0.1)
         end
-
-        -- 关闭时恢复默认
+        -- 停止时恢复默认
         local char = player.Character
         if char then
             local humanoid = char:FindFirstChild("Humanoid")
             if humanoid then humanoid.WalkSpeed = 16 end
         end
-
         if wsConn then wsConn:Disconnect() end
         for _, conn in pairs(debuffConns) do conn:Disconnect() end
         debuffConns = {}
