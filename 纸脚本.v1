@@ -447,216 +447,153 @@ AimbotTab:CreateToggle({
     end
 })
 
--- Tab 10: 99个夜晚区域 
+-- Tab: 99个夜晚区域
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Lighting = game:GetService("Lighting")
+local player = Players.LocalPlayer
+
 local Night99Tab = Window:CreateTab("99个夜晚区域", 4483362458)
 
--- 锁血功能
+-- 锁血
 Night99Tab:CreateButton({
     Name = "锁血",
     Callback = function()
-        local args = {
-            [1] = -999999999999
-        }
-
-        game:GetService("ReplicatedStorage").RemoteEvents.DamagePlayer:FireServer(unpack(args))
+        pcall(function()
+            ReplicatedStorage.RemoteEvents.DamagePlayer:FireServer(-9e18)
+        end)
     end
 })
 
--- 收集木头功能
-local collectingLogs = false
+-- 通用收集函数
+local function collectItem(itemName)
+    local inventory = player:FindFirstChild("Inventory")
+    if not inventory then return end
 
-Night99Tab:CreateButton({
-    Name = "收集木头",
-    Callback = function()
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
-local inventory = player:FindFirstChild("Inventory")
-local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
-local RequestBagDropItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem")
-local ItemsFolder = workspace:WaitForChild("Items")
-if inventory then
-    -- 先把背包里的木头放到物品里
-    for _, item in pairs(inventory:GetChildren()) do
-        for _, itemm in ipairs(ItemsFolder:GetChildren()) do
-            if itemm.Name == "Log" then
-                RequestBagStoreItem:InvokeServer(item, itemm)
+    local Remotes = ReplicatedStorage:WaitForChild("RemoteEvents")
+    local Store = Remotes:WaitForChild("RequestBagStoreItem")
+    local Drop = Remotes:WaitForChild("RequestBagDropItem")
+    local Items = workspace:WaitForChild("Items")
+
+    for _, item in ipairs(inventory:GetChildren()) do
+        for _, worldItem in ipairs(Items:GetChildren()) do
+            if worldItem.Name == itemName then
+                pcall(function()
+                    Store:InvokeServer(item, worldItem)
+                end)
             end
         end
     end
 
     task.wait(0.1)
 
-    -- 再从物品里把木头掉落到场景
-    for _, item in pairs(inventory:GetChildren()) do
-        local logItem = ItemsFolder:FindFirstChild("Log")
-        if logItem then
-            RequestBagDropItem:FireServer(item, logItem, true)
-        end
+    local worldItem = Items:FindFirstChild(itemName)
+    if not worldItem then return end
+
+    for _, item in ipairs(inventory:GetChildren()) do
+        pcall(function()
+            Drop:FireServer(item, worldItem, true)
+        end)
     end
 end
 
-local collectingLogs = false
+-- 收集木头 / 煤炭 / 生兔肉 / 萝卜
+Night99Tab:CreateButton({Name = "收集木头", Callback = function() collectItem("Log") end})
+Night99Tab:CreateButton({Name = "收集煤炭", Callback = function() collectItem("Coal") end})
+Night99Tab:CreateButton({Name = "收集生兔肉", Callback = function() collectItem("Morsel") end})
+Night99Tab:CreateButton({Name = "收集萝卜", Callback = function() collectItem("Carrot") end})
 
-Night99Tab:CreateButton({
-    Name = "收集煤炭",
-    Callback = function()
--- 获取服务
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
-local inventory = player:FindFirstChild("Inventory")
-local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
-local RequestBagDropItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem")
-local ItemsFolder = workspace:WaitForChild("Items")
+-- 透视 Toggle
+local espEnabled = false
+local espConnections = {}
 
-if inventory then
-    -- 先把背包里的煤炭放到物品里
-    for _, item in pairs(inventory:GetChildren()) do
-        for _, itemm in ipairs(ItemsFolder:GetChildren()) do
-            if itemm.Name == "Coal" then
-                RequestBagStoreItem:InvokeServer(item, itemm)
-            end
-        end
-    end
-
-    task.wait(0.1)
-
-    -- 再把煤炭掉落到场景
-    for _, item in pairs(inventory:GetChildren()) do
-        local coalItem = ItemsFolder:FindFirstChild("Coal")
-        if coalItem then
-            RequestBagDropItem:FireServer(item, coalItem, true)
-        end
-    end
-end
-   
-local collectingLogs = false
-
-Night99Tab:CreateButton({
-    Name = "收集生兔肉",
-    Callback = function()
--- 获取服务
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
-local inventory = player:FindFirstChild("Inventory")
-local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
-local RequestBagDropItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem")
-local ItemsFolder = workspace:WaitForChild("Items")
-
-if inventory then
-    -- 先把背包里的 Morsel 放到物品里
-    for _, item in pairs(inventory:GetChildren()) do
-        for _, itemm in ipairs(ItemsFolder:GetChildren()) do
-            if itemm.Name == "Morsel" then
-                RequestBagStoreItem:InvokeServer(item, itemm)
-            end
-        end
-    end
-
-    task.wait(0.1)
-
-    -- 再把 Morsel 掉落到场景
-    for _, item in pairs(inventory:GetChildren()) do
-        local morselItem = ItemsFolder:FindFirstChild("Morsel")
-        if morselItem then
-            RequestBagDropItem:FireServer(item, morselItem, true)
-        end
-    end
-end
-
-local collectingLogs = false
-
-Night99Tab:CreateButton({
-    Name = "收集萝卜",
-    Callback = function()
--- 获取服务
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
-local inventory = player:FindFirstChild("Inventory")
-local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
-local RequestBagDropItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem")
-local ItemsFolder = workspace:WaitForChild("Items")
-
-if inventory then
-    -- 先把背包里的 Carrot 放到物品里
-    for _, item in pairs(inventory:GetChildren()) do
-        for _, itemm in ipairs(ItemsFolder:GetChildren()) do
-            if itemm.Name == "Carrot" then
-                RequestBagStoreItem:InvokeServer(item, itemm)
-            end
-        end
-    end
-
-    task.wait(0.1)
-
-    -- 再把 Carrot 掉落到场景
-    for _, item in pairs(inventory:GetChildren()) do
-        local carrotItem = ItemsFolder:FindFirstChild("Carrot")
-        if carrotItem then
-            RequestBagDropItem:FireServer(item, carrotItem, true)
-        end
-    end
-end
-
-AimbotTab:CreateToggle({
+Night99Tab:CreateToggle({
     Name = "透视所有生物",
-    CurrentValue = false,  -- 默认关闭
-    Flag = "TeamCheckToggle",
+    CurrentValue = false,
     Callback = function(Value)
-        spawn(function()
-    while true do
-        local swWorkspace = workspace:WaitForChild("Characters")
-
-        for _, model in ipairs(swWorkspace:GetChildren()) do
-            if model:IsA("Model") then
-                -- 如果已经有 BillboardGui，就跳过
-                if not model:FindFirstChild("ModelNameBillboard") then
-                    local billboard = Instance.new("BillboardGui")
-                    billboard.Name = "ModelNameBillboard"
-                    billboard.Adornee = model
-                    billboard.Size = UDim2.new(5, 0, 1, 0)
-                    billboard.StudsOffset = Vector3.new(0, 3, 0)
-                    billboard.AlwaysOnTop = true
-                    billboard.LightInfluence = 0
-                    billboard.MaxDistance = 10000000
-
-                    local textLabel = Instance.new("TextLabel")
-                    textLabel.Size = UDim2.new(1, 0, 1, 0)
-                    textLabel.BackgroundTransparency = 1
-                    textLabel.Text = model.Name
-                    textLabel.Font = Enum.Font.SourceSansBold
-                    textLabel.TextSize = 20
-                    textLabel.TextColor3 = Color3.new(1, 0, 0)
-                    textLabel.TextStrokeTransparency = 0.5
-
-                    textLabel.Parent = billboard
-                    billboard.Parent = model
+        espEnabled = Value
+        if espEnabled then
+            -- 给已有角色加 Highlight
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= player and plr.Character then
+                    if not plr.Character:FindFirstChild("ESP_HL") then
+                        local hl = Instance.new("Highlight")
+                        hl.Name = "ESP_HL"
+                        hl.FillTransparency = 0.5
+                        hl.OutlineTransparency = 0
+                        hl.Parent = plr.Character
+                    end
                 end
             end
-        end
 
-        task.wait(1) -- 每秒更新一次，检测新加入的模型
-    end
-end)
+            -- 玩家加入 / 角色生成监听
+            table.insert(espConnections, Players.PlayerAdded:Connect(function(plr)
+                plr.CharacterAdded:Connect(function(char)
+                    task.wait(1)
+                    if espEnabled then
+                        local hl = Instance.new("Highlight")
+                        hl.Name = "ESP_HL"
+                        hl.FillTransparency = 0.5
+                        hl.OutlineTransparency = 0
+                        hl.Parent = char
+                    end
+                end)
+            end))
+        else
+            -- 移除已有 Highlight
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr.Character then
+                    local hl = plr.Character:FindFirstChild("ESP_HL")
+                    if hl then hl:Destroy() end
+                end
+            end
+            -- 断开连接
+            for _, conn in ipairs(espConnections) do conn:Disconnect() end
+            espConnections = {}
+        end
     end
 })
 
-AimbotTab:CreateToggle({
-    Name = "白天",
-    CurrentValue = false,  -- 默认关闭
-    Flag = "TeamCheckToggle",
-    Callback = function(Value)
-        -- 获取 Lighting 服务
-local Lighting = game:GetService("Lighting")
+-- 白天 Toggle
+local dayEnabled = false
+local defaultLighting = {
+    Brightness = Lighting.Brightness,
+    ClockTime = Lighting.ClockTime,
+    FogEnd = Lighting.FogEnd,
+    GlobalShadows = Lighting.GlobalShadows,
+    OutdoorAmbient = Lighting.OutdoorAmbient
+}
 
--- 修改环境参数
-Lighting.Brightness = 2
-Lighting.ClockTime = 14
-Lighting.FogEnd = 100000
-Lighting.GlobalShadows = false
-Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+local dayConnection
+Night99Tab:CreateToggle({
+    Name = "白天",
+    CurrentValue = false,
+    Callback = function(Value)
+        dayEnabled = Value
+        if dayEnabled then
+            -- 设置白天
+            Lighting.Brightness = 3
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+            Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+
+            -- 防止 ClockTime 被游戏修改
+            if dayConnection then dayConnection:Disconnect() end
+            dayConnection = Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+                if dayEnabled then
+                    Lighting.ClockTime = 14
+                end
+            end)
+        else
+            -- 恢复默认环境
+            Lighting.Brightness = defaultLighting.Brightness
+            Lighting.ClockTime = defaultLighting.ClockTime
+            Lighting.FogEnd = defaultLighting.FogEnd
+            Lighting.GlobalShadows = defaultLighting.GlobalShadows
+            Lighting.OutdoorAmbient = defaultLighting.OutdoorAmbient
+
+            if dayConnection then dayConnection:Disconnect() dayConnection = nil end
+        end
     end
 })
