@@ -600,3 +600,46 @@ if inventory then
         end
     end
 end
+
+AimbotTab:CreateToggle({
+    Name = "透视所有生物",
+    CurrentValue = false,  -- 默认关闭
+    Flag = "TeamCheckToggle",
+    Callback = function(Value)
+        spawn(function()
+    while true do
+        local swWorkspace = workspace:WaitForChild("Characters")
+
+        for _, model in ipairs(swWorkspace:GetChildren()) do
+            if model:IsA("Model") then
+                -- 如果已经有 BillboardGui，就跳过
+                if not model:FindFirstChild("ModelNameBillboard") then
+                    local billboard = Instance.new("BillboardGui")
+                    billboard.Name = "ModelNameBillboard"
+                    billboard.Adornee = model
+                    billboard.Size = UDim2.new(5, 0, 1, 0)
+                    billboard.StudsOffset = Vector3.new(0, 3, 0)
+                    billboard.AlwaysOnTop = true
+                    billboard.LightInfluence = 0
+                    billboard.MaxDistance = 10000000
+
+                    local textLabel = Instance.new("TextLabel")
+                    textLabel.Size = UDim2.new(1, 0, 1, 0)
+                    textLabel.BackgroundTransparency = 1
+                    textLabel.Text = model.Name
+                    textLabel.Font = Enum.Font.SourceSansBold
+                    textLabel.TextSize = 20
+                    textLabel.TextColor3 = Color3.new(1, 0, 0)
+                    textLabel.TextStrokeTransparency = 0.5
+
+                    textLabel.Parent = billboard
+                    billboard.Parent = model
+                end
+            end
+        end
+
+        task.wait(1) -- 每秒更新一次，检测新加入的模型
+    end
+end)
+    end
+})
