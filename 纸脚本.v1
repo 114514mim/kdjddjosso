@@ -780,8 +780,7 @@ AbandonedTab:CreateToggle({
 --==============================
 -- 战争大亨 区域
 --==============================
-local war = window:Tab("战争大亨")
-local war = war:section("战争大亨功能", true)
+local AbandonedTab = Window:CreateTab("战争大亨区域", 4483362458)
 
 -- 初始化全图
 war:Button("初始化全图", function()
