@@ -783,121 +783,176 @@ AbandonedTab:CreateToggle({
     end
 })
 
--- =========================
--- 战争大亨区域 (Rayfield版)
--- =========================
+-- 战争大亨区域 (Rayfield 版，完整还原原始脚本功能）
 local WarTab = Window:CreateTab("战争大亨区域", 4483362458)
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
--- 状态存储
-local warState = {
-    autoRepair = false,
-    espVehicles = false,
-    espObjects = false,
-    autoCapture = false,
-}
-
--- ====== 透视 ======
-local espConnections = {}
-
-local function clearESP()
-    for _, conn in ipairs(espConnections) do conn:Disconnect() end
-    espConnections = {}
-    for _, obj in ipairs(Workspace:GetDescendants()) do
-        local hl = obj:FindFirstChild("ESP_HL")
-        if hl then hl:Destroy() end
+-- =========== 传送 ===========
+WarTab:CreateButton({Name="初始化全图", Callback=function()
+    local ME = LocalPlayer.Character.HumanoidRootPart
+    local pts = {
+        Vector3.new(-954, 479, -2196),
+        Vector3.new(-1526, 439, -991),
+        Vector3.new(-1616, 326, 523),
+        Vector3.new(-846, 314, 1794),
+        Vector3.new(781, 292, 1885),
+        Vector3.new(2021, 199, 822),
+        Vector3.new(1768, 254, -492),
+        Vector3.new(550, 221, -1515),
+        Vector3.new(61, 216, 187)
+    }
+    for _,v in ipairs(pts) do
+        ME.CFrame = CFrame.new(v)
+        task.wait(1)
     end
-end
+end})
 
-local function startESP(keyword, color)
-    local function apply(obj)
-        if obj:IsA("Model") and obj.Name:lower():find(keyword) and not obj:FindFirstChild("ESP_HL") then
-            local hl = Instance.new("Highlight")
-            hl.Name = "ESP_HL"
-            hl.FillColor = color
-            hl.OutlineColor = Color3.new(1,1,1)
-            hl.FillTransparency = 0.5
-            hl.OutlineTransparency = 0
-            hl.Adornee = obj
-            hl.Parent = Workspace
+WarTab:CreateButton({Name="传送到油桶旁", Callback=function()
+    for _,v in ipairs(Workspace:GetDescendants()) do
+        if v.Name == "Barrel Template" and v:FindFirstChildOfClass("Part") then
+            LocalPlayer.Character:PivotTo(v:FindFirstChildOfClass("Part").CFrame)
+            break
         end
     end
+end})
 
-    for _, obj in ipairs(Workspace:GetDescendants()) do
-        apply(obj)
-    end
-    table.insert(espConnections, Workspace.DescendantAdded:Connect(apply))
-end
-
-WarTab:CreateToggle({
-    Name = "透视车辆",
-    CurrentValue = false,
-    Callback = function(v)
-        warState.espVehicles = v
-        clearESP()
-        if v then startESP("Vehicle", Color3.fromRGB(255,0,0)) end
-    end
-})
-
-WarTab:CreateToggle({
-    Name = "透视箱子",
-    CurrentValue = false,
-    Callback = function(v)
-        warState.espObjects = v
-        clearESP()
-        if v then
-            startESP("Box", Color3.fromRGB(0,255,0))
-        end
-    end
-})
-
--- ====== 自动占点 ======
-local autoCaptureConn
-WarTab:CreateToggle({
-    Name = "自动占点",
-    CurrentValue = false,
-    Callback = function(v)
-        warState.autoCapture = v
-        if autoCaptureConn then autoCaptureConn:Disconnect() autoCaptureConn = nil end
-        if v then
-            autoCaptureConn = RunService.Heartbeat:Connect(function()
-                pcall(function()
-                    local char = LocalPlayer.Character
-                    if not char then return end
-                    local hrp = char:FindFirstChild("HumanoidRootPart")
-                    if not hrp then return end
-                    for _, obj in ipairs(Workspace:GetDescendants()) do
-                        if obj.Name:match("CapturePoint") and obj:FindFirstChild("Owner") then
-                            hrp.CFrame = obj.CFrame
-                        end
-                    end
-                end)
-            end)
-        end
-    end
-})
-
--- ====== 战争区域传送 ======
-local teleportPositions = {
-    Base = CFrame.new(0,5,0),
-    FarBox = CFrame.new(100,5,100),
-    MidBox = CFrame.new(50,5,50)
-}
-
-for name, cf in pairs(teleportPositions) do
-    WarTab:CreateButton({
-        Name = "传送到 "..name,
-        Callback = function()
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                char.HumanoidRootPart.CFrame = cf
-                Rayfield:Notify({Title="传送", Content="已传送到 "..name, Duration=3})
+WarTab:CreateButton({Name="回到自己基地", Callback=function()
+    for _,c in ipairs(Workspace.Tycoon.Tycoons:GetChildren()) do
+        if c:FindFirstChild("Owner") and c.Owner.Value == LocalPlayer then
+            for _,part in ipairs(c:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    LocalPlayer.Character:PivotTo(part.CFrame)
+                    return
+                end
             end
         end
-    })
+    end
+end})
+
+WarTab:CreateButton({Name="自动占点", Callback=function()
+    local oldpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+    local myTycoon
+    for _,c in ipairs(Workspace.Tycoon.Tycoons:GetChildren()) do
+        if c:FindFirstChild("Owner") and c.Owner.Value == LocalPlayer then
+            myTycoon = c.Name
+        end
+    end
+    if tostring(Workspace["Game Systems"].CapturePoint["Captured Team"].Value) ~= myTycoon then
+        repeat
+            RunService.Stepped:Wait()
+            LocalPlayer.Character:PivotTo(CFrame.new(70.764,44.887,189)+Vector3.new(0,5,0))
+        until tostring(Workspace["Game Systems"].CapturePoint["Captured Team"].Value) == myTycoon
+    end
+    task.wait(12)
+    LocalPlayer.Character:PivotTo(oldpos)
+end})
+
+-- =========== 子弹设置 & 武器 ===========
+local ammoCount = 0
+WarTab:CreateTextbox({
+    Name="子弹数量",
+    PlaceholderText="请输入数字",
+    Callback=function(val)
+        ammoCount = tonumber(val) or 0
+    end
+})
+
+WarTab:CreateButton({Name="设置所有枪子弹数量", Callback=function()
+    local conf = ReplicatedStorage:FindFirstChild("Configurations")
+    if conf and conf:FindFirstChild("ACS_Guns") then
+        for _,desc in ipairs(conf.ACS_Guns:GetDescendants()) do
+            if desc.Name == "Ammo" and (desc:IsA("NumberValue") or desc:IsA("IntValue")) then
+                desc.Value = ammoCount
+            end
+        end
+    end
+end})
+
+WarTab:CreateButton({Name="武器全自动", Callback=function()
+    local function modify(parent)
+        for _,child in ipairs(parent:GetChildren()) do
+            if child:IsA("ModuleScript") and child.Name == "Settings" then
+                local ok,mod = pcall(function() return require(child) end)
+                if ok and type(mod)=="table" then
+                    mod.FireModes.Auto = true
+                    mod.Mode = "Auto"
+                end
+            else
+                modify(child)
+            end
+        end
+    end
+    local root = ReplicatedStorage:FindFirstChild("Configurations")
+    and ReplicatedStorage.Configurations:FindFirstChild("ACS_Guns")
+    if root then modify(root) end
+end})
+
+-- =========== 传送箱子 ==========  
+WarTab:CreateButton({Name="传送到远箱子", Callback=function()
+    local crates = Workspace:FindFirstChild("Game Systems")
+                  and Workspace["Game Systems"]:FindFirstChild("Crate Workspace")
+    if crates then
+        local hrp = LocalPlayer.Character.HumanoidRootPart
+        local farthest,dist = nil,0
+        for _,crate in ipairs(crates:GetChildren()) do
+            if crate:IsA("BasePart") then
+                local d = (crate.Position - hrp.Position).Magnitude
+                if d > dist then
+                    dist = d
+                    farthest = crate
+                end
+            end
+        end
+        if farthest then LocalPlayer.Character:PivotTo(farthest.CFrame) end
+    end
+end})
+
+-- =========== 透视 / 绘制 ===========
+local function createBillboard(model)
+    if model:FindFirstChild("ModelNameBillboard") then return end
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ModelNameBillboard"
+    billboard.Adornee = model
+    billboard.Size = UDim2.new(5,0,1,0)
+    billboard.StudsOffset = Vector3.new(0,3,0)
+    billboard.AlwaysOnTop = true
+    billboard.LightInfluence = 0
+    billboard.MaxDistance = 10000000
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1,0,1,0)
+    label.BackgroundTransparency = 1
+    label.Text = model.Name
+    label.Font = Enum.Font.SourceSansBold
+    label.TextSize = 24
+    label.TextColor3 = Color3.fromRGB(255,0,0)
+    label.TextStrokeTransparency = 0.5
+    label.Parent = billboard
+
+    billboard.Parent = model
 end
+
+local function toggleESP(on, workspaceName)
+    spawn(function()
+        while on do
+            local folder = Workspace["Game Systems"] and Workspace["Game Systems"][workspaceName]
+            if folder then
+                for _,obj in ipairs(folder:GetChildren()) do
+                    if obj:IsA("Model") then createBillboard(obj) end
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+WarTab:CreateToggle({Name="透视车辆", CurrentValue=false, Callback=function(v) toggleESP(v,"Vehicle Workspace") end})
+WarTab:CreateToggle({Name="透视坦克", CurrentValue=false, Callback=function(v) toggleESP(v,"Tank Workspace") end})
+WarTab:CreateToggle({Name="透视飞机", CurrentValue=false, Callback=function(v) toggleESP(v,"Plane Workspace") end})
+WarTab:CreateToggle({Name="透视直升机", CurrentValue=false, Callback=function(v) toggleESP(v,"Helicopter Workspace") end})
+WarTab:CreateToggle({Name="透视船只", CurrentValue=false, Callback=function(v) toggleESP(v,"Boat Workspace") end})
+WarTab:CreateToggle({Name="透视无人机", CurrentValue=false, Callback=function(v) toggleESP(v,"RC Workspace") end})
