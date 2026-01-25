@@ -769,208 +769,227 @@ AbandonedTab:CreateToggle({
     end
 })
 
---==============================
--- 战争大亨 区域
---==============================
-local AbandonedTab = Window:CreateTab("战争大亨区域", 4483362458)
+-- 战争大亨区域 (完整原版功能)
+local WarTycoonTab = Window:CreateTab("战争大亨区域", 4483362458)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local Mouse = LocalPlayer:GetMouse()
 
--- 初始化全图
-war:Button("初始化全图", function()
-    local poses = {
-        CFrame.new(-954, 479, -2196),
-        CFrame.new(-1526, 439, -991),
-        CFrame.new(-1616, 326, 523),
-        CFrame.new(-846, 314, 1794),
-        CFrame.new(781, 292, 1885),
-        CFrame.new(2021, 199, 822),
-        CFrame.new(1768, 254, -492),
-        CFrame.new(550, 221, -1515),
-        CFrame.new(61, 216, 187),
-    }
+local function tp(pos)
+    LocalPlayer.Character:PivotTo(pos)
+end
 
-    for round = 1, 2 do
-        for _, cf in ipairs(poses) do
-            ME.CFrame = cf
+-- ===== 传送 =====
+local tppSection = WarTycoonTab:CreateSection("传送")
+
+tppSection:CreateButton({
+    Name = "初始化全图",
+    Callback = function()
+        local ME = LocalPlayer.Character.HumanoidRootPart
+        local positions = {
+            Vector3.new(-954, 479, -2196),
+            Vector3.new(-1526, 439, -991),
+            Vector3.new(-1616, 326, 523),
+            Vector3.new(-846, 314, 1794),
+            Vector3.new(781, 292, 1885),
+            Vector3.new(2021, 199, 822),
+            Vector3.new(1768, 254, -492),
+            Vector3.new(550, 221, -1515),
+            Vector3.new(61, 216, 187)
+        }
+        for _, pos in ipairs(positions) do
+            ME.CFrame = CFrame.new(pos)
             task.wait(1)
         end
     end
-end)
+})
 
--- 传送到油桶
-war:Button("传送到油桶旁", function()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v.Name == "Barrel Template" then
-            local p = v:FindFirstChildWhichIsA("BasePart")
-            if p then
-                tp(p.CFrame + Vector3.new(0, 5, 0))
-                break
+tppSection:CreateButton({
+    Name = "传送到油桶旁",
+    Callback = function()
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v.Name == "Barrel Template" and v:FindFirstChildOfClass("Part") then
+                tp(v:FindFirstChildOfClass("Part").CFrame)
+                return
             end
         end
     end
-end)
+})
 
--- 回到自己基地
-war:Button("回到自己基地", function()
-    for _, c in ipairs(workspace.Tycoon.Tycoons:GetChildren()) do
-        if c:FindFirstChild("Owner") and c.Owner.Value == lp then
-            local part = c:FindFirstChildWhichIsA("BasePart", true)
-            if part then
-                tp(part.CFrame + Vector3.new(0, 5, 0))
-                break
-            end
-        end
-    end
-end)
-
--- 自动占点
-war:Button("自动占点", function()
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    local oldpos = hrp.CFrame
-    local myTycoon
-
-    for _, c in ipairs(workspace.Tycoon.Tycoons:GetChildren()) do
-        if c:FindFirstChild("Owner") and c.Owner.Value == lp then
-            myTycoon = c.Name
-        end
-    end
-    if not myTycoon then return end
-
-    local cp = workspace["Game Systems"].CapturePoint
-    while tostring(cp["Captured Team"].Value) ~= myTycoon do
-        tp(cp.Base.CFrame + Vector3.new(0, 6, 0))
-        task.wait()
-    end
-
-    task.wait(10)
-    tp(oldpos)
-end)
-
--- 传送到最远坦克箱
-war:Button("传送到一个零件箱子", function()
-    local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    local cratesFolder =
-        workspace:FindFirstChild("Game Systems") and
-        workspace["Game Systems"]:FindFirstChild("Crate Workspace")
-
-    if not cratesFolder then return end
-
-    local farthest, dist = nil, 0
-    for _, crate in ipairs(cratesFolder:GetChildren()) do
-        if crate.Name == "Tank Crate" and crate:IsA("BasePart") then
-            local d = (crate.Position - hrp.Position).Magnitude
-            if d > dist then
-                dist = d
-                farthest = crate
-            end
-        end
-    end
-
-    if farthest then
-        tp(farthest.CFrame + Vector3.new(0, 5, 0))
-    end
-end)
-
---==============================
--- 主要功能（武器相关）
---==============================
-local gn = window:Tab("主要功能")
-local gn = gn:section("功能", true)
-
-gn:Label("子弹数量需设置后再拿枪")
-
-local _AmmoNumber = 999
-gn:Textbox("子弹数量", "Ammo", "输入数字", function(v)
-    _AmmoNumber = tonumber(v) or _AmmoNumber
-end)
-
-gn:Button("设置所有枪子弹数量", function()
-    local ACS = game:GetService("ReplicatedStorage")
-        :FindFirstChild("Configurations")
-        :FindFirstChild("ACS_Guns")
-
-    if not ACS then return end
-
-    for _, v in ipairs(ACS:GetDescendants()) do
-        if v.Name == "Ammo" and (v:IsA("IntValue") or v:IsA("NumberValue")) then
-            v.Value = _AmmoNumber
-        end
-    end
-end)
-
--- 武器全自动
-gn:Button("武器全自动", function()
-    local Rep = game:GetService("ReplicatedStorage")
-
-    local function walk(p)
-        for _, c in ipairs(p:GetChildren()) do
-            if c:IsA("ModuleScript") and c.Name == "Settings" then
-                local ok, m = pcall(require, c)
-                if ok and type(m) == "table" and m.FireModes then
-                    m.FireModes.Auto = true
-                    m.Mode = "Auto"
-                end
-            else
-                walk(c)
-            end
-        end
-    end
-
-    local root = Rep:WaitForChild("Configurations"):WaitForChild("ACS_Guns")
-    walk(root)
-end)
-
---==============================
--- 绘制 ESP
---==============================
-local esp = window:Tab("绘制")
-local esp = esp:section("绘制", true)
-
-local function espLoop(workspacePath, flagName)
-    return function(state)
-        _G[flagName] = state
-        task.spawn(function()
-            while _G[flagName] do
-                local ws = workspace["Game Systems"][workspacePath]
-                for _, m in ipairs(ws:GetChildren()) do
-                    if m:IsA("Model") and not m:FindFirstChild("ModelNameBillboard") then
-                        local bb = Instance.new("BillboardGui", m)
-                        bb.Name = "ModelNameBillboard"
-                        bb.Adornee = m
-                        bb.Size = UDim2.new(5, 0, 1, 0)
-                        bb.StudsOffset = Vector3.new(0, 3, 0)
-                        bb.AlwaysOnTop = true
-                        bb.MaxDistance = 1e7
-
-                        local t = Instance.new("TextLabel", bb)
-                        t.Size = UDim2.fromScale(1, 1)
-                        t.BackgroundTransparency = 1
-                        t.Text = m.Name
-                        t.TextColor3 = Color3.new(1, 0, 0)
-                        t.TextStrokeTransparency = 0.5
-                        t.TextScaled = true
+tppSection:CreateButton({
+    Name = "回到自己基地",
+    Callback = function()
+        for _, c in pairs(Workspace.Tycoon.Tycoons:GetChildren()) do
+            if c:FindFirstChild("Owner") and c.Owner.Value == LocalPlayer then
+                for _, v in pairs(c:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        tp(v.CFrame)
+                        return
                     end
                 end
-                task.wait(1)
-            end
-        end)
-
-        if not state then
-            local ws = workspace["Game Systems"][workspacePath]
-            for _, m in ipairs(ws:GetChildren()) do
-                local bb = m:FindFirstChild("ModelNameBillboard")
-                if bb then bb:Destroy() end
             end
         end
     end
+})
+
+tppSection:CreateButton({
+    Name = "自动占点",
+    Callback = function()
+        local oldpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+        local tycoonName
+        for _, c in pairs(Workspace.Tycoon.Tycoons:GetChildren()) do
+            if c:FindFirstChild("Owner") and c.Owner.Value == LocalPlayer then
+                tycoonName = c.Name
+            end
+        end
+        if tostring(Workspace["Game Systems"].CapturePoint["Captured Team"].Value) ~= tycoonName then
+            repeat
+                RunService.Stepped:Wait()
+                tp(CFrame.new(70.764, 44.887, 189) + Vector3.new(0, 5, 0))
+            until tostring(Workspace["Game Systems"].CapturePoint["Captured Team"].Value) == tycoonName
+        end
+        task.wait(12)
+        tp(oldpos)
+    end
+})
+
+-- ===== 子弹设置 + 武器 =====
+local mainSection = WarTycoonTab:CreateSection("主要功能")
+
+mainSection:CreateTextbox({
+    Name = "子弹数量",
+    PlaceholderText = "输入子弹数量",
+    Callback = function(value)
+        _AmmoNumber = tonumber(value)
+    end
+})
+
+mainSection:CreateButton({
+    Name = "设置所有枪子弹数量",
+    Callback = function()
+        local ACS_Guns = ReplicatedStorage:FindFirstChild("Configurations") and ReplicatedStorage.Configurations:FindFirstChild("ACS_Guns")
+        if ACS_Guns then
+            for _, desc in ipairs(ACS_Guns:GetDescendants()) do
+                if desc.Name == "Ammo" and (desc:IsA("IntValue") or desc:IsA("NumberValue")) then
+                    desc.Value = _AmmoNumber
+                end
+            end
+        end
+    end
+})
+
+mainSection:CreateButton({
+    Name = "武器全自动",
+    Callback = function()
+        local function modify(parent)
+            for _, child in ipairs(parent:GetChildren()) do
+                if child:IsA("ModuleScript") and child.Name == "Settings" then
+                    local ok, mod = pcall(function() return require(child) end)
+                    if ok and type(mod) == "table" then
+                        mod.FireModes.Auto = true
+                        mod.Mode = "Auto"
+                    end
+                else
+                    modify(child)
+                end
+            end
+        end
+        local root = ReplicatedStorage:WaitForChild("Configurations"):WaitForChild("ACS_Guns")
+        modify(root)
+    end
+})
+
+-- ===== 绘制 / 透视 =====
+local drawSection = WarTycoonTab:CreateSection("绘制")
+
+-- 通用 Billboard 透视函数
+local function addBillboard(model)
+    if model:FindFirstChild("ModelNameBillboard") then return end
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ModelNameBillboard"
+    billboard.Adornee = model
+    billboard.Size = UDim2.new(5, 0, 1, 0)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.LightInfluence = 0
+    billboard.MaxDistance = 10000000
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = model.Name
+    label.Font = Enum.Font.SourceSansBold
+    label.TextSize = 24
+    label.TextColor3 = Color3.new(1, 0, 0)
+    label.TextStrokeTransparency = 0.5
+    label.Parent = billboard
+
+    billboard.Parent = model
 end
 
-esp:Toggle("透视车辆", "", false, espLoop("Vehicle Workspace", "esp_vehicle"))
-esp:Toggle("透视坦克", "", false, espLoop("Tank Workspace", "esp_tank"))
-esp:Toggle("透视飞机", "", false, espLoop("Plane Workspace", "esp_plane"))
-esp:Toggle("透视直升机", "", false, espLoop("Helicopter Workspace", "esp_heli"))
-esp:Toggle("透视船", "", false, espLoop("Boat Workspace", "esp_boat"))
-esp:Toggle("透视无人机", "", false, espLoop("RC Workspace", "esp_rc"))
+-- 透视循环函数
+local function loopESP(on, workspaceName)
+    spawn(function()
+        while on do
+            local ws = Workspace["Game Systems"] and Workspace["Game Systems"][workspaceName]
+            if ws then
+                for _, model in ipairs(ws:GetChildren()) do
+                    if model:IsA("Model") then
+                        addBillboard(model)
+                    end
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+drawSection:CreateToggle({
+    Name = "透视车辆",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "Vehicle Workspace") end
+    end
+})
+
+drawSection:CreateToggle({
+    Name = "透视坦克",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "Tank Workspace") end
+    end
+})
+
+drawSection:CreateToggle({
+    Name = "透视飞机",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "Plane Workspace") end
+    end
+})
+
+drawSection:CreateToggle({
+    Name = "透视直升机",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "Helicopter Workspace") end
+    end
+})
+
+drawSection:CreateToggle({
+    Name = "透视船",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "Boat Workspace") end
+    end
+})
+
+drawSection:CreateToggle({
+    Name = "透视无人机",
+    CurrentValue = false,
+    Callback = function(state)
+        if state then loopESP(true, "RC Workspace") end
+    end
+})
