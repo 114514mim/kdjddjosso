@@ -819,7 +819,7 @@ WarTab:CreateToggle({
     end
 })
 
--- 第二次重生点传送
+-- 第二次重生点记录
 local secondSpawnCFrame = nil
 local deathCount = 0
 local isWaitingForSecondSpawn = false
@@ -847,29 +847,45 @@ if LocalPlayer.Character then
     trackSecondSpawn(LocalPlayer.Character)
 end
 
+-- 传送回家(会自杀)
 WarTab:CreateButton({
-    Name = "传送到第二次重生点",
+    Name = "传送回家(会自杀)",
     Callback = function()
         local char = LocalPlayer.Character
-        if secondSpawnCFrame then
-            char.HumanoidRootPart.CFrame = secondSpawnCFrame + Vector3.new(0,5,0)
-            Rayfield:Notify({Title = "传送成功", Content = "已传送到第二次重生点！", Duration = 5})
-        else
-            if not isWaitingForSecondSpawn then
-                char:FindFirstChildOfClass("Humanoid").Health = 0
-                Rayfield:Notify({Title = "自杀中", Content = "第一次死亡后会记录第二次重生点", Duration = 5})
-            end
+        if secondSpawnCFrame and char then
+            -- 先自杀，再传送到第二次重生点
+            char:FindFirstChildOfClass("Humanoid").Health = 0
+            local conn
+            conn = LocalPlayer.CharacterAdded:Connect(function(newChar)
+                local newHRP = newChar:WaitForChild("HumanoidRootPart")
+                newHRP.CFrame = secondSpawnCFrame + Vector3.new(0,5,0)
+                Rayfield:Notify({Title = "传送成功", Content = "已传送回家！", Duration = 5})
+                conn:Disconnect()
+            end)
         end
     end
 })
 
--- 传送到指定站点 (回家)
+-- 传送回家（不会自杀）
 WarTab:CreateButton({
-    Name = "传送回家(会自杀)",
+    Name = "传送回家",
     Callback = function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-509.92, 177.04, -1022.77)
-            LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0
+        local char = LocalPlayer.Character
+        if secondSpawnCFrame and char then
+            char.HumanoidRootPart.CFrame = secondSpawnCFrame + Vector3.new(0,5,0)
+            Rayfield:Notify({Title = "传送成功", Content = "已传送回家！", Duration = 5})
+        end
+    end
+})
+
+-- 传送到指定站点
+WarTab:CreateButton({
+    Name = "传送到站点",
+    Callback = function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(-509.92, 177.04, -1022.77)
+            Rayfield:Notify({Title = "传送成功", Content = "已传送到指定站点！", Duration = 5})
         end
     end
 })
