@@ -608,7 +608,6 @@ local abandonedState = {
     espItems = false,
     espGenerators = false,
     autoRepair = false,
-    noDebuff = false,
 }
 
 local Players = game:GetService("Players")
@@ -664,29 +663,6 @@ AbandonedTab:CreateToggle({
         abandonedState.killerInfiniteStamina = Value
         setStamina()
         Rayfield:Notify({Title="杀手无限体力", Content=(Value and "已开启" or "已关闭"), Duration=3})
-    end
-})
-
--- ========================= 免疫 Debuff =========================
-local debuffConn
-AbandonedTab:CreateToggle({
-    Name = "免疫 Debuff",
-    CurrentValue = false,
-    Callback = function(Value)
-        abandonedState.noDebuff = Value
-        if debuffConn then debuffConn:Disconnect() debuffConn = nil end
-        if Value then
-            debuffConn = RunService.Heartbeat:Connect(function()
-                local char = LocalPlayer.Character
-                if not char then return end
-                for _, child in pairs(char:GetChildren()) do
-                    if child:IsA("ValueBase") and child.Name:lower():find("debuff") then
-                        pcall(function() child:Destroy() end)
-                    end
-                end
-            end)
-        end
-        Rayfield:Notify({Title="免疫 Debuff", Content=(Value and "已开启" or "已关闭"), Duration=3})
     end
 })
 
