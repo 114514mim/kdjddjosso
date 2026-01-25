@@ -733,19 +733,19 @@ AbandonedTab:CreateToggle({
                 end
             end
 
-            while state.espGenerators do
-                local area = workspace:FindFirstChild("AbandonedArea")
-                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
-                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do
-                        if v:IsA("Model") and v.Name=="Generator" then
-                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)
-                            ESPGenerator(v,color)
-                        end
-                    end
-                end
-                task.wait(2)
-            end
-        end)
+            while state.espGenerators do  
+                local area = workspace:FindFirstChild("AbandonedArea")  
+                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then  
+                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do  
+                        if v:IsA("Model") and v.Name=="Generator" then  
+                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)  
+                            ESPGenerator(v,color)  
+                        end  
+                    end  
+                end  
+                task.wait(2)  
+            end  
+        end)  
     end
 })
 
@@ -798,45 +798,45 @@ AbandonedTab:CreateToggle({
         local TARGET_SPEED = 20
         local wsConn, debuffConns = nil, {}
 
-        local function clearDebuffs(humanoid)
-            if not humanoid then return end
-            humanoid.WalkSpeed = TARGET_SPEED
-            if wsConn then wsConn:Disconnect() end
-            wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                humanoid.WalkSpeed = TARGET_SPEED
-            end)
-            local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}
-            for _, name in ipairs(debuffNames) do
-                local obj = humanoid:FindFirstChild(name)
-                if obj and not debuffConns[name] then
-                    obj.Value = false
-                    debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()
-                        obj.Value = false
-                    end)
-                end
-            end
-        end
+        local function clearDebuffs(humanoid)  
+            if not humanoid then return end  
+            humanoid.WalkSpeed = TARGET_SPEED  
+            if wsConn then wsConn:Disconnect() end  
+            wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()  
+                humanoid.WalkSpeed = TARGET_SPEED  
+            end)  
+            local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}  
+            for _, name in ipairs(debuffNames) do  
+                local obj = humanoid:FindFirstChild(name)  
+                if obj and not debuffConns[name] then  
+                    obj.Value = false  
+                    debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()  
+                        obj.Value = false  
+                    end)  
+                end  
+            end  
+        end  
 
-        player.CharacterAdded:Connect(function(newChar)
-            local humanoid = newChar:WaitForChild("Humanoid")
-            if state.noDebuff then clearDebuffs(humanoid) end
-        end)
+        player.CharacterAdded:Connect(function(newChar)  
+            local humanoid = newChar:WaitForChild("Humanoid")  
+            if state.noDebuff then clearDebuffs(humanoid) end  
+        end)  
 
-        spawn(function()
-            while state.noDebuff do
-                local char = player.Character
-                if char then
-                    local humanoid = char:FindFirstChild("Humanoid")
-                    clearDebuffs(humanoid)
-                end
-                task.wait(0.1)
-            end
-            -- 停止时恢复默认
-            local char = player.Character
-            if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = 16 end
-            if wsConn then wsConn:Disconnect() end
-            for _, conn in pairs(debuffConns) do conn:Disconnect() end
-            debuffConns = {}
-        end)
+        spawn(function()  
+            while state.noDebuff do  
+                local char = player.Character  
+                if char then  
+                    local humanoid = char:FindFirstChild("Humanoid")  
+                    clearDebuffs(humanoid)  
+                end  
+                task.wait(0.1)  
+            end  
+            -- 停止时恢复默认  
+            local char = player.Character  
+            if char and char:FindFirstChild("Humanoid") then char.Humanoid.WalkSpeed = 16 end  
+            if wsConn then wsConn:Disconnect() end  
+            for _, conn in pairs(debuffConns) do conn:Disconnect() end  
+            debuffConns = {}  
+        end)  
     end
 })
