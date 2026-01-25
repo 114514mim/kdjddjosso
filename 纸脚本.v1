@@ -598,98 +598,128 @@ Night99Tab:CreateToggle({
     end
 })
 
--- =========================
--- 被遗弃区域（稳定修复版）
--- =========================
+-- 被遗弃区域 (走马观花X 完整版)
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
 
-local abandonedState = {
+local state = {
     infiniteStamina = false,
     killerInfiniteStamina = false,
+    antiStun = false,
+    autoRepair = false,
     espKillers = false,
     espSurvivors = false,
     espItems = false,
-    espGenerators = false,
-    autoRepair = false,
+    espGenerators = false
 }
 
--- ===== 安全获取 Sprinting 模块 =====
-local sprintModule
-local function tryLoadSprint()
-    if sprintModule then return end
-    local ok, mod = pcall(function()
-        local sys = ReplicatedStorage:FindFirstChild("Systems")
-        if not sys then return end
-        local char = sys:FindFirstChild("Character")
-        if not char then return end
-        local gameFolder = char:FindFirstChild("Game")
-        if not gameFolder then return end
-        local sprint = gameFolder:FindFirstChild("Sprinting")
-        if not sprint then return end
-        return require(sprint)
-    end)
-    if ok then sprintModule = mod end
+-- ===== 无限耐力 =====
+local function applyStamina()
+    local sprintModule = require(ReplicatedStorage.Systems.Character.Game.Sprinting)
+    sprintModule.StaminaLossDisabled = state.infiniteStamina
+    sprintModule.MinStamina = state.killerInfiniteStamina and -100000 or 0
 end
-
--- ===== 体力逻辑 =====
-local function setStamina()
-    tryLoadSprint()
-    if not sprintModule then return end
-    pcall(function()
-        sprintModule.StaminaLossDisabled = abandonedState.infiniteStamina
-        sprintModule.MinStamina = abandonedState.killerInfiniteStamina and -1e6 or 0
-    end)
-end
-
-task.spawn(function()
-    while task.wait(0.5) do
-        pcall(setStamina)
-    end
-end)
-
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    setStamina()
-end)
 
 AbandonedTab:CreateToggle({
-    Name = "无限体力",
+    Name = "无限耐力",
     CurrentValue = false,
     Callback = function(v)
-        abandonedState.infiniteStamina = v
-        setStamina()
+        state.infiniteStamina = v
+        applyStamina()
     end
 })
 
 AbandonedTab:CreateToggle({
-    Name = "杀手无限体力",
+    Name = "杀手无限耐力",
     CurrentValue = false,
     Callback = function(v)
-        abandonedState.killerInfiniteStamina = v
-        setStamina()
+        state.killerInfiniteStamina = v
+        applyStamina()
     end
 })
 
--- ===== ESP 通用 =====
+-- ===== 防眩晕 =====
+local antiStunConn
+AbandonedTab:CreateToggle({
+    Name = "免减速 / 防眩晕",
+    CurrentValue = false,
+    Callback = function(v)
+        state.antiStun = v
+        local TARGET_SPEED = 20
+        local wsLoopConn, charAddedConn
+
+        local function applySpeed(char)
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = TARGET_SPEED
+                wsLoopConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+                    humanoid.WalkSpeed = TARGET_SPEED
+                end)
+            end
+        end
+
+        if v then
+            if LocalPlayer.Character then applySpeed(LocalPlayer.Character) end
+            charAddedConn = LocalPlayer.CharacterAdded:Connect(applySpeed)
+        else
+            if wsLoopConn then wsLoopConn:Disconnect() wsLoopConn = nil end
+            if charAddedConn then charAddedConn:Disconnect() charAddedConn = nil end
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            end
+        end
+    end
+})
+
+-- ===== 自动修机 =====
+local repairInterval = 5
+local autoRepairConn
+
+AbandonedTab:CreateTextbox({
+    Name = "修机间隔(秒)",
+    PlaceholderText = "输入间隔",
+    Callback = function(value)
+        repairInterval = tonumber(value) or 5
+    end
+})
+
+AbandonedTab:CreateToggle({
+    Name = "自动修机",
+    CurrentValue = false,
+    Callback = function(v)
+        state.autoRepair = v
+        if autoRepairConn then autoRepairConn:Disconnect() autoRepairConn = nil end
+        if v then
+            autoRepairConn = RunService.Heartbeat:Connect(function()
+                pcall(function()
+                    for _, obj in ipairs(Workspace:GetDescendants()) do
+                        if obj.Name:lower():find("generator") and obj:FindFirstChild("ClickDetector") then
+                            fireclickdetector(obj.ClickDetector)
+                        end
+                    end
+                    task.wait(repairInterval)
+                end)
+            end)
+        end
+    end
+})
+
+-- ===== ESP / 透视 =====
 local espConnections = {}
-
 local function clearESP()
-    for _, obj in ipairs(workspace:GetDescendants()) do
+    for _, obj in ipairs(Workspace:GetDescendants()) do
         local hl = obj:FindFirstChild("ESP_HL")
         if hl then hl:Destroy() end
     end
     for _, c in ipairs(espConnections) do c:Disconnect() end
-    table.clear(espConnections)
+    espConnections = {}
 end
 
 local function startESP(keyword, color)
-    clearESP()
-
     local function apply(obj)
         if obj:IsA("Model") and obj.Name:lower():find(keyword) and not obj:FindFirstChild("ESP_HL") then
             local hl = Instance.new("Highlight")
@@ -699,21 +729,18 @@ local function startESP(keyword, color)
             hl.FillTransparency = 0.5
             hl.OutlineTransparency = 0
             hl.Adornee = obj
-            hl.Parent = workspace
+            hl.Parent = Workspace
         end
     end
 
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        apply(obj)
-    end
-
-    table.insert(espConnections, workspace.DescendantAdded:Connect(apply))
+    for _, obj in ipairs(Workspace:GetDescendants()) do apply(obj) end
+    table.insert(espConnections, Workspace.DescendantAdded:Connect(apply))
 end
 
 AbandonedTab:CreateToggle({
     Name = "ESP 杀手",
     Callback = function(v)
-        abandonedState.espKillers = v
+        state.espKillers = v
         if v then startESP("killer", Color3.fromRGB(255,0,0)) else clearESP() end
     end
 })
@@ -721,7 +748,7 @@ AbandonedTab:CreateToggle({
 AbandonedTab:CreateToggle({
     Name = "ESP 幸存者",
     Callback = function(v)
-        abandonedState.espSurvivors = v
+        state.espSurvivors = v
         if v then startESP("survivor", Color3.fromRGB(0,255,0)) else clearESP() end
     end
 })
@@ -729,7 +756,7 @@ AbandonedTab:CreateToggle({
 AbandonedTab:CreateToggle({
     Name = "ESP 物品",
     Callback = function(v)
-        abandonedState.espItems = v
+        state.espItems = v
         if v then startESP("item", Color3.fromRGB(0,0,255)) else clearESP() end
     end
 })
@@ -737,43 +764,8 @@ AbandonedTab:CreateToggle({
 AbandonedTab:CreateToggle({
     Name = "ESP 发电机",
     Callback = function(v)
-        abandonedState.espGenerators = v
+        state.espGenerators = v
         if v then startESP("generator", Color3.fromRGB(255,255,0)) else clearESP() end
-    end
-})
-
--- ===== 自动修机（已修复致命错误）=====
-local autoRepairConn
-
-AbandonedTab:CreateToggle({
-    Name = "自动修机",
-    CurrentValue = false,
-    Callback = function(v)
-        abandonedState.autoRepair = v
-        if autoRepairConn then autoRepairConn:Disconnect() autoRepairConn = nil end
-
-        if not v then return end
-
-        autoRepairConn = RunService.Heartbeat:Connect(function()
-            pcall(function()
-                local char = LocalPlayer.Character
-                if not char then return end
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if not hrp then return end
-
-                local gensFolder = workspace:FindFirstChild("Generators")
-                if not gensFolder then return end
-
-                for _, gen in ipairs(gensFolder:GetChildren()) do
-                    if gen:FindFirstChild("Main") and gen:FindFirstChild("Remotes") then
-                        if (gen.Main.Position - hrp.Position).Magnitude <= 30 then
-                            gen.Remotes.RE:FireServer()
-                            break
-                        end
-                    end
-                end
-            end)
-        end)
     end
 })
 
