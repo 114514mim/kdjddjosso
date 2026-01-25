@@ -643,3 +643,20 @@ AimbotTab:CreateToggle({
 end)
     end
 })
+
+AimbotTab:CreateToggle({
+    Name = "白天",
+    CurrentValue = false,  -- 默认关闭
+    Flag = "TeamCheckToggle",
+    Callback = function(Value)
+        -- 获取 Lighting 服务
+local Lighting = game:GetService("Lighting")
+
+-- 修改环境参数
+Lighting.Brightness = 2
+Lighting.ClockTime = 14
+Lighting.FogEnd = 100000
+Lighting.GlobalShadows = false
+Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+    end
+})
