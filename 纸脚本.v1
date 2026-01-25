@@ -870,8 +870,8 @@ WarTab:CreateButton({
 
                 if ok and type(settings) == "table" then
                     -- 无限子弹
-                    settings.Ammo = 114514
-                    settings.Bullets = 114514
+                    settings.Ammo = 1145
+                    settings.Bullets = 1145
 
                     -- 无限射程
                     settings.Range = 9e9
