@@ -598,91 +598,121 @@ Night99Tab:CreateToggle({
     end
 })
 
--- 被遗弃区域整合版
-local ts = window:Tab("被遗弃区域")
-local tsSection = ts:Section("功能", true)
-local tsSection = Window:CreateTab("99个夜晚区域", 4483362458)
+-- ================================
+-- 被遗弃区域 Tab
+-- ================================
+local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
 
+-- 全局状态
+local state = {
+    infiniteStamina = false,
+    killerESP = false,
+    survivorESP = false,
+    itemESP = false,
+    generatorESP = false,
+    autoFix = false,
+    noSlow = false
+}
+
+-- ================================
 -- 无限耐力 (杀手用)
-local jjump = false
-tsSection:Toggle("无限耐力(杀手用)", "", false, function(state)
-    jjump = state
-    spawn(function()
-        while jjump do
-            -- 仅在被遗弃区域
-            if workspace:FindFirstChild("AbandonedArea") then
-                local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
-                sprintModule.MinStamina = -100000
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "无限耐力(杀手用)",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.infiniteStamina = Value
+        spawn(function()
+            while state.infiniteStamina do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area then
+                    local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+                    sprintModule.MinStamina = -100000
+                end
+                task.wait(5)
             end
-            task.wait(5)
-        end
-    end)
-end)
+        end)
+    end
+})
 
+-- ================================
 -- 透视杀手
-local kill = false
-tsSection:Toggle("透视杀手", "", false, function(state)
-    kill = state
-    spawn(function()
-        while kill do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area then
-                local killFolder = workspace.Players:FindFirstChild("Killers")
-                if killFolder then
-                    for _, child in ipairs(killFolder:GetChildren()) do
-                        if child:IsA("Model") then
-                            setupModelEffects(child)
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "透视杀手",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.killerESP = Value
+        spawn(function()
+            while state.killerESP do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area then
+                    local killersFolder = workspace.Players:FindFirstChild("Killers")
+                    if killersFolder then
+                        for _, model in ipairs(killersFolder:GetChildren()) do
+                            if model:IsA("Model") then
+                                -- 这里假设你已经定义 setupModelEffects 函数
+                                setupModelEffects(model)
+                            end
                         end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end)
+        end)
+    end
+})
 
+-- ================================
 -- 透视幸存者
-local Survivors = false
-tsSection:Toggle("透视幸存者", "", false, function(state)
-    Survivors = state
-    spawn(function()
-        while Survivors do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area then
-                local SurvivorsFolder = workspace.Players:FindFirstChild("Survivors")
-                if SurvivorsFolder then
-                    for _, child in ipairs(SurvivorsFolder:GetChildren()) do
-                        if child:IsA("Model") then
-                            setupSurvivorsModelEffects(child)
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "透视幸存者",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.survivorESP = Value
+        spawn(function()
+            while state.survivorESP do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area then
+                    local survivorsFolder = workspace.Players:FindFirstChild("Survivors")
+                    if survivorsFolder then
+                        for _, model in ipairs(survivorsFolder:GetChildren()) do
+                            if model:IsA("Model") then
+                                -- 这里假设你已经定义 setupSurvivorsModelEffects 函数
+                                setupSurvivorsModelEffects(model)
+                            end
                         end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end)
+        end)
+    end
+})
 
+-- ================================
 -- 透视物品
-local item = false
-tsSection:Toggle("透视物品", "", false, function(state)
-    item = state
-    spawn(function()
-        while item do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area then
-                local ingame = area:FindFirstChild("Ingame")
-                if ingame then
-                    for _, instance in ipairs(ingame:GetDescendants()) do
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "透视物品",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.itemESP = Value
+        spawn(function()
+            while state.itemESP do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") then
+                    for _, instance in ipairs(area.Ingame:GetDescendants()) do
                         if instance:IsA("Tool") then
                             -- Highlight
                             if not instance:FindFirstChildOfClass("Highlight") then
-                                local highlight = Instance.new("Highlight")
-                                highlight.Name = "Highlight"
-                                highlight.FillColor = Color3.fromRGB(255, 255, 0)
-                                highlight.OutlineColor = Color3.fromRGB(255, 165, 0)
-                                highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                                highlight.Parent = instance
+                                local hl = Instance.new("Highlight")
+                                hl.Name = "Highlight"
+                                hl.FillColor = Color3.fromRGB(255, 255, 0)
+                                hl.OutlineColor = Color3.fromRGB(255, 165, 0)
+                                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                                hl.Parent = instance
                             end
                             -- Billboard
                             if not instance:FindFirstChild("NameLabel") then
@@ -704,123 +734,105 @@ tsSection:Toggle("透视物品", "", false, function(state)
                         end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end)
+        end)
+    end
+})
 
+-- ================================
 -- 透视电机
-local djjb = false
-tsSection:Toggle("透视电机", "", false, function(state)
-    djjb = state
-    spawn(function()
-        local area = workspace:FindFirstChild("AbandonedArea")
-        if area and djjb then
-            for _,v in next,area.Ingame.Map:GetChildren() do
-                if v.Name == "Generator" and v:IsA("Model") then
-                    if v.Progress.Value < 99 then
-                        ESPGenerator("电机(未完成) 进度.."..v.Progress.Value,v,Color3.new(1,0,0))
-                    elseif v.Progress.Value == 100 then
-                        ESPGenerator("电机(完成)",v,Color3.new(1,0,0))
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "透视电机",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.generatorESP = Value
+        spawn(function()
+            while state.generatorESP do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
+                    for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
+                        if gen.Name == "Generator" and gen:IsA("Model") then
+                            ESPGenerator("电机 进度 "..gen.Progress.Value, gen, Color3.new(1,0,0))
+                        end
                     end
                 end
+                task.wait(2)
             end
-            area.Ingame.Map.ChildAdded:Connect(function(v)
-                if v.Name == "Generator" and v:IsA("Model") and djjb then
-                    if v.Progress.Value < 99 then
-                        ESPGenerator("电机(未完成) 进度.."..v.Progress.Value,v,Color3.new(1,0,0))
-                    elseif v.Progress.Value == 100 then
-                        ESPGenerator("电机(完成)",v,Color3.new(1,0,0))
-                    end
-                end
-            end)
-        else
-            for _,v in pairs(workspace.GeneratorESPFloder:GetChildren()) do
-                v:Destroy()
-            end
-        end
-    end)
-end)
+        end)
+    end
+})
 
+-- ================================
 -- 自动修机
-local _fixtime = 5
-gm:Textbox("修机间隔", "速度", "请输入间隔", function(value)
-    _fixtime = tonumber(value)
-end)
-
-local xj = false
-gm:Toggle("自动修机(自定义修机间隔)", "", false, function(state)
-    xj = state
-    spawn(function()
-        while xj do
-            task.wait(_fixtime)
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area then
-                local FartNapFolder = area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map")
-                if FartNapFolder then
-                    local closestGenerator, closestDistance = nil, math.huge
-                    local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-                    for _, g in ipairs(FartNapFolder:GetChildren()) do
-                        if g.Name == "Generator" and g.Progress.Value < 100 then
-                            local distance = (g.Main.Position - playerPosition).Magnitude
-                            if distance < closestDistance then
-                                closestDistance = distance
-                                closestGenerator = g
+-- ================================
+local fixInterval = 5
+AbandonedTab:CreateTextbox({
+    Name = "修机间隔(秒)",
+    PlaceholderText = "输入秒数",
+    Callback = function(value)
+        fixInterval = tonumber(value)
+    end
+})
+AbandonedTab:CreateToggle({
+    Name = "自动修机",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.autoFix = Value
+        spawn(function()
+            while state.autoFix do
+                task.wait(fixInterval)
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
+                    local closestGen, minDist = nil, math.huge
+                    local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                    for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
+                        if gen.Name == "Generator" and gen.Progress.Value < 100 then
+                            local dist = (gen.Main.Position - playerPos).Magnitude
+                            if dist < minDist then
+                                minDist = dist
+                                closestGen = gen
                             end
                         end
                     end
-                    if closestGenerator then
-                        closestGenerator.Remotes.RE:FireServer()
+                    if closestGen then
+                        closestGen.Remotes.RE:FireServer()
                     end
                 end
             end
-        end
-    end)
-end)
+        end)
+    end
+})
 
--- 免减速，眩晕
-local jjumppp = false
-gm:Toggle("免减速，眩晕", "", false, function(state)
-    jjumppp = state
-    spawn(function()
-        local TARGET_SPEED = 20
+-- ================================
+-- 免减速 / 眩晕
+-- ================================
+AbandonedTab:CreateToggle({
+    Name = "免减速/眩晕",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.noSlow = Value
         local player = game.Players.LocalPlayer
-        local wsLoopConnection
-        local charAddedConnection
+        local TARGET_SPEED = 20
 
-        while jjumppp do
+        spawn(function()
+            while state.noSlow do
+                local char = player.Character
+                if char then
+                    local humanoid = char:FindFirstChild("Humanoid")
+                    if humanoid then
+                        humanoid.WalkSpeed = TARGET_SPEED
+                    end
+                end
+                task.wait(0.05)
+            end
+            -- 停止时恢复
             local char = player.Character
             if char then
                 local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid.WalkSpeed = TARGET_SPEED
-                    if wsLoopConnection then wsLoopConnection:Disconnect() end
-                    wsLoopConnection = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                        humanoid.WalkSpeed = TARGET_SPEED
-                    end)
-                end
+                if humanoid then humanoid.WalkSpeed = 16 end
             end
-
-            if not charAddedConnection then
-                charAddedConnection = player.CharacterAdded:Connect(function(newChar)
-                    local humanoid = newChar:WaitForChild("Humanoid")
-                    humanoid.WalkSpeed = TARGET_SPEED
-                    if wsLoopConnection then wsLoopConnection:Disconnect() end
-                    wsLoopConnection = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                        humanoid.WalkSpeed = TARGET_SPEED
-                    end)
-                end)
-            end
-
-            task.wait(0.01)
-        end
-
-        -- 停止时重置
-        local char = player.Character
-        if char then
-            local humanoid = char:FindFirstChild("Humanoid")
-            if humanoid then humanoid.WalkSpeed = 16 end
-        end
-    end)
-end)
+        end)
+    end
+})
