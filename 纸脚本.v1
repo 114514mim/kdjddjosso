@@ -598,9 +598,10 @@ Night99Tab:CreateToggle({
     end
 })
 
--- 被遗弃区域完整版
+-- 被遗弃区域 完整版
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
 
+-- 状态表
 local state = {
     infiniteStamina = false,
     espKillers = false,
@@ -614,150 +615,175 @@ local state = {
 -- ===============================
 -- 无限体力 (杀手用)
 -- ===============================
-AbandonedTab:CreateToggle({Name="无限体力", CurrentValue=false, Callback=function(Value)
-    state.infiniteStamina = Value
-    spawn(function()
-        while state.infiniteStamina do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area then
-                local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
-                sprintModule.MinStamina = -100000
+AbandonedTab:CreateToggle({
+    Name = "无限体力",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.infiniteStamina = Value
+        spawn(function()
+            while state.infiniteStamina do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area then
+                    local sprintModule = require(game.ReplicatedStorage.Systems.Character.Game.Sprinting)
+                    sprintModule.MinStamina = -100000
+                end
+                task.wait(5)
             end
-            task.wait(5)
-        end
-    end)
-end})
+        end)
+    end
+})
 
 -- ===============================
 -- 透视杀手
 -- ===============================
-AbandonedTab:CreateToggle({Name="透视杀手", CurrentValue=false, Callback=function(Value)
-    state.espKillers = Value
-    spawn(function()
-        while state.espKillers do
-            local killers = workspace.Players:FindFirstChild("Killers")
-            if killers then
-                for _, model in ipairs(killers:GetChildren()) do
-                    if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
-                        local hl = Instance.new("Highlight")
-                        hl.FillColor = Color3.fromRGB(255,0,0)
-                        hl.OutlineColor = Color3.fromRGB(255,255,0)
-                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                        hl.Parent = model
+AbandonedTab:CreateToggle({
+    Name = "透视杀手",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.espKillers = Value
+        spawn(function()
+            while state.espKillers do
+                local killers = workspace.Players:FindFirstChild("Killers")
+                if killers then
+                    for _, model in ipairs(killers:GetChildren()) do
+                        if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
+                            local hl = Instance.new("Highlight")
+                            hl.FillColor = Color3.fromRGB(255,0,0)
+                            hl.OutlineColor = Color3.fromRGB(255,255,0)
+                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                            hl.Parent = model
+                        end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end})
+        end)
+    end
+})
 
 -- ===============================
 -- 透视幸存者
 -- ===============================
-AbandonedTab:CreateToggle({Name="透视幸存者", CurrentValue=false, Callback=function(Value)
-    state.espSurvivors = Value
-    spawn(function()
-        while state.espSurvivors do
-            local survivors = workspace.Players:FindFirstChild("Survivors")
-            if survivors then
-                for _, model in ipairs(survivors:GetChildren()) do
-                    if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
-                        local hl = Instance.new("Highlight")
-                        hl.FillColor = Color3.fromRGB(0,255,0)
-                        hl.OutlineColor = Color3.fromRGB(255,255,0)
-                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                        hl.Parent = model
+AbandonedTab:CreateToggle({
+    Name = "透视幸存者",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.espSurvivors = Value
+        spawn(function()
+            while state.espSurvivors do
+                local survivors = workspace.Players:FindFirstChild("Survivors")
+                if survivors then
+                    for _, model in ipairs(survivors:GetChildren()) do
+                        if model:IsA("Model") and not model:FindFirstChildOfClass("Highlight") then
+                            local hl = Instance.new("Highlight")
+                            hl.FillColor = Color3.fromRGB(0,255,0)
+                            hl.OutlineColor = Color3.fromRGB(255,255,0)
+                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                            hl.Parent = model
+                        end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end})
+        end)
+    end
+})
 
 -- ===============================
 -- 透视物品
 -- ===============================
-AbandonedTab:CreateToggle({Name="透视物品", CurrentValue=false, Callback=function(Value)
-    state.espItems = Value
-    spawn(function()
-        while state.espItems do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area and area:FindFirstChild("Ingame") then
-                for _, instance in ipairs(area.Ingame:GetDescendants()) do
-                    if (instance:IsA("Tool") or instance:IsA("Part")) and not instance:FindFirstChildOfClass("Highlight") then
-                        local hl = Instance.new("Highlight")
-                        hl.FillColor = Color3.fromRGB(255,255,0)
-                        hl.OutlineColor = Color3.fromRGB(255,165,0)
-                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                        hl.Parent = instance
+AbandonedTab:CreateToggle({
+    Name = "透视物品",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.espItems = Value
+        spawn(function()
+            while state.espItems do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") then
+                    for _, instance in ipairs(area.Ingame:GetDescendants()) do
+                        if (instance:IsA("Tool") or instance:IsA("Part")) and not instance:FindFirstChildOfClass("Highlight") then
+                            local hl = Instance.new("Highlight")
+                            hl.FillColor = Color3.fromRGB(255,255,0)
+                            hl.OutlineColor = Color3.fromRGB(255,165,0)
+                            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                            hl.Parent = instance
+                        end
                     end
                 end
+                task.wait(2)
             end
-            task.wait(2)
-        end
-    end)
-end})
+        end)
+    end
+})
 
 -- ===============================
 -- 透视电机
 -- ===============================
-AbandonedTab:CreateToggle({Name="透视电机", CurrentValue=false, Callback=function(Value)
-    state.espGenerators = Value
-    spawn(function()
-        local function ESPGenerator(model, color)
-            if not workspace:FindFirstChild("GeneratorESPFloder") then
-                local folder = Instance.new("Folder")
-                folder.Name = "GeneratorESPFloder"
-                folder.Parent = workspace
-            end
-            local folder = workspace:FindFirstChild("GeneratorESPFloder")
-            if not folder:FindFirstChild(model.Name) then
-                local hl = Instance.new("Highlight")
-                hl.Name = model.Name
-                hl.FillColor = color
-                hl.OutlineColor = Color3.new(1,1,1)
-                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.Adornee = model
-                hl.Parent = folder
-            end
-        end
-
-        while state.espGenerators do
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
-                for _, v in ipairs(area.Ingame.Map:GetChildren()) do
-                    if v:IsA("Model") and v.Name == "Generator" then
-                        local color = v.Progress.Value == 100 and Color3.new(0,1,0) or Color3.new(1,0,0)
-                        ESPGenerator(v, color)
-                    end
+AbandonedTab:CreateToggle({
+    Name = "透视电机",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.espGenerators = Value
+        spawn(function()
+            local function ESPGenerator(model, color)
+                if not workspace:FindFirstChild("GeneratorESPFolder") then
+                    local folder = Instance.new("Folder")
+                    folder.Name = "GeneratorESPFolder"
+                    folder.Parent = workspace
+                end
+                local folder = workspace:FindFirstChild("GeneratorESPFolder")
+                if not folder:FindFirstChild(model.Name) then
+                    local hl = Instance.new("Highlight")
+                    hl.Name = model.Name
+                    hl.FillColor = color
+                    hl.OutlineColor = Color3.new(1,1,1)
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                    hl.Adornee = model
+                    hl.Parent = folder
                 end
             end
-            task.wait(2)
-        end
-    end)
-end})
+
+            while state.espGenerators do
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
+                    for _, v in ipairs(area.Ingame.Map:GetChildren()) do
+                        if v:IsA("Model") and v.Name=="Generator" then
+                            local color = v.Progress.Value==100 and Color3.new(0,1,0) or Color3.new(1,0,0)
+                            ESPGenerator(v,color)
+                        end
+                    end
+                end
+                task.wait(2)
+            end
+        end)
+    end
+})
 
 -- ===============================
 -- 自动修机
 -- ===============================
 local fixInterval = 5
-AbandonedTab:CreateTextbox({Name="修机间隔(秒)", PlaceholderText="输入秒数", Flag="FixTime", Callback=function(val)
-    fixInterval = tonumber(val) or 5
-end})
-
-AbandonedTab:CreateToggle({Name="自动修机", CurrentValue=false, Callback=function(Value)
-    state.autoFix = Value
-    spawn(function()
-        while state.autoFix do
-            task.wait(fixInterval)
-            local area = workspace:FindFirstChild("AbandonedArea")
-            if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
-                local closestGen, closestDist
-                local player = game.Players.LocalPlayer
-                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    local playerPos = player.Character.HumanoidRootPart.Position
+AbandonedTab:CreateTextbox({
+    Name="修机间隔(秒)",
+    PlaceholderText="输入秒数",
+    Flag="FixTime",
+    Callback=function(val)
+        fixInterval = tonumber(val) or 5
+    end
+})
+AbandonedTab:CreateToggle({
+    Name="自动修机",
+    CurrentValue=false,
+    Callback=function(Value)
+        state.autoFix = Value
+        spawn(function()
+            while state.autoFix do
+                task.wait(fixInterval)
+                local area = workspace:FindFirstChild("AbandonedArea")
+                if area and area:FindFirstChild("Ingame") and area.Ingame:FindFirstChild("Map") then
+                    local closestGen, closestDist
+                    local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
                     for _, gen in ipairs(area.Ingame.Map:GetChildren()) do
                         if gen:IsA("Model") and gen.Name=="Generator" and gen.Progress.Value<100 then
                             local dist = (gen.Main.Position - playerPos).Magnitude
@@ -772,69 +798,74 @@ AbandonedTab:CreateToggle({Name="自动修机", CurrentValue=false, Callback=fun
                     end
                 end
             end
-        end
-    end)
-end})
+        end)
+    end
+})
 
 -- ===============================
--- 免减速 + 免眩晕
+-- 免眩晕 / 免减速
 -- ===============================
-AbandonedTab:CreateToggle({Name="免眩晕/免减速", CurrentValue=false, Callback=function(Value)
-    state.noDebuff = Value
-    spawn(function()
-        local TARGET_SPEED = 20
-        local player = game.Players.LocalPlayer
-        local wsConn, charConn, stunConn
+AbandonedTab:CreateToggle({
+    Name = "免眩晕/免减速",
+    CurrentValue = false,
+    Callback = function(Value)
+        state.noDebuff = Value
+        spawn(function()
+            local TARGET_SPEED = 20
+            local player = game.Players.LocalPlayer
+            local wsConn, charConn, debuffConns = nil, nil, {}
 
-        while state.noDebuff do
-            local char = player.Character
-            if char then
-                local humanoid = char:FindFirstChild("Humanoid")
-                if humanoid then
-                    -- 固定速度
+            local function clearDebuffs(humanoid)
+                -- 固定速度
+                humanoid.WalkSpeed = TARGET_SPEED
+                if wsConn then wsConn:Disconnect() end
+                wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
                     humanoid.WalkSpeed = TARGET_SPEED
-                    if wsConn then wsConn:Disconnect() end
-                    wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                        humanoid.WalkSpeed = TARGET_SPEED
-                    end)
+                end)
 
-                    -- 免眩晕
-                    if humanoid:FindFirstChild("Stun") then
-                        humanoid.Stun.Value = false
-                        if stunConn then stunConn:Disconnect() end
-                        stunConn = humanoid.Stun:GetPropertyChangedSignal("Value"):Connect(function()
-                            humanoid.Stun.Value = false
+                -- 清理常见眩晕状态
+                local debuffNames = {"Stun","Ragdoll","Rooted","Frozen"}
+                for _, name in ipairs(debuffNames) do
+                    local obj = humanoid:FindFirstChild(name)
+                    if obj and not debuffConns[name] then
+                        obj.Value = false
+                        debuffConns[name] = obj:GetPropertyChangedSignal("Value"):Connect(function()
+                            obj.Value = false
                         end)
                     end
                 end
             end
 
-            -- 角色重生时重新绑定
+            -- 角色重生绑定
             if not charConn then
                 charConn = player.CharacterAdded:Connect(function(newChar)
                     local humanoid = newChar:WaitForChild("Humanoid")
-                    humanoid.WalkSpeed = TARGET_SPEED
-                    wsConn = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                        humanoid.WalkSpeed = TARGET_SPEED
-                    end)
-                    if humanoid:FindFirstChild("Stun") then
-                        humanoid.Stun.Value = false
-                        stunConn = humanoid.Stun:GetPropertyChangedSignal("Value"):Connect(function()
-                            humanoid.Stun.Value = false
-                        end)
-                    end
+                    clearDebuffs(humanoid)
                 end)
             end
-            task.wait(0.05)
-        end
 
-        -- 关闭时恢复默认速度
-        local char = player.Character
-        if char then
-            local humanoid = char:FindFirstChild("Humanoid")
-            if humanoid then humanoid.WalkSpeed = 16 end
-        end
-        if wsConn then wsConn:Disconnect() end
-        if stunConn then stunConn:Disconnect() end
-    end)
-end})
+            while state.noDebuff do
+                local char = player.Character
+                if char then
+                    local humanoid = char:FindFirstChild("Humanoid")
+                    if humanoid then
+                        clearDebuffs(humanoid)
+                    end
+                end
+                task.wait(0.05)
+            end
+
+            -- 关闭时恢复默认
+            local char = player.Character
+            if char then
+                local humanoid = char:FindFirstChild("Humanoid")
+                if humanoid then humanoid.WalkSpeed = 16 end
+            end
+
+            -- 清理监听
+            if wsConn then wsConn:Disconnect() end
+            for _, conn in pairs(debuffConns) do conn:Disconnect() end
+            debuffConns = {}
+        end)
+    end
+})
