@@ -783,109 +783,107 @@ AbandonedTab:CreateToggle({
     end
 })
 
+--==============================
 -- 战争大亨区域
+--==============================
 local WarTab = Window:CreateTab("战争大亨区域", 4483362458)
+
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
-local state = {
-    infinitePistol = false
-}
+--==============================
+-- 传送回家（第一次会自杀，之后不会）
+--==============================
+local homeCFrame = nil
+local hasDiedOnce = false
 
--- 手枪无限子弹 + 无限射程
-WarTab:CreateToggle({
-    Name = "手枪无限子弹/射程",
-    CurrentValue = false,
-    Callback = function(Value)
-        state.infinitePistol = Value
-        spawn(function()
-            while state.infinitePistol do
-                task.wait(0.1)
-                local char = LocalPlayer.Character
-                if char then
-                    for _, tool in pairs(char:GetChildren()) do
-                        if tool:IsA("Tool") and tool.Name:lower():find("pistol") then
-                            if tool:FindFirstChild("Ammo") then
-                                tool.Ammo.Value = math.huge
-                            end
-                            if tool:FindFirstChild("Range") then
-                                tool.Range.Value = math.huge
-                            end
-                        end
-                    end
-                end
-            end
-        end)
+local function recordHome(character)
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    if not homeCFrame then
+        homeCFrame = hrp.CFrame
+        Rayfield:Notify({
+            Title = "已记录回家点",
+            Content = "这是你的重生点",
+            Duration = 4
+        })
     end
-})
-
--- 第二次重生点记录
-local secondSpawnCFrame = nil
-local deathCount = 0
-local isWaitingForSecondSpawn = false
-
-local function trackSecondSpawn(character)
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.Died:Connect(function()
-        deathCount = deathCount + 1
-        if deathCount == 1 then
-            isWaitingForSecondSpawn = true
-            local conn
-            conn = LocalPlayer.CharacterAdded:Connect(function(newChar)
-                local newHRP = newChar:WaitForChild("HumanoidRootPart")
-                secondSpawnCFrame = newHRP.CFrame
-                isWaitingForSecondSpawn = false
-                Rayfield:Notify({Title = "重生点记录", Content = "已记录第二次重生点！", Duration = 5})
-                conn:Disconnect()
-            end)
-        end
-    end)
 end
 
-LocalPlayer.CharacterAdded:Connect(trackSecondSpawn)
+LocalPlayer.CharacterAdded:Connect(recordHome)
 if LocalPlayer.Character then
-    trackSecondSpawn(LocalPlayer.Character)
+    recordHome(LocalPlayer.Character)
 end
 
--- 传送回家(会自杀)
 WarTab:CreateButton({
     Name = "传送回家(会自杀)",
     Callback = function()
         local char = LocalPlayer.Character
-        if secondSpawnCFrame and char then
-            -- 先自杀，再传送到第二次重生点
-            char:FindFirstChildOfClass("Humanoid").Health = 0
-            local conn
-            conn = LocalPlayer.CharacterAdded:Connect(function(newChar)
-                local newHRP = newChar:WaitForChild("HumanoidRootPart")
-                newHRP.CFrame = secondSpawnCFrame + Vector3.new(0,5,0)
-                Rayfield:Notify({Title = "传送成功", Content = "已传送回家！", Duration = 5})
-                conn:Disconnect()
-            end)
+        if not char or not char:FindFirstChild("Humanoid") then return end
+
+        if not hasDiedOnce then
+            hasDiedOnce = true
+            char.Humanoid.Health = 0 -- 第一次自杀
+            Rayfield:Notify({
+                Title = "回家中",
+                Content = "第一次需要自杀记录回家点",
+                Duration = 4
+            })
+        else
+            if homeCFrame and char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = homeCFrame + Vector3.new(0,5,0)
+            end
         end
     end
 })
 
--- 传送回家（不会自杀）
-WarTab:CreateButton({
-    Name = "传送回家",
-    Callback = function()
-        local char = LocalPlayer.Character
-        if secondSpawnCFrame and char then
-            char.HumanoidRootPart.CFrame = secondSpawnCFrame + Vector3.new(0,5,0)
-            Rayfield:Notify({Title = "传送成功", Content = "已传送回家！", Duration = 5})
-        end
-    end
-})
-
--- 传送到指定站点
+--==============================
+-- 传送到站点（不会自杀）
+--==============================
 WarTab:CreateButton({
     Name = "传送到站点",
     Callback = function()
         local char = LocalPlayer.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
-            char.HumanoidRootPart.CFrame = CFrame.new(-509.92, 177.04, -1022.77)
-            Rayfield:Notify({Title = "传送成功", Content = "已传送到指定站点！", Duration = 5})
+            char.HumanoidRootPart.CFrame =
+                CFrame.new(-509.92, 177.04, -1022.77)
         end
+    end
+})
+
+--==============================
+-- 全枪无限子弹 + 无限射程
+--（ACS 枪械系统）
+--==============================
+WarTab:CreateButton({
+    Name = "全枪无限子弹 + 无限射程",
+    Callback = function()
+        local GunsFolder =
+            ReplicatedStorage:WaitForChild("Configurations")
+            :WaitForChild("ACS_Guns")
+
+        for _, gun in pairs(GunsFolder:GetChildren()) do
+            if gun:FindFirstChild("Settings") then
+                local ok, settings = pcall(function()
+                    return require(gun.Settings)
+                end)
+
+                if ok and type(settings) == "table" then
+                    -- 无限子弹
+                    settings.Ammo = 114514
+                    settings.Bullets = 114514
+
+                    -- 无限射程
+                    settings.Range = 9e9
+                    settings.MaxDistance = 9e9
+                end
+            end
+        end
+
+        Rayfield:Notify({
+            Title = "武器已强化",
+            Content = "所有枪械：无限子弹 + 无限射程",
+            Duration = 4
+        })
     end
 })
