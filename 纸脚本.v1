@@ -531,3 +531,37 @@ if inventory then
     end
 end
    
+local collectingLogs = false
+
+Night99Tab:CreateButton({
+    Name = "收集生兔肉",
+    Callback = function()
+-- 获取服务
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local inventory = player:FindFirstChild("Inventory")
+local RequestBagStoreItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagStoreItem")
+local RequestBagDropItem = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("RequestBagDropItem")
+local ItemsFolder = workspace:WaitForChild("Items")
+
+if inventory then
+    -- 先把背包里的 Morsel 放到物品里
+    for _, item in pairs(inventory:GetChildren()) do
+        for _, itemm in ipairs(ItemsFolder:GetChildren()) do
+            if itemm.Name == "Morsel" then
+                RequestBagStoreItem:InvokeServer(item, itemm)
+            end
+        end
+    end
+
+    task.wait(0.1)
+
+    -- 再把 Morsel 掉落到场景
+    for _, item in pairs(inventory:GetChildren()) do
+        local morselItem = ItemsFolder:FindFirstChild("Morsel")
+        if morselItem then
+            RequestBagDropItem:FireServer(item, morselItem, true)
+        end
+    end
+end
