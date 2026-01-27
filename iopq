@@ -1,0 +1,2122 @@
+-- filename: 
+-- version: lua51
+-- line: [0, 0] id: 1
+local r0_1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/Lightsmoke666/LS_HubPro/refs/heads/main/windui.txt"))
+r0_1 = r0_1()
+function gradient(r0_67, r1_67, r2_67)
+  -- line: [0, 0] id: 67
+  for r8_67 = 1, #r0_67, 1 do
+    local r10_67 = math.max(#r0_67 - 1, 1)
+    r10_67 = math.floor(r1_67.R + r2_67.R - r1_67.R * r8_67 - 1 / r10_67 * 255)
+    local r11_67 = math.floor(r1_67.G + r2_67.G - r1_67.G * r8_67 - 1 / r10_67 * 255)
+    local r12_67 = math.floor(r1_67.B + r2_67.B - r1_67.B * r8_67 - 1 / r10_67 * 255)
+    local r13_67 = r0_67:sub(r8_67, r8_67)
+  end
+  return "" .. "<font color=\"rgb(" .. r10_67 .. ", " .. r11_67 .. ", " .. r12_67 .. ")\">" .. r13_67 .. "</font>"
+end
+local r3_1 = ColorSequenceKeypoint.new(0)
+local r4_1 = ColorSequenceKeypoint.new(0.2)
+local r5_1 = ColorSequenceKeypoint.new(0.4)
+local r6_1 = ColorSequenceKeypoint.new(0.6)
+local r7_1 = ColorSequenceKeypoint.new(0.65)
+local r8_1 = ColorSequenceKeypoint.new(0.8)
+local r9_1 = ColorSequenceKeypoint.new(0.9)
+local r1_1 = ColorSequence.new({})
+r5_1 = r0_1:CreateWindow(200)
+r5_1 = Color3.fromRGB(0, 0, 0)
+local r2_1 = r0_1:CreateWindow(r0_1, {
+  Title = "LS_Hub",
+  Icon = "crown",
+  IconThemed = true,
+  Author = "By杞荤儫",
+  Folder = "CloudHub",
+  Size = r5_1,
+  Transparent = false,
+  Theme = "Light",
+  User = r5_1,
+  SideBarWidth = 200,
+  ScrollBarEnabled = true,
+  BackgroundColor3 = r5_1,
+})
+r2_1:SetBackgroundImage({Enabled = true})
+r2_1:SetBackgroundImageTransparency(0.9)
+r6_1 = r2_1:EditOpenButton(6)
+r8_1 = ColorSequenceKeypoint.new(0)
+r9_1 = ColorSequenceKeypoint.new(0.14)
+local r10_1 = ColorSequenceKeypoint.new(0.28)
+local r11_1 = ColorSequenceKeypoint.new(0.42)
+local r12_1 = ColorSequenceKeypoint.new(0.56)
+local r13_1 = ColorSequenceKeypoint.new(0.7)
+local r14_1 = ColorSequenceKeypoint.new(0.84)
+r6_1 = ColorSequence.new({})
+r2_1:EditOpenButton(r2_1, {
+  Title = "杞荤儫Hub",
+  Icon = "crown",
+  CornerRadius = r6_1,
+  StrokeThickness = 2,
+  Theme = "Light",
+  Color = r6_1,
+  Draggable = true,
+})
+r4_1 = r2_1:Tab({Title = "涓婚〉", Icon = "star"})
+r4_1 = r2_1:Tab({Title = "鐜╁", Icon = "user"})
+r4_1 = r2_1:Tab({Title = "鑷姩", Icon = "star"})
+r4_1 = r2_1:Tab({Title = "鏀堕泦", Icon = "star"})
+r4_1 = r2_1:Tab({Title = "鏀诲嚮", Icon = "star"})
+r2_1:SelectTab(1)
+r3_1.Main:Paragraph({
+  Title = "娆㈣繋浣跨敤杞荤儫ohio",
+  Desc = "QQ缇�:1057220534",
+  Image = "https://c-ssl.duitang.com/uploads/blog/202310/21/oVS4gnBVIg4A1yJ.jpg",
+  ImageSize = 50,
+  Thumbnail = "https://c-ssl.duitang.com/uploads/blog/202103/27/20210327131203_74b6b.jpg",
+  ThumbnailSize = 130,
+})
+local r7_1 = function()
+  -- line: [0, 0] id: 85
+  print("鑴氭湰閲嶆柊鍔犺浇涓�...")
+  return
+end
+r3_1.Main:Button({Title = "閲嶆柊鍔犺浇鑴氭湰", Callback = r7_1})
+local r4_1 = function()
+  -- line: [0, 0] id: 9
+  local r1_9 = function()
+    -- line: [0, 0] id: 10
+    local r0_10 = game:GetService("ReplicatedStorage")
+    local r1_10 = game:GetService("RunService")
+    local r2_10 = game:GetService("Players")
+    local r4_10 = game:GetService("UserInputService")
+    local r5_10 = r0_10:FindFirstChild("devv")
+    if r5_10 then
+      error("devv妯″潡鏈壘鍒�")
+    end
+    r5_10 = require(r0_10.devv)
+    local r6_10 = r5_10.load("Signal")
+    local r7_10 = r5_10.load("v3item")
+    return r8_10
+  end
+  local r0_9, r1_9 = pcall(r1_9)
+  if r0_9 then
+    warn("鑾峰彇鏈嶅姟鎴栧彉閲忓け璐�:", r1_9)
+    return nil
+  end
+  return r1_9
+end
+r5_1 = r4_1()
+if r5_1 then
+  warn("鍒濆鍖栧け璐�: 鏃犳硶鑾峰彇蹇呰鐨勬湇鍔�")
+  return
+end
+local r40_1 = game:GetService("Workspace")
+local r41_1 = game:GetService("Workspace")
+local r45_1 = function()
+  -- line: [0, 0] id: 62
+  upval_0 = upval_1.Character
+  if not upval_0 then
+    local r0_62 = upval_0:WaitForChild("Humanoid")
+    upval_2 = r0_62
+    r0_62 = upval_0:WaitForChild("HumanoidRootPart")
+    upval_3 = r0_62
+    local r2_62 = function()
+      -- line: [0, 0] id: 63
+    end
+    task.wait()
+    if upval_0.Character ~= nil then
+      upval_1()
+      return
+    end
+    upval_2.Died:Connect(r2_62)
+  end
+  return
+end
+local r48_1 = function(r0_44)
+  -- line: [0, 0] id: 44
+  upval_0 = r0_44
+  upval_1()
+  return
+end
+r5_1.LocalPlayer.CharacterAdded:Connect(r48_1)
+r45_1()
+local r49_1 = function(r0_79)
+  -- line: [0, 0] id: 79
+  upval_0 = r0_79
+  if not upval_0 then
+  end
+end
+if not upval_0 then
+  local r1_79 = wait()
+  if not r1_79 then
+    r1_79 = game:GetService("Players")
+    local r3_79 = game:GetService("Players")
+    if not r3_79.LocalPlayer.Character then
+      local r5_79 = r3_79.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+      if not r5_79 then
+        if not upval_1.Door.Attachment.ProximityPrompt.Enabled then
+          upval_1.Door.Attachment.ProximityPrompt.HoldDuration = 0
+          upval_1.Door.Attachment.ProximityPrompt.MaxActivationDistance = 20
+          local r6_79 = CFrame.new(1071.9558105469, 9, -343.80816650391)
+          r1_79.LocalPlayer.Character.HumanoidRootPart.CFrame = r6_79
+          wait(0.3)
+          upval_1.Door.Attachment.ProximityPrompt:InputHoldBegin()
+          wait(0.3)
+          upval_1.Door.Attachment.ProximityPrompt:InputHoldEnd()
+        end
+        local r6_79, r7_79, r8_79 = ipairs(workspace.Game.Entities:GetDescendants())
+        local r11_79 = r10_79:IsA("ProximityPrompt")
+        if not r11_79 then
+          if r10_79.ActionText ~= "Crack Chest" then
+            if r10_79.ActionText == "Crack Safe" then
+            end
+            if not r10_79.Enabled then
+              if not upval_0 then
+                r10_79.RequiresLineOfSight = false
+                r10_79.HoldDuration = 0
+                if not r10_79.Parent then
+                end
+                if not r10_79.Parent.Parent then
+                  local r12_79 = r10_79.Parent.Parent:IsA("BasePart")
+                  if not r12_79 then
+                    local r13_79 = CFrame.new(0, 2, 2)
+                    r13_79 = game:GetService("Players")
+                    r13_79.LocalPlayer.Character.HumanoidRootPart.CFrame = r10_79.Parent.Parent.CFrame * r13_79
+                    wait(0.5)
+                    fireproximityprompt(r10_79)
+                  end
+                end
+              end
+            end
+          end
+        end
+        for r9_79, r10_79 in r6_79 do
+        end
+      end
+    end
+    return
+end
+r3_1.Auto:Toggle({
+  Title = "鑷姩寮€淇濋櫓&瀹濈",
+  Desc = "",
+  Value = false,
+  Callback = r49_1,
+})
+local r49_1 = function(r0_8)
+  -- line: [0, 0] id: 8
+  upval_0 = r0_8
+  if not upval_0 then
+  end
+end
+if not upval_0 then
+  local r1_8 = wait()
+  if not r1_8 then
+    r1_8 = game:GetService("Players")
+    if not r1_8.LocalPlayer.Character then
+      local r3_8 = r1_8.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+      if not r3_8 then
+        upval_1.InvokeServer("attemptPurchase", "Lockpick")
+      end
+    end
+  end
+  return
+end
+r3_1.Auto:Toggle({
+  Title = "鑷姩璐拱鎾攣",
+  Desc = "",
+  Value = false,
+  Callback = r49_1,
+})
+local r49_1 = function(r0_25)
+  -- line: [0, 0] id: 25
+  upval_0 = r0_25
+  if not upval_0 then
+    if not upval_0 then
+      local r1_25 = wait()
+      if not r1_25 then
+        r1_25 = game:GetService("Players")
+        if r1_25.LocalPlayer.Character then
+          local r2_25 = r1_25.LocalPlayer.CharacterAdded:Wait()
+        end
+        local r3_25 = r2_25:FindFirstChild("HumanoidRootPart")
+        local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.GoldJewelSafe:GetDescendants())
+        local r9_25 = r8_25:IsA("ProximityPrompt")
+        if not r9_25 then
+          if not r3_25 then
+            if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+              r8_25.RequiresLineOfSight = false
+              r8_25.HoldDuration = 0
+              fireproximityprompt(r8_25)
+            end
+          end
+        end
+        for r7_25, r8_25 in r4_25 do
+          local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.SmallSafe:GetDescendants())
+          r9_25 = r8_25:IsA("ProximityPrompt")
+          if not r9_25 then
+            if not r3_25 then
+              if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                r8_25.RequiresLineOfSight = false
+                r8_25.HoldDuration = 0
+                fireproximityprompt(r8_25)
+              end
+            end
+          end
+          for r7_25, r8_25 in r4_25 do
+            local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.SmallChest:GetDescendants())
+            r9_25 = r8_25:IsA("ProximityPrompt")
+            if not r9_25 then
+              if not r3_25 then
+                if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                  r8_25.RequiresLineOfSight = false
+                  r8_25.HoldDuration = 0
+                  fireproximityprompt(r8_25)
+                end
+              end
+            end
+            for r7_25, r8_25 in r4_25 do
+              local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.LargeSafe:GetDescendants())
+              r9_25 = r8_25:IsA("ProximityPrompt")
+              if not r9_25 then
+                if not r3_25 then
+                  if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                    r8_25.RequiresLineOfSight = false
+                    r8_25.HoldDuration = 0
+                    fireproximityprompt(r8_25)
+                  end
+                end
+              end
+              for r7_25, r8_25 in r4_25 do
+                local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.MediumSafe:GetDescendants())
+                r9_25 = r8_25:IsA("ProximityPrompt")
+                if not r9_25 then
+                  if not r3_25 then
+                    if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                      r8_25.RequiresLineOfSight = false
+                      r8_25.HoldDuration = 0
+                      fireproximityprompt(r8_25)
+                    end
+                  end
+                end
+                for r7_25, r8_25 in r4_25 do
+                  local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.LargeChest:GetDescendants())
+                  r9_25 = r8_25:IsA("ProximityPrompt")
+                  if not r9_25 then
+                    if not r3_25 then
+                      if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                        r8_25.RequiresLineOfSight = false
+                        r8_25.HoldDuration = 0
+                        fireproximityprompt(r8_25)
+                      end
+                    end
+                  end
+                  for r7_25, r8_25 in r4_25 do
+                    local r4_25, r5_25, r6_25 = ipairs(workspace.Game.Entities.JewelSafe:GetDescendants())
+                    r9_25 = r8_25:IsA("ProximityPrompt")
+                    if not r9_25 then
+                      if not r3_25 then
+                        if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                          r8_25.RequiresLineOfSight = false
+                          r8_25.HoldDuration = 0
+                          fireproximityprompt(r8_25)
+                        end
+                      end
+                    end
+                    for r7_25, r8_25 in r4_25 do
+                      local r4_25, r5_25, r6_25 = ipairs(workspace.BankRobbery.VaultDoor:GetDescendants())
+                      r9_25 = r8_25:IsA("ProximityPrompt")
+                      if not r9_25 then
+                        if not r3_25 then
+                          if 35 < r8_25.Parent.Position - r3_25.Position.Magnitude then
+                            r8_25.RequiresLineOfSight = false
+                            r8_25.HoldDuration = 0
+                            fireproximityprompt(r8_25)
+                          end
+                        end
+                      end
+                      for r7_25, r8_25 in r4_25 do
+                      end
+                    end
+                  end
+                  return
+end
+r3_1.Auto:Toggle({
+  Title = "淇濋櫓&绠卞瓙&閾惰鍏夌幆",
+  Desc = "",
+  Value = false,
+  Callback = r49_1,
+})
+if not r5_1.item then
+  if not r5_1.item.inventory then
+    if not r5_1.item.inventory.items then
+      if r51_1.name == "Fists" then
+      end
+      for r50_1, r51_1 in next do
+      end
+    end
+  end
+  if r51_1.guid then
+    warn("鏈壘鍒版嫵澶寸墿鍝�")
+  end
+  local r47_1 = function()
+    -- line: [0, 0] id: 14
+    if upval_0.Character then
+      return
+    end
+    local r1_14 = upval_0.Character:FindFirstChild("HumanoidRootPart")
+    local r2_14 = upval_0.Character:FindFirstChild("Humanoid")
+    if not r1_14 then
+      if r2_14 then
+      end
+      return
+    end
+    r2_14.WalkSpeed = 0
+    r2_14.JumpPower = 0
+    r2_14.AutoRotate = false
+    local r7_14 = function()
+      -- line: [0, 0] id: 17
+      local r0_17 = workspace:FindFirstChild("Game")
+      if not r0_17 then
+        local r1_17 = r0_17:FindFirstChild("Entities")
+        if not r1_17 then
+          r1_17 = r1_17:FindFirstChild("CashBundle")
+          if not r1_17 then
+            local r1_17, r2_17, r3_17 = pairs(r1_17:GetDescendants())
+            local r6_17 = r5_17:IsA("ClickDetector")
+            if not r6_17 then
+              r6_17 = r5_17.Parent:GetPivot()
+              if upval_0.Position - r6_17.Position.Magnitude <= 35 then
+                fireclickdetector(r5_17)
+              end
+            end
+            for r4_17, r5_17 in r1_17 do
+            end
+          end
+        end
+        return
+    end
+    pcall(r7_14)
+    local r7_14 = function()
+      -- line: [0, 0] id: 16
+      local r0_16 = workspace:FindFirstChild("Game")
+      if not r0_16 then
+        local r1_16 = r0_16:FindFirstChild("Props")
+        if not r1_16 then
+          r1_16 = r1_16:FindFirstChild("ATM")
+          if not r1_16 then
+            local r1_16, r2_16, r3_16 = ipairs(r1_16:GetChildren())
+            local r6_16 = r5_16:IsA("Model")
+            if not r6_16 then
+              r6_16 = r5_16:GetAttribute("health")
+              if r6_16 then
+              end
+              if 0 < 0 then
+                local r7_16 = r5_16:GetAttribute("guid")
+                local r8_16 = r5_16:GetPivot()
+                local r10_16 = CFrame.new(r8_16.Position.x, r8_16.Position.y - 5, r8_16.Position.z)
+                upval_0.CFrame = r10_16
+                upval_0.Anchored = true
+                if upval_0.Position - r8_16.Position.Magnitude <= 40 then
+                  if not upval_1 then
+                    upval_2.FireServer("equip", upval_1)
+                    upval_2.FireServer("meleeItemHit", "prop", r10_16)
+                  end
+                end
+              end
+            end
+            for r4_16, r5_16 in r1_16 do
+            end
+          end
+        end
+        return
+    end
+    pcall(r7_14)
+    local r7_14 = function()
+      -- line: [0, 0] id: 15
+      upval_0.WalkSpeed = upval_1
+      upval_0.JumpPower = upval_2
+      upval_0.AutoRotate = upval_3
+      return
+    end
+    pcall(r7_14)
+    return
+  end
+  local r48_1 = function()
+    -- line: [0, 0] id: 31
+    if not lastATM then
+      if lastATM.position then
+      end
+      return false
+    end
+    local r0_31, r1_31 = getCharacterSafely()
+    if not r0_31 then
+      if r1_31 then
+      end
+      return false
+    end
+    local r2_31 = Vector3.new(2, 2, 0)
+    local r5_31 = function()
+      -- line: [0, 0] id: 32
+      local r1_32 = CFrame.new(upval_1, lastATM.position)
+      upval_0.CFrame = r1_32
+      return
+    end
+    pcall(r5_31)
+    return true
+  end
+  local r53_1 = function(r0_49)
+    -- line: [0, 0] id: 49
+    if not r0_49 then
+      local r2_49 = game:GetService("Players")
+      if not r2_49.LocalPlayer.Character then
+        local r5_49 = r2_49.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not r5_49 then
+          print("锟斤拷锟斤拷锟斤拷 ATM鍔熻兘锛氬垵濮嬩綅缃凡淇濆瓨")
+        end
+      end
+      local r5_49 = function()
+        -- line: [0, 0] id: 51
+        if not upval_0 then
+          if not upval_1.Character then
+            local r0_51 = upval_1.Character:FindFirstChild("HumanoidRootPart")
+            if not r0_51 then
+              r0_51.CFrame = upval_0
+              print("锟斤拷锟斤拷锟斤拷 ATM鍔熻兘锛氬凡浼犻€佸洖鍒濆浣嶇疆")
+              return true
+            end
+          end
+        end
+        return false
+      end
+      local r6_49 = function()
+        -- line: [0, 0] id: 52
+        local r3_52 = function()
+          -- line: [0, 0] id: 53
+          local r0_53 = workspace:FindFirstChild("Game")
+          if not r0_53 then
+            local r1_53 = r0_53:FindFirstChild("Props")
+            if not r1_53 then
+              r1_53 = r1_53:FindFirstChild("ATM")
+              if not r1_53 then
+                local r1_53, r2_53, r3_53 = ipairs(r1_53:GetChildren())
+                local r6_53 = r5_53:IsA("Model")
+                if not r6_53 then
+                  r6_53 = r5_53:GetAttribute("health")
+                  if r6_53 then
+                  end
+                  if 0 < 0 then
+                    upval_0 = true
+                    upval_1 = upval_1 + 1
+                  end
+                end
+                for r4_53, r5_53 in r1_53 do
+                end
+              end
+            end
+            return
+        end
+        pcall(r3_52)
+        return false, 0
+      end
+      local r8_49 = function()
+        -- line: [0, 0] id: 50
+        if not upval_0 then
+          local r2_50, r3_50 = upval_1()
+          if not r2_50 then
+            upval_2()
+            if true then
+              print("锟斤拷锟斤拷锟斤拷 鍙戠幇 " .. r3_50 .. " 涓狝TM锛屽紑濮嬫敾鍑�...")
+            end
+            if not true then
+              print("鉂� 鏈壘鍒板彲鏀诲嚮鐨凙TM")
+            end
+            if 3 <= 0 + 1 then
+              print("锟斤拷锟斤拷锟斤拷 闀挎椂闂存湭鎵惧埌ATM锛屼紶閫佸洖瀹夊叏浣嶇疆...")
+              upval_3()
+              task.wait(3)
+            end
+            task.wait(1)
+          end
+          task.wait(0.5)
+        end
+        return
+      end
+      local r7_49 = task.spawn(r8_49)
+      upval_0 = r7_49
+    end
+    atmActive = false
+    if not upval_0 then
+      task.cancel(upval_0)
+      upval_0 = nil
+      local r1_49 = game:GetService("Players")
+      if not r1_49.LocalPlayer.Character then
+        local r3_49 = r1_49.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not r3_49 then
+          print("鉂� ATM鍔熻兘宸插叧闂紝瑙掕壊淇濇寔鍦ㄥ綋鍓嶄綅缃�")
+        end
+      end
+    end
+    return
+  end
+  r3_1.Auto:Toggle({
+    Title = "鑷姩鎵揂TM",
+    Desc = "甯︽櫤鑳藉洖浼犲姛鑳�",
+    Value = false,
+    Callback = r53_1,
+  })
+  local r51_1 = function()
+    -- line: [0, 0] id: 13
+    if upval_0.Character then
+      return nil, nil
+    end
+    local r1_13 = upval_0.Character:FindFirstChild("HumanoidRootPart")
+    local r2_13 = upval_0.Character:FindFirstChild("Humanoid")
+    return upval_0.Character, r1_13, r2_13
+  end
+  local r55_1 = function(r0_100)
+    -- line: [0, 0] id: 100
+    upval_0 = r0_100
+    if not r0_100 then
+      local r2_100 = function()
+        -- line: [0, 0] id: 101
+        if not upval_0 then
+          local r0_101, r1_101, r2_101 = upval_1()
+          if not r0_101 then
+            if not r1_101 then
+              if not r2_101 then
+                local r3_101 = workspace:FindFirstChild("BankRobbery")
+                if not r3_101 then
+                  local r4_101 = r3_101:FindFirstChild("VaultDoor")
+                  r4_101 = workspace:FindFirstChild("BankRobbery")
+                  if not r4_101 then
+                    local r5_101 = r4_101:FindFirstChild("BankCash")
+                    if not r4_101 then
+                      if not r4_101.Door.Attachment.ProximityPrompt.Enabled then
+                        r4_101.Door.Attachment.ProximityPrompt.HoldDuration = 0
+                        r4_101.Door.Attachment.ProximityPrompt.MaxActivationDistance = 20
+                        r5_101 = CFrame.new(1071.9558105469, 9, -343.80816650391)
+                        r1_101.CFrame = r5_101
+                        task.wait(0.3)
+                        r4_101.Door.Attachment.ProximityPrompt:InputHoldBegin()
+                        task.wait(0.3)
+                        r4_101.Door.Attachment.ProximityPrompt:InputHoldEnd()
+                      end
+                    end
+                    if not r5_101 then
+                      r5_101 = r5_101.Cash:FindFirstChild("Bundle")
+                      if not r5_101 then
+                        r5_101 = CFrame.new(1055.94153, 3, -344.58374)
+                        r1_101.CFrame = r5_101
+                        if not r5_101.Main.Attachment then
+                          r5_101.Main.Attachment.ProximityPrompt.MaxActivationDistance = 20
+                          local r5_101, r6_101, r7_101 = ipairs(r5_101:GetDescendants())
+                          local r10_101 = r9_101:IsA("ProximityPrompt")
+                          if not r10_101 then
+                            r9_101.RequiresLineOfSight = false
+                            r9_101.HoldDuration = 0
+                            fireproximityprompt(r9_101)
+                          end
+                          for r8_101, r9_101 in r5_101 do
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            task.wait(0.5)
+          end
+          return
+      end
+      task.spawn(r2_100)
+    end
+    return
+  end
+  r3_1.Auto:Toggle({Title = "鑷姩鎶㈤摱琛�", Value = false, Callback = r55_1})
+  if not r5_1.item then
+    if not r5_1.item.inventory then
+      if not r5_1.item.inventory.items then
+        if r61_1.name == "Fists" then
+        end
+        for r60_1, r61_1 in next do
+        end
+      end
+    end
+    if r61_1.guid then
+      warn("鏈壘鍒版嫵澶寸墿鍝�")
+    end
+    local r60_1 = function(r0_7)
+      -- line: [0, 0] id: 7
+      if r0_7 == "閲嶆嫵" then
+        upval_0 = "meleemegapunch"
+      end
+      if r0_7 == "杞绘嫵" then
+        upval_0 = "meleepunch"
+      end
+      print("鉁� 閫夋嫨鎴愬姛:")
+      print("   閫夋嫨鐨勬敾鍑绘柟寮�:", r0_7)
+      print("   璁剧疆鐨刪itMOD:", upval_0)
+      return
+    end
+    r3_1.Fight:Dropdown({
+      Title = "鏀诲嚮鏂瑰紡",
+      Desc = "鐐逛竴涓嬫墠浼氱敓鏁�",
+      Values = r60_1,
+      Value = "閲嶆嫵",
+      Callback = r60_1,
+    })
+    local r60_1 = function(r0_74)
+      -- line: [0, 0] id: 74
+      upval_0 = r0_74
+      return
+    end
+    r3_1.Fight:Toggle({Title = "鏉€鎴厜鐜�", Value = false, Callback = r60_1})
+    local r60_1 = function(r0_60)
+      -- line: [0, 0] id: 60
+      upval_0 = r0_60
+      return
+    end
+    r3_1.Fight:Toggle({Title = "韪╄笍鍏夌幆", Value = false, Callback = r60_1})
+    local r60_1 = function(r0_84)
+      -- line: [0, 0] id: 84
+      upval_0 = r0_84
+      return
+    end
+    r3_1.Fight:Toggle({Title = "鎶撳彇鍏夌幆", Value = false, Callback = r60_1})
+    local r60_1 = function(r0_64)
+      -- line: [0, 0] id: 64
+      if r0_64 == "杞诲瀷鎶ょ敳100" then
+        upval_0 = "Light Vest"
+      end
+      if r0_64 == "閲嶅瀷鎶ょ敳2000" then
+        upval_0 = "Heavy Vest"
+      end
+      if r0_64 == "鍐涚敤鎶ょ敳3500" then
+        upval_0 = "Military Vest"
+      end
+      if r0_64 == "EOD鎶ょ敳7500" then
+        upval_0 = "EOD Vest"
+      end
+      print("鉁� 閫夋嫨鎴愬姛:")
+      print("   閫夋嫨鐨勬姢鐢茬被鍨�:", r0_64)
+      print("   璁剧疆鐨刯iahit:", upval_0)
+      return
+    end
+    r3_1.Fight:Dropdown({
+      Title = "閫夋嫨鎶ょ敳",
+      Desc = "鐐逛竴涓嬫墠浼氱敓鏁�",
+      Values = r60_1,
+      Value = "杞诲瀷鎶ょ敳100",
+      Callback = r60_1,
+    })
+    local r60_1 = function(r0_58)
+      -- line: [0, 0] id: 58
+      upval_0 = r0_58
+      if not upval_0 then
+        if not upval_0 then
+          local r1_58 = wait()
+          if not r1_58 then
+            upval_1.InvokeServer("attemptPurchase", upval_2)
+            if r5_58.name == upval_2 then
+              local r7_58 = upval_4:GetAttribute("armor")
+              if r7_58 ~= nil then
+                if r7_58 <= 0 then
+                end
+                upval_1.FireServer("equip", r5_58.guid)
+                upval_1.FireServer("useConsumable", r5_58.guid)
+                upval_1.FireServer("removeItem", r5_58.guid)
+              end
+            end
+            for r4_58, r5_58 in next do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Fight:Toggle({
+      Title = "鑷姩绌跨敳",
+      Desc = "鑷姩绌挎埓閫夋嫨鐨勬姢鐢�",
+      Value = false,
+      Callback = r60_1,
+    })
+    local r60_1 = function(r0_46)
+      -- line: [0, 0] id: 46
+      upval_0 = r0_46
+      if not upval_0 then
+        if not upval_0 then
+          local r1_46 = wait()
+          if not r1_46 then
+            upval_1.InvokeServer("attemptPurchase", "Bandage")
+            if r5_46.name == "Bandage" then
+              if upval_3.Character then
+                local r7_46 = upval_3.CharacterAdded:Wait()
+              end
+              local r8_46 = r7_46:WaitForChild("Humanoid")
+              if r8_46.Health < r8_46.MaxHealth then
+                upval_1.FireServer("equip", r5_46.guid)
+                upval_1.FireServer("useConsumable", r5_46.guid)
+                upval_1.FireServer("removeItem", r5_46.guid)
+              end
+            end
+            for r4_46, r5_46 in next do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Fight:Toggle({
+      Title = "鑷姩鍥炶",
+      Desc = "浣跨敤缁峰甫鑷姩鍥炶",
+      Value = false,
+      Callback = r60_1,
+    })
+    local r60_1 = function()
+      -- line: [0, 0] id: 2
+      local r0_2 = upval_0:GetAttribute("armor")
+      if r0_2 then
+      end
+      if not upval_0.Character then
+        local r4_2 = upval_0.Character:FindFirstChild("Humanoid")
+        if not r4_2 then
+        end
+      end
+      local r5_2 = Color3.fromRGB(0, 255, 0)
+      if 0 <= 0 then
+        local r6_2 = Color3.fromRGB(255, 0, 0)
+      end
+      if 0 < 1000 then
+        r6_2 = Color3.fromRGB(255, 165, 0)
+      end
+      if upval_0.Character.Humanoid.Health / upval_0.Character.Humanoid.MaxHealth * 100 < 30 then
+        local r7_2 = Color3.fromRGB(255, 0, 0)
+      end
+      if upval_0.Character.Humanoid.Health / upval_0.Character.Humanoid.MaxHealth * 100 < 70 then
+        r7_2 = Color3.fromRGB(255, 165, 0)
+      end
+      local r13_2 = upval_1:Notify()
+      local r14_2 = math.floor(upval_0.Character.Humanoid.MaxHealth)
+      local r10_2 = string.format("锟斤拷锟斤拷锟斤拷 鎶ょ敳鍊�: %d\
+鉂わ笍 琛€閲�: %d/%d\
+锟斤拷锟斤拷锟斤拷 鎶ょ敳绫诲瀷: %s\
+锟斤拷锟斤拷锟斤拷 琛€閲忕櫨鍒嗘瘮: %.1f%%", 0, r13_2, r14_2, upval_2, upval_0.Character.Humanoid.Health / upval_0.Character.Humanoid.MaxHealth * 100)
+      local r10_2 = function()
+        -- line: [0, 0] id: 3
+        print("鉁� 鐘舵€佷俊鎭凡鏄剧ず")
+        return
+      end
+      upval_1:Notify(upval_1, {
+        Title = "锟斤拷锟斤拷锟斤拷锔� 瑙掕壊鐘舵€佹鏌�",
+        Desc = r10_2,
+        Duration = 10,
+        Callback = r10_2,
+      })
+      if 0 <= 0 then
+        task.wait(2)
+        local r10_2 = function()
+          -- line: [0, 0] id: 4
+          print("锟斤拷锟斤拷锟斤拷 鎶ょ敳寤鸿宸叉樉绀�")
+          return
+        end
+        upval_1:Notify({
+          Title = "鈿狅笍 鎶ょ敳寤鸿",
+          Desc = "妫€娴嬪埌鎮ㄦ病鏈夋姢鐢诧紝寤鸿寮€鍚嚜鍔ㄧ┛鐢插姛鑳斤紒",
+          Duration = 6,
+          Callback = r10_2,
+        })
+      end
+      if upval_0.Character.Humanoid.Health / upval_0.Character.Humanoid.MaxHealth * 100 < 50 then
+        task.wait(4)
+        local r10_2 = function()
+          -- line: [0, 0] id: 5
+          print("锟斤拷锟斤拷锟斤拷 琛€閲忓缓璁凡鏄剧ず")
+          return
+        end
+        upval_1:Notify({
+          Title = "锟斤拷锟斤拷锟斤拷 琛€閲忓缓璁�",
+          Desc = "鎮ㄧ殑琛€閲忚緝浣庯紝寤鸿寮€鍚嚜鍔ㄥ洖琛€鍔熻兘锛�",
+          Duration = 6,
+          Callback = r10_2,
+        })
+      end
+      return
+    end
+    r3_1.Fight:Button({Title = "妫€鏌ユ姢鐢茬姸鎬�", Desc = "鏄剧ず褰撳墠鎶ょ敳鍜岃閲忎俊鎭�", Callback = r60_1})
+    local r59_1 = function()
+      -- line: [0, 0] id: 81
+      local r1_81 = function()
+        -- line: [0, 0] id: 82
+        if upval_0.Character then
+          return
+        end
+        local r1_82 = upval_0.Character:FindFirstChild("HumanoidRootPart")
+        local r2_82 = upval_0.Character:FindFirstChild("Humanoid")
+        if not r1_82 then
+          if not r2_82 then
+            if r2_82.Health <= 0 then
+            end
+          end
+          return
+        end
+        if not upval_1 then
+          local r3_82, r4_82, r5_82 = ipairs(upval_2:GetPlayers())
+          if r7_82 ~= upval_0 then
+            if not r7_82.Character then
+              local r9_82 = r7_82.Character:FindFirstChild("HumanoidRootPart")
+              local r10_82 = r7_82.Character:FindFirstChild("Humanoid")
+              if not r9_82 then
+                if not r10_82 then
+                  if 0 < r10_82.Health then
+                    if r1_82.Position - r9_82.Position.Magnitude <= 45 then
+                      upval_3.FireServer("equip", upval_4)
+                      upval_3.FireServer("meleeItemHit", "player", {hitPlayerId = r7_82.UserId, meleeType = upval_5})
+                    end
+                  end
+                end
+              end
+            end
+          end
+          for r6_82, r7_82 in r3_82 do
+          end
+          if not upval_6 then
+            local r3_82, r4_82, r5_82 = ipairs(upval_2:GetPlayers())
+            if r7_82 ~= upval_0 then
+              if not r7_82.Character then
+                r9_82 = r7_82.Character:FindFirstChild("HumanoidRootPart")
+                r10_82 = r7_82.Character:FindFirstChild("Humanoid")
+                if not r9_82 then
+                  if not r10_82 then
+                    if r10_82.Health < 20 then
+                      if r1_82.Position - r9_82.Position.Magnitude <= 45 then
+                        upval_3.FireServer("stomp", r7_82)
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            for r6_82, r7_82 in r3_82 do
+            end
+            if not upval_7 then
+              local r3_82, r4_82, r5_82 = ipairs(upval_2:GetPlayers())
+              if r7_82 ~= upval_0 then
+                if not r7_82.Character then
+                  r9_82 = r7_82.Character:FindFirstChild("HumanoidRootPart")
+                  r10_82 = r7_82.Character:FindFirstChild("Humanoid")
+                  if not r9_82 then
+                    if not r10_82 then
+                      if r10_82.Health < 20 then
+                        if r1_82.Position - r9_82.Position.Magnitude <= 40 then
+                          upval_3.FireServer("grabPlayer", r7_82)
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              for r6_82, r7_82 in r3_82 do
+              end
+              return
+      end
+      pcall(r1_81)
+      return
+    end
+    r5_1.RunService.Heartbeat:Connect(r59_1)
+    local r64_1 = function(r0_59)
+      -- line: [0, 0] id: 59
+      return upval_0:IsFriendsWith(upval_0, r0_59.UserId)
+      return 
+    end
+    local r65_1 = function(r0_65)
+      -- line: [0, 0] id: 65
+      if r0_65.Character then
+        return
+      end
+      local r2_65 = r0_65.Character:FindFirstChild("ForceField")
+      if r2_65 then
+        r2_65 = upval_0(r0_65)
+        if not r2_65 then
+        end
+        return
+      end
+      r2_65 = r0_65.Character:FindFirstChild("HumanoidRootPart")
+      if not upval_1.Character then
+        local r4_65 = upval_1.Character:FindFirstChild("HumanoidRootPart")
+      end
+      if not r2_65 then
+        if not r4_65 then
+          local r6_65 = CFrame.new(0, 0, 3)
+          r4_65.CFrame = r2_65.CFrame * r6_65
+        end
+      end
+      return
+    end
+    local r68_1 = function()
+      -- line: [0, 0] id: 33
+      if not upval_0.Character then
+        local r1_33 = upval_0.Character:FindFirstChild("HumanoidRootPart")
+        if not r1_33 then
+          upval_1 = upval_0.Character.HumanoidRootPart.CFrame
+        end
+      end
+      upval_2 = true
+      if not upval_3 then
+        upval_3:Disconnect()
+        upval_3 = nil
+      end
+      local r3_33 = function()
+        -- line: [0, 0] id: 34
+        if upval_0 then
+          upval_1:Disconnect()
+          upval_1 = nil
+          return
+        end
+        local r0_34, r1_34, r2_34 = ipairs(upval_2:GetPlayers())
+        if r4_34 ~= upval_3 then
+          if not upval_0 then
+            upval_4(r4_34)
+            task.wait(0.1)
+          end
+        end
+        for r3_34, r4_34 in r0_34 do
+          return
+      end
+      r1_33 = upval_4.Heartbeat:Connect(r3_33)
+      upval_3 = r1_33
+      return
+    end
+    local r69_1 = function()
+      -- line: [0, 0] id: 28
+      upval_0 = false
+      if not upval_1 then
+        upval_1:Disconnect()
+        upval_1 = nil
+      end
+      if not upval_2 then
+        if not upval_3.Character then
+          local r1_28 = upval_3.Character:FindFirstChild("HumanoidRootPart")
+          if not r1_28 then
+            upval_3.Character.HumanoidRootPart.CFrame = upval_2
+            print("宸蹭紶閫佸洖鍘熷浣嶇疆")
+          end
+        end
+        upval_2 = nil
+      end
+      return
+    end
+    local r70_1 = function()
+      -- line: [0, 0] id: 36
+      upval_0 = upval_1.Character
+      if not upval_0 then
+        local r0_36 = upval_0:WaitForChild("Humanoid")
+        upval_2 = r0_36
+        local r2_36 = function()
+          -- line: [0, 0] id: 37
+        end
+        task.wait()
+        if upval_0.Character ~= nil then
+          upval_1()
+          if not upval_2 then
+            startTPWalk()
+          end
+          return
+        end
+        upval_2.Died:Connect(r2_36)
+      end
+      return
+    end
+    local r71_1 = function()
+      -- line: [0, 0] id: 69
+      if not upval_0 then
+        upval_0:Disconnect()
+      end
+      local r2_69 = function()
+        -- line: [0, 0] id: 70
+        if not upval_0 then
+          if not upval_1 then
+            if not upval_2 then
+              if upval_2.Health <= 0 then
+              end
+            end
+          end
+          return
+        end
+        if 0 < upval_2.MoveDirection.Magnitude then
+          local r4_70 = upval_1:SetPrimaryPartCFrame()
+          upval_1:SetPrimaryPartCFrame(upval_1, r4_70 * upval_1.PrimaryPart.CFrame.Rotation)
+        end
+        return
+      end
+      local r0_69 = upval_1.Heartbeat:Connect(r2_69)
+      upval_0 = r0_69
+      return
+    end
+    local r72_1 = function()
+      -- line: [0, 0] id: 23
+      if not upval_0 then
+        upval_0:Disconnect()
+        upval_0 = nil
+      end
+      return
+    end
+    local r75_1 = function(r0_29)
+      -- line: [0, 0] id: 29
+      upval_0 = r0_29
+      upval_1()
+      return
+    end
+    r5_1.LocalPlayer.CharacterAdded:Connect(r75_1)
+    r70_1()
+    local r73_1 = function()
+      -- line: [0, 0] id: 87
+      local r0_87 = game:GetService("Players")
+      local r1_87 = game:GetService("RunService")
+      if r0_87.LocalPlayer.Character then
+        local r3_87 = r0_87.LocalPlayer.CharacterAdded:Wait()
+      end
+      local r4_87 = r3_87:WaitForChild("Head")
+      local r6_87 = function(r0_88, r1_88, r2_88)
+        -- line: [0, 0] id: 88
+        if r0_88.Character then
+          return
+        end
+        local r4_88 = r0_88.Character:FindFirstChildOfClass("Humanoid")
+        local r5_88 = r0_88.Character:FindFirstChild("Head")
+        if not r4_88 then
+          if not r5_88 then
+            if 0 < r4_88.Health then
+              local r10_88 = math.floor(r4_88.Health)
+              local r11_88 = math.floor(r4_88.MaxHealth)
+              local r7_88 = string.format("%s\
+琛€閲�: %d/%d\
+璺濈: %.1fm", r0_88.Name, r10_88, r11_88, upval_0.Position - r5_88.Position.Magnitude)
+              r1_88.Text = r7_88
+              r1_88.Visible = true
+            end
+          end
+        end
+        r1_88.Visible = false
+        return
+      end
+      local r7_87 = function(r0_92)
+        -- line: [0, 0] id: 92
+        if r0_92 == upval_0 then
+          return
+        end
+        upval_1[r0_92] = r2_92
+        local r1_92 = function(r0_93)
+          -- line: [0, 0] id: 93
+          local r1_93 = r0_93:WaitForChild("Head")
+          local r2_93 = Instance.new("BillboardGui")
+          r2_93.Name = "PlayerNametag"
+          r2_93.Adornee = r1_93
+          local r3_93 = UDim2.new(0, 200, 0, 80)
+          r2_93.Size = r3_93
+          r3_93 = Vector3.new(0, 3, 0)
+          r2_93.StudsOffset = r3_93
+          r2_93.AlwaysOnTop = true
+          r2_93.Parent = r1_93
+          r3_93 = Instance.new("TextLabel")
+          local r4_93 = UDim2.new(1, 0, 1, 0)
+          r3_93.Size = r4_93
+          r3_93.Font = Enum.Font.GothamBold
+          r3_93.TextSize = 8
+          r4_93 = Color3.new(1, 0, 0)
+          r3_93.TextColor3 = r4_93
+          r4_93 = Color3.new(0, 0, 0)
+          r3_93.TextStrokeColor3 = r4_93
+          r3_93.TextStrokeTransparency = 0.3
+          r3_93.BackgroundTransparency = 1
+          r3_93.TextYAlignment = Enum.TextYAlignment.Top
+          r3_93.Parent = r2_93
+          local r6_93 = function()
+            -- line: [0, 0] id: 94
+            if not upval_0 then
+              if upval_0.Parent then
+              end
+              heartbeatConn:Disconnect()
+              return
+            end
+            upval_1(upval_2, upval_3, upval_4)
+            return
+          end
+          r4_93 = upval_0.Heartbeat:Connect(r6_93)
+          table.insert(upval_3[upval_2], r4_93)
+          local r8_93 = function(r0_95, r1_95)
+            -- line: [0, 0] id: 95
+            if r1_95 == nil then
+              upval_0:Destroy()
+              upval_1:Disconnect()
+              upval_2:Disconnect()
+            end
+            return
+          end
+          r6_93 = r0_93.AncestryChanged:Connect(r8_93)
+          table.insert(upval_3[upval_2], r6_93)
+          return
+        end
+        if not r0_92.Character then
+          r1_92(r0_92.Character)
+        end
+        local r2_92 = r0_92.CharacterAdded:Connect(r1_92)
+        table.insert(upval_1[r0_92], r2_92)
+        return
+      end
+      local r8_87 = function(r0_97)
+        -- line: [0, 0] id: 97
+        if not upval_0[r0_97] then
+          local r1_97, r2_97, r3_97 = ipairs(upval_0[r0_97])
+          r5_97:Disconnect()
+          for r4_97, r5_97 in r1_97 do
+            upval_0[r0_97] = nil
+          end
+          if not r0_97.Character then
+            r1_97 = r0_97.Character:FindFirstChild("Head")
+            if not r1_97 then
+              r2_97 = r1_97:FindFirstChild("PlayerNametag")
+              if not r2_97 then
+                r2_97:Destroy()
+              end
+            end
+          end
+          return
+      end
+      local r11_87 = function(r0_90)
+        -- line: [0, 0] id: 90
+        upval_0(r0_90)
+        local r4_90 = function(r0_91, r1_91)
+          -- line: [0, 0] id: 91
+          if r1_91 == nil then
+            upval_0(upval_1)
+            upval_2:Disconnect()
+          end
+          return
+        end
+        local r2_90 = r0_90.AncestryChanged:Connect(r4_90)
+        return
+      end
+      r0_87.PlayerAdded:Connect(r11_87)
+      local r9_87, r10_87, r11_87 = ipairs(r0_87:GetPlayers())
+      if r13_87 ~= r0_87.LocalPlayer then
+        r7_87(r13_87)
+        local r17_87 = function(r0_96, r1_96)
+          -- line: [0, 0] id: 96
+          if r1_96 == nil then
+            upval_0(upval_1)
+            upval_2:Disconnect()
+          end
+          return
+        end
+        local r15_87 = r13_87.AncestryChanged:Connect(r17_87)
+      end
+      for r12_87, r13_87 in r9_87 do
+        local r11_87 = function(r0_89)
+          -- line: [0, 0] id: 89
+          upval_0 = r0_89
+          local r1_89 = r0_89:WaitForChild("Head")
+          upval_1 = r1_89
+          return
+        end
+        r0_87.LocalPlayer.CharacterAdded:Connect(r11_87)
+        return
+    end
+    local r74_1 = game:GetService("RunService")
+    local r76_1 = function()
+      -- line: [0, 0] id: 43
+      workspace.CurrentCamera.FieldOfView = 120
+      return
+    end
+    r74_1.Heartbeat:Connect(r76_1)
+    local r77_1 = function()
+      -- line: [0, 0] id: 12
+      upval_0()
+      return
+    end
+    r3_1.Player:Button({Title = "寮€鍚€忚ESP", Callback = r77_1})
+    local r77_1 = function(r0_6)
+      -- line: [0, 0] id: 6
+      local r1_6 = tonumber(r0_6)
+      if not r1_6 then
+        if 1 <= r1_6 then
+          if r1_6 <= 15 then
+            upval_0 = r1_6
+            print("閫熷害璁剧疆涓�:", upval_0)
+          end
+        end
+      end
+      warn("璇疯緭鍏�1-15涔嬮棿鐨勬暟瀛�")
+      return
+    end
+    r3_1.Player:Input({
+      Title = "閫熷害璁剧疆",
+      Default = "1",
+      PlaceholderText = "杈撳叆閫熷害 (1-15)",
+      Callback = r77_1,
+    })
+    local r77_1 = function(r0_57)
+      -- line: [0, 0] id: 57
+      upval_0 = r0_57
+      if not r0_57 then
+        upval_1()
+      end
+      upval_2()
+      return
+    end
+    r3_1.Player:Toggle({Title = "閫熷害寮€鍏�", Value = false, Callback = r77_1})
+    local r77_1 = function(r0_98)
+      -- line: [0, 0] id: 98
+      if not r0_98 then
+        if upval_0 then
+          if not upval_1.Character then
+            local r2_98 = upval_1.Character:FindFirstChild("Humanoid")
+            upval_0 = r2_98
+          end
+        end
+        if not upval_0 then
+          local r3_98 = function()
+            -- line: [0, 0] id: 99
+            if not upval_0 then
+              if 0 < upval_0.Health then
+                upval_0:ChangeState(Enum.HumanoidStateType.Jumping)
+              end
+            end
+            return
+          end
+          local r1_98 = upval_3.JumpRequest:Connect(r3_98)
+          upval_2 = r1_98
+        end
+        warn("鏈壘鍒癏umanoid锛屾棤娉曞紑鍚繛璺�")
+      end
+      if not upval_2 then
+        upval_2:Disconnect()
+        upval_2 = nil
+      end
+      return
+    end
+    r3_1.Player:Toggle({Title = "杩炶烦", Value = false, Callback = r77_1})
+    local r77_1 = function()
+      -- line: [0, 0] id: 73
+      local r1_73, r2_73, r3_73 = ipairs(upval_0:GetPlayers())
+      if r5_73 ~= upval_1 then
+        table.insert(r0_73, r5_73.Name)
+      end
+      for r4_73, r5_73 in r1_73 do
+        return r0_73
+    end
+    local r78_1 = function(r0_22)
+      -- line: [0, 0] id: 22
+      if not r0_22 then
+        if r0_22.Character then
+        end
+        return
+      end
+      local r2_22 = r0_22.Character:FindFirstChild("HumanoidRootPart")
+      if not upval_0.Character then
+        local r4_22 = upval_0.Character:FindFirstChild("HumanoidRootPart")
+      end
+      if not r2_22 then
+        if not r4_22 then
+          local r6_22 = CFrame.new(0, 0, 3)
+          r4_22.CFrame = r2_22.CFrame * r6_22
+          return true
+        end
+      end
+      return false
+    end
+    local r79_1 = function()
+      -- line: [0, 0] id: 26
+      if upval_0 then
+        upval_1:Notify({Title = "鈿狅笍 浼犻€佸け璐�", Desc = "璇峰厛閫夋嫨瑕佷紶閫佺殑鐜╁锛�", Duration = 5})
+        return
+      end
+      if not upval_2.Character then
+        local r1_26 = upval_2.Character:FindFirstChild("HumanoidRootPart")
+        if not r1_26 then
+          upval_3 = upval_2.Character.HumanoidRootPart.CFrame
+        end
+      end
+      upval_4 = true
+      if not upval_5 then
+        upval_5:Disconnect()
+        upval_5 = nil
+      end
+      local r3_26 = function()
+        -- line: [0, 0] id: 27
+        if not upval_0 then
+          if upval_1 then
+          end
+          if not upval_2 then
+            upval_2:Disconnect()
+            upval_2 = nil
+          end
+          return
+        end
+        local r0_27 = upval_3(upval_1)
+        if r0_27 then
+          upval_4:Notify({Title = "鈿狅笍 浼犻€佷腑鏂�", Desc = "鐩爣鐜╁涓嶅瓨鍦ㄦ垨鏃犳硶浼犻€�", Duration = 5})
+          upval_5()
+        end
+        task.wait(0.1)
+        return
+      end
+      r1_26 = upval_6.Heartbeat:Connect(r3_26)
+      upval_5 = r1_26
+      upval_1:Notify({Title = "锟斤拷锟斤拷锟斤拷 浼犻€佸凡鍚姩", Desc = "姝ｅ湪浼犻€佸埌: " .. upval_0.Name, Duration = 5})
+      return
+    end
+    local r80_1 = function()
+      -- line: [0, 0] id: 68
+      upval_0 = false
+      if not upval_1 then
+        upval_1:Disconnect()
+        upval_1 = nil
+      end
+      if not upval_2 then
+        if not upval_3.Character then
+          local r1_68 = upval_3.Character:FindFirstChild("HumanoidRootPart")
+          if not r1_68 then
+            upval_3.Character.HumanoidRootPart.CFrame = upval_2
+            upval_4:Notify({Title = "锟斤拷锟斤拷锟斤拷 宸茶繑鍥�", Desc = "浼犻€佸洖鍘熷浣嶇疆", Duration = 3})
+          end
+        end
+        upval_2 = nil
+      end
+      return
+    end
+    local r84_1 = r3_1.Player:Dropdown()
+    local r84_1 = function(r0_76)
+      -- line: [0, 0] id: 76
+      local r1_76, r2_76, r3_76 = ipairs(upval_0:GetPlayers())
+      if r5_76.Name == r0_76 then
+        upval_1 = r5_76
+        upval_2:Notify({Title = "鉁� 鐩爣宸查€夋嫨", Desc = "宸查€夋嫨鐜╁: " .. r0_76, Duration = 3})
+      end
+      for r4_76, r5_76 in r1_76 do
+        return
+    end
+    r3_1.Player:Dropdown(r3_1.Player, {
+      Title = "閫夋嫨浼犻€佺洰鏍�",
+      Desc = "閫夋嫨瑕佷紶閫佺殑鐜╁",
+      Values = r84_1,
+      Value = "",
+      Callback = r84_1,
+    })
+    local r84_1 = function()
+      -- line: [0, 0] id: 77
+      local r0_77 = upval_0()
+      upval_1:Notify({Title = "锟斤拷锟斤拷锟斤拷 鍒楄〃宸插埛鏂�", Desc = "鐜╁鍒楄〃宸叉洿鏂帮紝褰撳墠鍦ㄧ嚎: " .. #r0_77 .. "浜�", Duration = 3})
+      return
+    end
+    r3_1.Player:Button({Title = "鍒锋柊鐜╁鍒楄〃", Desc = "鏇存柊鍦ㄧ嚎鐜╁鍒楄〃", Callback = r84_1})
+    local r84_1 = function(r0_75)
+      -- line: [0, 0] id: 75
+      if not r0_75 then
+        upval_0()
+      end
+      upval_1()
+      return
+    end
+    r3_1.Player:Toggle({
+      Title = "浼犻€佸埌閫夊畾鐜╁",
+      Desc = "鎸佺画浼犻€佸埌閫夋嫨鐨勭帺瀹惰儗鍚�",
+      Value = false,
+      Callback = r84_1,
+    })
+    local r84_1 = function()
+      -- line: [0, 0] id: 71
+      if upval_0 then
+        upval_1:Notify({Title = "鈿狅笍 浼犻€佸け璐�", Desc = "璇峰厛閫夋嫨瑕佷紶閫佺殑鐜╁锛�", Duration = 5})
+        return
+      end
+      local r0_71 = upval_2(upval_0)
+      if not r0_71 then
+        upval_1:Notify({Title = "鉁� 浼犻€佹垚鍔�", Desc = "宸蹭紶閫佸埌: " .. upval_0.Name, Duration = 3})
+      end
+      upval_1:Notify({Title = "鉂� 浼犻€佸け璐�", Desc = "鏃犳硶浼犻€佸埌鐩爣鐜╁", Duration = 5})
+      return
+    end
+    r3_1.Player:Button({Title = "蹇€熶紶閫�", Desc = "鍗曟浼犻€佸埌閫夊畾鐜╁", Callback = r84_1})
+    local r84_1 = function(r0_66)
+      -- line: [0, 0] id: 66
+      if not r0_66 then
+        upval_0()
+      end
+      upval_1()
+      return
+    end
+    r3_1.Player:Toggle({
+      Title = "浼犻€佽儗鍚庡惊鐜�",
+      Desc = "寰幆浼犻€佸埌鎵€鏈夌帺瀹惰儗鍚�",
+      Value = false,
+      Callback = r84_1,
+    })
+    local r83_1 = function(r0_80)
+      -- line: [0, 0] id: 80
+      upval_0:Notify({Title = "锟斤拷锟斤拷锟斤拷 鐜╁鍔犲叆", Desc = r0_80.Name .. " 鍔犲叆浜嗘父鎴�", Duration = 3})
+      return
+    end
+    r5_1.Players.PlayerAdded:Connect(r83_1)
+    local r83_1 = function(r0_102)
+      -- line: [0, 0] id: 102
+      if r0_102 == upval_0 then
+        upval_0 = nil
+        if not upval_1 then
+          upval_2()
+        end
+        upval_3:Notify({Title = "锟斤拷锟斤拷锟斤拷 鐩爣鐜╁绂诲紑", Desc = r0_102.Name .. " 宸茬寮€娓告垙锛屼紶閫佸凡鍋滄", Duration = 5})
+      end
+      return
+    end
+    r5_1.Players.PlayerRemoving:Connect(r83_1)
+    local r89_1 = function(r0_47)
+      -- line: [0, 0] id: 47
+      upval_0 = r0_47
+      if not upval_0 then
+        if not upval_0 then
+          local r1_47 = wait()
+          if not r1_47 then
+            if r5_47.name ~= "Green Lucky Block" then
+              if r5_47.name ~= "Orange Lucky Block" then
+                if r5_47.name ~= "Purple Lucky Block" then
+                  if r5_47.name ~= "Electronics" then
+                    if r5_47.name == "Weapon Parts" then
+                    end
+                  end
+                end
+              end
+              useid = r5_47.guid
+              upval_2.FireServer("equip", useid)
+              upval_2.FireServer("useConsumable", useid)
+              upval_2.FireServer("removeItem", useid)
+            end
+            for r4_47, r5_47 in next do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Auto:Toggle({
+      Title = "鑷姩浣跨敤娑堣€楀搧",
+      Desc = "骞歌繍鏂瑰潡&鏉愭枡",
+      Value = false,
+      Callback = r89_1,
+    })
+    local r89_1 = function(r0_48)
+      -- line: [0, 0] id: 48
+      upval_0 = r0_48
+      if not upval_0 then
+        if not upval_0 then
+          local r1_48 = wait()
+          if not r1_48 then
+            if r5_48.name ~= "Amethyst" then
+              if r5_48.name ~= "Sapphire" then
+                if r5_48.name ~= "Emerald" then
+                  if r5_48.name ~= "Topaz" then
+                    if r5_48.name ~= "Ruby" then
+                      if r5_48.name ~= "Diamond Ring" then
+                        if r5_48.name ~= "Gold Bar" then
+                          if r5_48.name ~= "AK-47" then
+                            if r5_48.name ~= "AR-15" then
+                              if r5_48.name == "Diamond" then
+                              end
+                            end
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              sellid = r5_48.guid
+              upval_2.FireServer("equip", sellid)
+              upval_2.FireServer("sellItem", sellid)
+            end
+            for r4_48, r5_48 in next do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Auto:Toggle({
+      Title = "鑷姩鍞崠鐗╁搧",
+      Desc = "瀹濈煶鍜岃吹閲嶇墿鍝�",
+      Value = false,
+      Callback = r89_1,
+    })
+    local r89_1 = function(r0_21)
+      -- line: [0, 0] id: 21
+      upval_0 = r0_21
+      if not upval_0 then
+        if not upval_0 then
+          local r1_21 = wait()
+          if not r1_21 then
+            if r5_21.name ~= "Uzi" then
+              if r5_21.name ~= "Baseball Bat" then
+                if r5_21.name ~= "Basketball" then
+                  if r5_21.name ~= "Bloxaide" then
+                    if r5_21.name ~= "Bloxy Cola" then
+                      if r5_21.name ~= "C4" then
+                        if r5_21.name ~= "Cake" then
+                          if r5_21.name == "Stop Sign" then
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              upval_2.FireServer("removeItem", r5_21.guid)
+            end
+            for r4_21, r5_21 in next do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Auto:Toggle({
+      Title = "鑷姩娓呯悊鑳屽寘鍨冨溇",
+      Desc = "",
+      Value = false,
+      Callback = r89_1,
+    })
+    local r89_1 = function(r0_86)
+      -- line: [0, 0] id: 86
+      upval_0 = r0_86
+      if not upval_0 then
+        if not upval_0 then
+          local r1_86 = wait()
+          if not r1_86 then
+            r1_86 = game:GetService("Players")
+            if r1_86.LocalPlayer.Character then
+              local r2_86 = r1_86.LocalPlayer.CharacterAdded:Wait()
+            end
+            local r3_86, r4_86, r5_86 = ipairs(workspace.Game.Local.Rubbish:GetDescendants())
+            local r8_86 = r7_86:IsA("ClickDetector")
+            if not r8_86 then
+              local r9_86 = r7_86.Parent:IsA("BasePart")
+              if not r9_86 then
+                r2_86:PivotTo(r2_86)
+                task.wait(0.2)
+                fireclickdetector(r7_86)
+              end
+            end
+            for r6_86, r7_86 in r3_86 do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Auto:Toggle({
+      Title = "鑷姩娓呯悊宸ヤ綔鍨冨溇",
+      Desc = "",
+      Value = false,
+      Callback = r89_1,
+    })
+    local r89_1 = function(r0_38)
+      -- line: [0, 0] id: 38
+      upval_0 = r0_38
+      if not upval_0 then
+        local r1_38 = function(r0_39)
+          -- line: [0, 0] id: 39
+          r0_39.HoldDuration = 0
+          return
+        end
+        local r2_38 = function(r0_40)
+          -- line: [0, 0] id: 40
+          if not r0_40.Parent then
+            if r0_40.Parent ~= workspace then
+              if r0_40.Parent == workspace.BankRobbery.VaultDoor then
+              end
+              return true
+            end
+          end
+          return false
+        end
+        local r3_38, r4_38, r5_38 = ipairs(workspace:GetDescendants())
+        local r8_38 = r7_38:IsA("ProximityPrompt")
+        if not r8_38 then
+          r8_38 = r2_38(r7_38)
+          if not r8_38 then
+            r1_38(r7_38)
+          end
+        end
+        for r6_38, r7_38 in r3_38 do
+          local r5_38 = function(r0_41)
+            -- line: [0, 0] id: 41
+            local r1_41 = r0_41:IsA("ProximityPrompt")
+            if not r1_41 then
+              r1_41 = upval_0(r0_41)
+              if not r1_41 then
+                upval_1(r0_41)
+              end
+            end
+            return
+          end
+          workspace.DescendantAdded:Connect(r5_38)
+        end
+        return
+    end
+    r3_1.Auto:Toggle({
+      Title = "鍗虫椂浜掑姩",
+      Desc = "鍙栨秷绛夊緟鏃堕棿",
+      Value = false,
+      Callback = r89_1,
+    })
+    local r90_1 = function(r0_78)
+      -- line: [0, 0] id: 78
+      upval_0 = r0_78
+      if not upval_0 then
+      end
+    end
+    if not upval_0 then
+      local r1_78 = wait()
+      if not r1_78 then
+        r1_78 = game:GetService("Players")
+        if not r1_78.LocalPlayer.Character then
+          local r3_78 = r1_78.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+          if not r3_78 then
+            local r4_78 = game:GetService("Players")
+            if r4_78.LocalPlayer.Character then
+              local r5_78 = r4_78.LocalPlayer.CharacterAdded:Wait()
+            end
+            local r6_78 = r5_78:WaitForChild("HumanoidRootPart")
+            local r7_78, r8_78, r9_78 = pairs(workspace.Game.Entities.CashBundle:GetDescendants())
+            local r12_78 = r11_78:IsA("ClickDetector")
+            if not r12_78 then
+              r12_78 = r11_78.Parent:GetPivot()
+              if r6_78.Position - r12_78.Position.Magnitude <= 35 then
+                fireclickdetector(r11_78)
+              end
+            end
+            for r10_78, r11_78 in r7_78 do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Collect:Toggle({
+      Title = "閲戦挶鍏夌幆",
+      Desc = "鑷姩鎷惧彇鐜伴噾",
+      Value = false,
+      Callback = r90_1,
+    })
+    local r87_1 = function(r0_61, r1_61)
+      -- line: [0, 0] id: 61
+      local r2_61 = game:GetService("Players")
+      if not r2_61.LocalPlayer.Character then
+        local r4_61 = r2_61.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if not r4_61 then
+          r4_61 = r2_61.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+          if not r4_61 then
+            local r6_61 = game:GetService("Workspace")
+            local r5_61, r6_61, r7_61 = pairs(r6_61.Game.Entities.ItemPickup:GetChildren())
+            local r10_61, r11_61, r12_61 = pairs(r9_61:GetChildren())
+            if r14_61.ClassName ~= "MeshPart" then
+              if r14_61.ClassName == "Part" then
+              end
+              local r15_61, r16_61, r17_61 = pairs(r14_61:GetChildren())
+              if r19_61.ClassName == "ProximityPrompt" then
+                local r21_61 = type(r0_61)
+                if r21_61 == "table" then
+                  local r21_61, r22_61, r23_61 = pairs(r0_61)
+                  if r19_61.ObjectText == r25_61 then
+                  end
+                  for r24_61, r25_61 in r21_61 do
+                  end
+                  if r19_61.ObjectText ~= r0_61 then
+                    if not false then
+                      if not r1_61 then
+                        local r21_61, r22_61, r23_61 = ipairs(workspace.BankRobbery.VaultDoor:GetDescendants())
+                        local r26_61 = r25_61:IsA("ProximityPrompt")
+                        if not r26_61 then
+                          if 35 < r25_61.Parent.Position - r4_61.Position.Magnitude then
+                            r25_61.RequiresLineOfSight = false
+                            r25_61.HoldDuration = 0
+                            fireproximityprompt(r25_61)
+                          end
+                        end
+                        for r24_61, r25_61 in r21_61 do
+                        end
+                        r22_61 = CFrame.new(0, 2, 0)
+                        r4_61.CFrame = r14_61.CFrame * r22_61
+                        r19_61.RequiresLineOfSight = false
+                        r19_61.HoldDuration = 0
+                        wait(0.1)
+                        fireproximityprompt(r19_61)
+                        fireproximityprompt(r19_61)
+                        fireproximityprompt(r19_61)
+                      end
+                    end
+                    for r18_61, r19_61 in r15_61 do
+                    end
+                    for r13_61, r14_61 in r10_61 do
+                      for r8_61, r9_61 in r5_61 do
+                      end
+                    end
+                  end
+                  return
+    end
+    local r91_1 = function(r0_11)
+      -- line: [0, 0] id: 11
+      upval_0 = r0_11
+      if not upval_0 then
+      end
+    end
+  end
+  if not upval_0 then
+    local r1_11 = wait()
+    if not r1_11 then
+      r1_11 = game:GetService("Players")
+      if not r1_11.LocalPlayer.Character then
+        local r3_11 = r1_11.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if not r3_11 then
+          r3_11 = r1_11.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+          if not r3_11 then
+            local r5_11 = game:GetService("Workspace")
+            local r4_11, r5_11, r6_11 = pairs(r5_11.Game.Entities.ItemPickup:GetChildren())
+            local r9_11, r10_11, r11_11 = pairs(r8_11:GetChildren())
+            if r13_11.ClassName ~= "MeshPart" then
+              if r13_11.ClassName == "Part" then
+              end
+              local r14_11, r15_11, r16_11 = pairs(r13_11:GetChildren())
+              if r18_11.ClassName == "ProximityPrompt" then
+                if r18_11.ObjectText ~= "Electronics" then
+                  if r18_11.ObjectText == "Weapon Parts" then
+                  end
+                  local r20_11 = CFrame.new(0, 2, 0)
+                  r3_11.CFrame = r13_11.CFrame * r20_11
+                  r18_11.RequiresLineOfSight = false
+                  r18_11.HoldDuration = 0
+                  wait(0.1)
+                  fireproximityprompt(r18_11)
+                  fireproximityprompt(r18_11)
+                  fireproximityprompt(r18_11)
+                end
+              end
+              for r17_11, r18_11 in r14_11 do
+              end
+              for r12_11, r13_11 in r9_11 do
+                for r7_11, r8_11 in r4_11 do
+                end
+              end
+            end
+            return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇鏉愭枡",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_20)
+      -- line: [0, 0] id: 20
+      upval_0 = r0_20
+      if not upval_0 then
+        if not upval_0 then
+          local r1_20 = wait()
+          if not r1_20 then
+            upval_1({
+              "Amethyst",
+              "Sapphire",
+              "Emerald",
+              "Topaz",
+              "Ruby",
+              "Diamond Ring",
+              "Diamond",
+              "Void Gem",
+              "Dark Matter Gem",
+              "Rollie",
+            }, true)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇瀹濈煶",
+      Desc = "鎵€鏈夊疂鐭�",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_54)
+      -- line: [0, 0] id: 54
+      upval_0 = r0_54
+      if not upval_0 then
+        if not upval_0 then
+          local r1_54 = wait()
+          if not r1_54 then
+            upval_1("Military Armory Keycard", false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇绾㈠崱",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_72)
+      -- line: [0, 0] id: 72
+      upval_0 = r0_72
+      if not upval_0 then
+        if not upval_1 then
+          local r1_72 = wait()
+          if not r1_72 then
+            upval_2("Police Armory Keycard", false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇钃濆崱",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_83)
+      -- line: [0, 0] id: 83
+      upval_0 = r0_83
+      if not upval_0 then
+        if not upval_0 then
+          local r1_83 = wait()
+          if not r1_83 then
+            upval_1("Money Printer", false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇鍗伴挒鏈�",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_24)
+      -- line: [0, 0] id: 24
+      upval_0 = r0_24
+      if not upval_0 then
+        if not upval_0 then
+          local r1_24 = wait()
+          if not r1_24 then
+            upval_1({"Suitcase Nuke", "Nuke Launcher", "Easter Basket"}, false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇椤剁骇鐗╁搧",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_30)
+      -- line: [0, 0] id: 30
+      upval_0 = r0_30
+      if not upval_0 then
+      end
+    end
+  end
+  if not upval_0 then
+    local r1_30 = wait()
+    if not r1_30 then
+      r1_30 = game:GetService("Players")
+      if not r1_30.LocalPlayer.Character then
+        local r3_30 = r1_30.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if not r3_30 then
+          r3_30 = r1_30.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+          if not r3_30 then
+            local r5_30 = game:GetService("Workspace")
+            local r4_30, r5_30, r6_30 = pairs(r5_30.Game.Entities.ItemPickup:GetChildren())
+            local r9_30, r10_30, r11_30 = pairs(r8_30:GetChildren())
+            if r13_30.ClassName ~= "MeshPart" then
+              if r13_30.ClassName == "Part" then
+              end
+              local r14_30, r15_30, r16_30 = pairs(r13_30:GetChildren())
+              if r18_30.ClassName == "ProximityPrompt" then
+                if r18_30.ObjectText == "Gold Bar" then
+                  local r19_30, r20_30, r21_30 = ipairs(workspace.BankRobbery.VaultDoor:GetDescendants())
+                  local r24_30 = r23_30:IsA("ProximityPrompt")
+                  if not r24_30 then
+                    if 35 < r23_30.Parent.Position - r3_30.Position.Magnitude then
+                      r23_30.RequiresLineOfSight = false
+                      r23_30.HoldDuration = 0
+                      fireproximityprompt(r23_30)
+                    end
+                  end
+                  for r22_30, r23_30 in r19_30 do
+                    r20_30 = CFrame.new(0, 2, 0)
+                    r3_30.CFrame = r13_30.CFrame * r20_30
+                    r18_30.RequiresLineOfSight = false
+                    r18_30.HoldDuration = 0
+                    wait(0.1)
+                    fireproximityprompt(r18_30)
+                    fireproximityprompt(r18_30)
+                    fireproximityprompt(r18_30)
+                  end
+                end
+                for r17_30, r18_30 in r14_30 do
+                end
+                for r12_30, r13_30 in r9_30 do
+                  for r7_30, r8_30 in r4_30 do
+                  end
+                end
+              end
+              return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇閲戞潯",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_42)
+      -- line: [0, 0] id: 42
+      upval_0 = r0_42
+      if not upval_0 then
+        if not upval_0 then
+          local r1_42 = wait()
+          if not r1_42 then
+            upval_1({
+              "Bunny Balloon",
+              "Ghost Balloon",
+              "Clover Balloon",
+              "Bat Balloon",
+              "Gold Clover Balloon",
+              "Golden Rose",
+              "Black Rose",
+              "Heart Balloon",
+            }, false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇姘旂悆",
+      Desc = "鎵€鏈夋皵鐞冮兘鏀寔",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_35)
+      -- line: [0, 0] id: 35
+      upval_0 = r0_35
+      if not upval_0 then
+        if not upval_0 then
+          local r1_35 = wait()
+          if not r1_35 then
+            upval_1({"Blue Candy Cane", "Red Candy Cane"}, false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇绯栨灉妫�",
+      Desc = "绾㈣摑閮芥湁",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_18)
+      -- line: [0, 0] id: 18
+      upval_0 = r0_18
+      if not upval_0 then
+        if not upval_0 then
+          local r1_18 = wait()
+          if not r1_18 then
+            upval_1({"Green Lucky Block", "Orange Lucky Block", "Purple Lucky Block"}, false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鑷姩鎷惧彇骞歌繍鏂瑰潡",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r91_1 = function(r0_45)
+      -- line: [0, 0] id: 45
+      upval_0 = r0_45
+      if not upval_0 then
+      end
+    end
+    if not upval_0 then
+      local r1_45 = wait()
+      if not r1_45 then
+        r1_45 = game:GetService("Players")
+        if not workspace.Game.Local.droppables then
+          local r4_45 = workspace.Game.Local.droppables:FindFirstChild("Money Printer")
+          if not r4_45 then
+            r4_45 = workspace.Game.Local.droppables:FindFirstChild("Money Printer")
+            local r5_45, r6_45, r7_45 = pairs(r4_45:GetChildren())
+            local r10_45 = r9_45:IsA("MeshPart")
+            if not r10_45 then
+              if not r1_45.LocalPlayer.Character then
+                r10_45 = r1_45.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+              end
+              if not r10_45 then
+                local r11_45 = CFrame.new(r9_45.Position)
+                r10_45.CFrame = r11_45
+              end
+            end
+            for r8_45, r9_45 in r5_45 do
+            end
+          end
+        end
+        return
+    end
+    r3_1.Collect:Toggle({
+      Title = "鏌ユ壘鏀句笅鏉ュ嵃閽炴満",
+      Desc = "",
+      Value = false,
+      Callback = r91_1,
+    })
+    local r93_1 = function(r0_19)
+      -- line: [0, 0] id: 19
+      upval_0 = r0_19
+      if not upval_0 then
+        if not upval_0 then
+          local r1_19 = task.wait()
+          if not r1_19 then
+            upval_1.FireServer("setRagdoll", false)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Fight:Toggle({
+      Title = "鍙嶅竷濞冨▋鐘舵€�",
+      Desc = "闃叉鍍电洿",
+      Value = false,
+      Callback = r93_1,
+    })
+    local r93_1 = function(r0_55)
+      -- line: [0, 0] id: 55
+      upval_0 = r0_55
+      if not upval_0 then
+        if not upval_0 then
+          local r1_55 = task.wait()
+          if not r1_55 then
+            r1_55 = game:GetService("Players")
+            local r5_55 = function(r0_56)
+              -- line: [0, 0] id: 56
+              local r1_56 = r0_56:WaitForChild("Humanoid")
+              r1_56.Sit = false
+              return
+            end
+            r1_55.LocalPlayer.CharacterAdded:Connect(r5_55)
+          end
+        end
+      end
+      return
+    end
+    r3_1.Fight:Toggle({
+      Title = "鍙嶅潗涓嬬姸鎬�",
+      Desc = "闃叉琚潗涓�",
+      Value = false,
+      Callback = r93_1,
+    })
+    return
