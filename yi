@@ -1,0 +1,210 @@
+-- Lightsmoke Hub V2.0 Pro
+-- 自动功能完整修复版
+
+local WindUI = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Lightsmoke666/LS_HubPro/refs/heads/main/windui.txt"
+))()
+
+-- ===== 状态 =====
+local State = {
+    AutoGrab = false,
+    AutoEat = false,
+    AutoSell = false,
+    AutoThrow = false,
+
+    BuySize = false,
+    BuySpeed = false,
+    BuyMultiplier = false,
+    BuyEatSpeed = false,
+
+    RewardSmall = false,
+    RewardMid = false,
+    RewardBig = false,
+}
+
+-- ===== Popup =====
+WindUI:Popup({
+    Title = "Lightsmoke Hub",
+    Icon = "rbxassetid://71391084474065",
+    Content = "欢迎使用 LS_Hub V2.0 Pro",
+})
+
+-- ===== Window =====
+local Window = WindUI:CreateWindow({
+    Title = "Lightsmoke Hub",
+    Icon = "crown",
+    Author = "轻烟 V2.0 Pro",
+    Folder = "LS_Hub",
+    Theme = "Light",
+    SideBarWidth = 200,
+})
+
+-- ===== Tabs =====
+local MainTab   = Window:Tab({ Title = "主页", Icon = "home" })
+local AutoTab   = Window:Tab({ Title = "自动功能", Icon = "user" })
+local UpgradeTab= Window:Tab({ Title = "自动升级", Icon = "star" })
+local RewardTab = Window:Tab({ Title = "自动奖励", Icon = "gift" })
+
+-- ===== 主页 =====
+MainTab:Paragraph({
+    Title = "欢迎使用 LS_Hub",
+    Desc = "QQ群：1057220534",
+})
+
+-- ===== 安全获取角色 =====
+local function getChar()
+    local plr = game:GetService("Players").LocalPlayer
+    return plr.Character or plr.CharacterAdded:Wait()
+end
+
+-- ===== 自动循环封装 =====
+local function loop(flag, fn)
+    task.spawn(function()
+        while State[flag] do
+            pcall(fn)
+            task.wait(0.2)
+        end
+    end)
+end
+
+-- ===== 自动行为 =====
+AutoTab:Toggle({
+    Title = "自动抓取",
+    Callback = function(v)
+        State.AutoGrab = v
+        if v then
+            loop("AutoGrab", function()
+                getChar().Events.Grab:FireServer()
+            end)
+        end
+    end
+})
+
+AutoTab:Toggle({
+    Title = "自动吃掉",
+    Callback = function(v)
+        State.AutoEat = v
+        if v then
+            loop("AutoEat", function()
+                getChar().Events.Eat:FireServer()
+            end)
+        end
+    end
+})
+
+AutoTab:Toggle({
+    Title = "自动卖出",
+    Callback = function(v)
+        State.AutoSell = v
+        if v then
+            loop("AutoSell", function()
+                getChar().Events.Sell:FireServer()
+            end)
+        end
+    end
+})
+
+AutoTab:Toggle({
+    Title = "自动丢出",
+    Callback = function(v)
+        State.AutoThrow = v
+        if v then
+            loop("AutoThrow", function()
+                getChar().Events.Throw:FireServer()
+            end)
+        end
+    end
+})
+
+-- ===== 自动升级 =====
+local RS = game:GetService("ReplicatedStorage")
+
+UpgradeTab:Toggle({
+    Title = "自动购买最大尺寸",
+    Callback = function(v)
+        State.BuySize = v
+        if v then
+            loop("BuySize", function()
+                RS.Events.PurchaseEvent:FireServer()
+            end)
+        end
+    end
+})
+
+UpgradeTab:Toggle({
+    Title = "自动购买速度倍数",
+    Callback = function(v)
+        State.BuySpeed = v
+        if v then
+            loop("BuySpeed", function()
+                RS.Events.PurchaseEvent:FireServer()
+            end)
+        end
+    end
+})
+
+UpgradeTab:Toggle({
+    Title = "自动购买吞噬倍数",
+    Callback = function(v)
+        State.BuyMultiplier = v
+        if v then
+            loop("BuyMultiplier", function()
+                RS.Events.PurchaseEvent:FireServer()
+            end)
+        end
+    end
+})
+
+UpgradeTab:Toggle({
+    Title = "自动购买吃掉速度",
+    Callback = function(v)
+        State.BuyEatSpeed = v
+        if v then
+            loop("BuyEatSpeed", function()
+                RS.Events.PurchaseEvent:FireServer()
+            end)
+        end
+    end
+})
+
+-- ===== 自动奖励 =====
+RewardTab:Toggle({
+    Title = "自动领取小奖励",
+    Callback = function(v)
+        State.RewardSmall = v
+        if v then
+            loop("RewardSmall", function()
+                RS.Events.RewardEvent:FireServer()
+            end)
+        end
+    end
+})
+
+RewardTab:Toggle({
+    Title = "自动领取中奖励",
+    Callback = function(v)
+        State.RewardMid = v
+        if v then
+            loop("RewardMid", function()
+                RS.Events.RewardEvent:FireServer()
+            end)
+        end
+    end
+})
+
+RewardTab:Toggle({
+    Title = "自动领取大奖励",
+    Callback = function(v)
+        State.RewardBig = v
+        if v then
+            loop("RewardBig", function()
+                RS.Events.RewardEvent:FireServer()
+            end)
+        end
+    end
+})
+
+-- ===== 关闭 =====
+Window:OnClose(function()
+    print("Lightsmoke Hub Closed")
+end)
