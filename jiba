@@ -1,0 +1,1302 @@
+-- ts file was generated at discord.gg/25ms
+
+local u1 = loadstring(game:HttpGet('https://pastebin.com/raw/FUEx0f3G'))()
+local v2 = u1
+local v3 = u1.MakeWindow(v2, {
+    Name = '\u{76ae}\u{811a}\u{672c}-\u{4fc4}\u{4ea5}\u{4fc4}\u{5dde}',
+    HidePremium = false,
+    SaveConfig = true,
+    IntroText = '\u{76ae}\u{811a}\u{672c}-\u{4fc4}\u{4ea5}\u{4fc4}\u{5dde}',
+    ConfigFolder = '\u{76ae}\u{811a}\u{672c}',
+})
+
+game:GetService('StarterGui'):SetCore('SendNotification', {
+    Title = '\u{76ae}\u{811a}\u{672c}',
+    Text = '\u{4fc4}\u{4ea5}\u{4fc4}\u{5dde}',
+    Duration = 4,
+})
+game:GetService('StarterGui'):SetCore('SendNotification', {
+    Title = '\u{542f}\u{52a8}\u{6210}\u{529f}',
+    Text = '\u{4fc4}\u{4ea5}\u{4fc4}\u{5dde}',
+    Duration = 4,
+})
+
+local v4 = v3:MakeTab({
+    Name = '\u{5168}\u{90e8}\u{529f}\u{80fd}',
+    Icon = 'rbxassetid://18941716391',
+    PremiumOnly = false,
+})
+
+v4:AddSection({
+    Name = '\u{4f5c}\u{8005}\u{4fe1}\u{606f}',
+})
+v4:AddParagraph('\u{4f5c}\u{8005}: \u{5c0f}\u{76ae}')
+v4:AddParagraph('\u{4f5c}\u{8005}QQ: 2131869117')
+v4:AddParagraph('QQ\u{4e3b}\u{7fa4}: 1002100032')
+v4:AddParagraph('QQ2\u{7fa4}: 894995244')
+v4:AddSection({
+    Name = '\u{516c}\u{544a}',
+})
+v4:AddParagraph('\u{6b64}\u{811a}\u{672c}\u{4e3a}\u{76ae}\u{811a}\u{672c}\u{5185}\u{7f6e}\u{4fc4}\u{4ea5}\u{4fc4}\u{5dde}\u{811a}\u{672c}')
+v4:AddParagraph('\u{53ef}\u{4ee5}\u{5355}\u{72ec}\u{4e00}\u{4e2a}\u{811a}\u{672c}')
+v4:AddParagraph('\u{6b64}\u{811a}\u{672c}\u{4e3a}\u{514d}\u{8d39}\u{7f1d}\u{5408}')
+v4:AddParagraph('\u{4e25}\u{7981}\u{5012}\u{5356}\u{5708}\u{94b1}')
+v4:AddSection({
+    Name = '\u{590d}\u{5236}\u{4f5c}\u{8005}\u{4fe1}\u{606f}',
+})
+v4:AddButton({
+    Name = '\u{590d}\u{5236}\u{4f5c}\u{8005}QQ',
+    Callback = function()
+        setclipboard('2131869117')
+    end,
+})
+v4:AddButton({
+    Name = '\u{590d}\u{5236}QQ\u{4e3b}\u{7fa4}',
+    Callback = function()
+        setclipboard('1002100032')
+    end,
+})
+v4:AddButton({
+    Name = '\u{590d}\u{5236}QQ2\u{7fa4}',
+    Callback = function()
+        setclipboard('894995244')
+    end,
+})
+v4:AddSection({
+    Name = '\u{4f20}\u{9001}\u{529f}\u{80fd}',
+})
+v4:AddDropdown({
+    Name = '\u{4f20}\u{9001}',
+    Default = '',
+    Options = {
+        '\u{94f6}\u{884c}',
+        '\u{73e0}\u{5b9d}\u{5e97}',
+        '\u{6c99}\u{6ee9}',
+        '\u{6b66}\u{5668}\u{5e97}\u{ff08}\u{64ac}\u{9501}\u{ff09}',
+        '\u{6b66}\u{58eb}\u{5200}',
+        '\u{5c04}\u{7ebf}\u{67aa}',
+        '\u{52a0}\u{7279}\u{6797}',
+        '\u{952f}\u{6389}',
+        '\u{6c99}\u{6f20}\u{4e4b}\u{9e70}',
+        '\u{8b66}\u{5bdf}\u{5c40}\u{ff08}M4A1\u{ff09}',
+        'AUG',
+        '\u{519b}\u{4e8b}\u{57fa}\u{5730}\u{ff08}\u{519b}\u{7532}\u{ff09}',
+    },
+    Callback = function(p5)
+        local _HumanoidRootPart = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+        if p5 == '\u{94f6}\u{884c}' then
+            _HumanoidRootPart.CFrame = CFrame.new(1055.94153, 15.11950874, -344.58374)
+        elseif p5 == '\u{73e0}\u{5b9d}\u{5e97}' then
+            _HumanoidRootPart.CFrame = CFrame.new(1719.02637, 14.2831011, -714.293091)
+        elseif p5 == '\u{6c99}\u{6ee9}' then
+            _HumanoidRootPart.CFrame = CFrame.new(998.4656372070313, 15, 395.9789733886719)
+        elseif p5 == '\u{6b66}\u{5668}\u{5e97}\u{ff08}\u{64ac}\u{9501}\u{ff09}' then
+            _HumanoidRootPart.CFrame = CFrame.new(660.5284423828125, 6.4081127643585205, -716.489990234375)
+        elseif p5 == '\u{6b66}\u{58eb}\u{5200}' then
+            _HumanoidRootPart.CFrame = CFrame.new(175.191, 13.937, -132.69)
+        elseif p5 == '\u{5c04}\u{7ebf}\u{67aa}' then
+            _HumanoidRootPart.CFrame = CFrame.new(148.685471, -90, -529.280945)
+        elseif p5 == '\u{52a0}\u{7279}\u{6797}' then
+            _HumanoidRootPart.CFrame = CFrame.new(364.97076416015625, 0.764974117279053, -1447.3302001953125)
+        elseif p5 == '\u{952f}\u{6389}' then
+            _HumanoidRootPart.CFrame = CFrame.new(1179.98523, 40, -436.812683)
+        elseif p5 == '\u{6c99}\u{6f20}\u{4e4b}\u{9e70}' then
+            _HumanoidRootPart.CFrame = CFrame.new(363.341461, 26.0798492, -259.681396)
+        elseif p5 == '\u{8b66}\u{5bdf}\u{5c40}\u{ff08}M4A1\u{ff09}' then
+            _HumanoidRootPart.CFrame = CFrame.new(603.4676513671875, 25.662811279296875, -922.0442504882813)
+        elseif p5 == 'AUG' then
+            _HumanoidRootPart.CFrame = CFrame.new(1170.500244140625, 48.37138366699219, -772.55859375)
+        elseif p5 == '\u{519b}\u{4e8b}\u{57fa}\u{5730}\u{ff08}\u{519b}\u{7532}\u{ff09}' then
+            _HumanoidRootPart.CFrame = CFrame.new(563.4422607421875, 28.502071380615234, -1472.780517578125)
+        end
+    end,
+})
+v4:AddSection({
+    Name = '\u{4e3b}\u{8981}\u{529f}\u{80fd}',
+})
+v4:AddTextbox({
+    Name = '\u{8df3}\u{8dc3}\u{9ad8}\u{5ea6}\u{8bbe}\u{7f6e}',
+    Default = '',
+    TextDisappear = true,
+    Callback = function(p7)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = p7
+    end,
+})
+v4:AddTextbox({
+    Name = '\u{79fb}\u{52a8}\u{901f}\u{5ea6}\u{8bbe}\u{7f6e}',
+    Default = '',
+    TextDisappear = true,
+    Callback = function(p8)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = p8
+    end,
+})
+v4:AddTextbox({
+    Name = '\u{91cd}\u{529b}\u{8bbe}\u{7f6e}',
+    Default = '',
+    TextDisappear = true,
+    Callback = function(p9)
+        game.Workspace.Gravity = p9
+    end,
+})
+v4:AddToggle({
+    Name = '\u{94f6}\u{884c}\u{5237}\u{65b0}\u{63d0}\u{9192}',
+    Callback = function(p10)
+        Bank1 = p10
+
+        if Bank1 then
+            Bank2()
+        end
+    end,
+})
+
+function Bank2()
+    while Bank1 do
+        wait(0.1)
+
+        if game:GetService('Workspace').BankRobbery.BankCash.Cash:FindFirstChild('Bundle') then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{94f6}\u{884c}\u{5df2}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{73e0}\u{5b9d}\u{5e97}\u{5237}\u{65b0}\u{63d0}\u{9192}',
+    Callback = function(p11)
+        Gem1 = p11
+
+        if Gem1 then
+            Gem2()
+        end
+    end,
+})
+
+function Gem2()
+    while Gem1 do
+        wait(0.1)
+
+        if game:GetService('Workspace').GemRobbery:FindFirstChild('Rubble') then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{73e0}\u{5b9d}\u{5e97}\u{5df2}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{81ea}\u{52a8}\u{62a2}\u{94f6}\u{884c}',
+    Callback = function(p12)
+        AutoBank1 = p12
+
+        if AutoBank1 then
+            AutoBank2()
+        end
+    end,
+})
+
+function AutoBank2()
+    while AutoBank1 do
+        wait()
+
+        local _VaultDoor = game:GetService('Workspace').BankRobbery.VaultDoor
+        local _BankCash = game:GetService('Workspace').BankRobbery.BankCash
+        local _HumanoidRootPart2 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+        if _VaultDoor.Door.Attachment.ProximityPrompt.Enabled == true then
+            _VaultDoor.Door.Attachment.ProximityPrompt.HoldDuration = 0
+            _VaultDoor.Door.Attachment.ProximityPrompt.MaxActivationDistance = 16
+            _HumanoidRootPart2.CFrame = CFrame.new(1071.955810546875, 9, -343.80816650390625)
+
+            wait(1)
+            _VaultDoor.Door.Attachment.ProximityPrompt:InputHoldBegin()
+            _VaultDoor.Door.Attachment.ProximityPrompt:InputHoldEnd()
+
+            _VaultDoor.Door.Attachment.ProximityPrompt.Enabled = false
+        end
+        if _BankCash.Cash.Bundle then
+            _HumanoidRootPart2.CFrame = CFrame.new(1055.872802734375, 10, -344.6944580078125)
+            _BankCash.Main.Attachment.ProximityPrompt.MaxActivationDistance = 16
+
+            if _BankCash.Cash.Bundle then
+                _BankCash.Main.Attachment.ProximityPrompt:InputHoldBegin()
+                wait(45)
+                _BankCash.Main.Attachment.ProximityPrompt:InputHoldEnd()
+
+                _HumanoidRootPart2.CFrame = CFrame.new(240.52850341796875, -120, -620)
+            end
+        end
+        if not _BankCash.Cash.Bundle then
+            _HumanoidRootPart2.CFrame = CFrame.new(240.52850341796875, -120, -620)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{81ea}\u{52a8}\u{62a2}\u{91d1}\u{4fdd}\u{9669}\u{67dc}',
+    Callback = function(p16)
+        AutoSafe1 = p16
+
+        if AutoSafe1 then
+            AutoSafe2()
+        end
+    end,
+})
+
+function AutoSafe2()
+    while true do
+        if not AutoSafe1 then
+            return
+        end
+
+        wait()
+
+        local _VaultDoor2 = game:GetService('Workspace').BankRobbery.VaultDoor
+        local _HumanoidRootPart3 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+        if _VaultDoor2.Door.Attachment.ProximityPrompt.Enabled == true then
+            _VaultDoor2.Door.Attachment.ProximityPrompt.HoldDuration = 0
+            _VaultDoor2.Door.Attachment.ProximityPrompt.MaxActivationDistance = 16
+            _HumanoidRootPart3.CFrame = CFrame.new(1071.955810546875, 9, -343.80816650390625)
+
+            wait(1)
+            _VaultDoor2.Door.Attachment.ProximityPrompt:InputHoldBegin()
+            _VaultDoor2.Door.Attachment.ProximityPrompt:InputHoldEnd()
+
+            _VaultDoor2.Door.Attachment.ProximityPrompt.Enabled = false
+        end
+
+        local _GoldJewelSafe = game:GetService('Workspace').Game.Entities.GoldJewelSafe
+        local v20, v21, v22 = pairs(_GoldJewelSafe:GetChildren())
+        local v23 = false
+
+        while true do
+            local v24
+
+            v22, v24 = v20(v21, v22)
+
+            if v22 == nil then
+                break
+            end
+            if v24.ClassName == 'Model' then
+                v23 = true
+                _HumanoidRootPart3.CFrame = v24.WorldPivot
+
+                wait(1)
+
+                v24.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.HoldDuration = 0
+                v24.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.MaxActivationDistance = 16
+
+                if v24.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.Enabled == true then
+                    v24.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt:InputHoldBegin()
+                    v24.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt:InputHoldEnd()
+                    wait(5)
+                    v24:Destroy()
+
+                    break
+                end
+            end
+        end
+
+        if not v23 then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{91d1}\u{4fdd}\u{9669}\u{672a}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{81ea}\u{52a8}\u{62a2}\u{9ed1}\u{4fdd}\u{9669}\u{67dc}',
+    Callback = function(p25)
+        AutoSafe3 = p25
+
+        if AutoSafe3 then
+            AutoSafe4()
+        end
+    end,
+})
+
+function AutoSafe4()
+    while AutoSafe3 do
+        wait()
+
+        local _VaultDoor3 = game:GetService('Workspace').BankRobbery.VaultDoor
+        local _HumanoidRootPart4 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+        if _VaultDoor3.Door.Attachment.ProximityPrompt.Enabled == true then
+            _VaultDoor3.Door.Attachment.ProximityPrompt.HoldDuration = 0
+            _VaultDoor3.Door.Attachment.ProximityPrompt.MaxActivationDistance = 16
+            _HumanoidRootPart4.CFrame = CFrame.new(1071.955810546875, 9, -343.80816650390625)
+
+            wait(1)
+            _VaultDoor3.Door.Attachment.ProximityPrompt:InputHoldBegin()
+            _VaultDoor3.Door.Attachment.ProximityPrompt:InputHoldEnd()
+
+            _VaultDoor3.Door.Attachment.ProximityPrompt.Enabled = false
+        end
+
+        local _JewelSafe = game:GetService('Workspace').Game.Entities.JewelSafe
+        local v29, v30, v31 = pairs(_JewelSafe:GetChildren())
+        local v32 = false
+
+        while true do
+            local v33
+
+            v31, v33 = v29(v30, v31)
+
+            if v31 == nil then
+                break
+            end
+            if v33.ClassName == 'Model' then
+                v32 = true
+                _HumanoidRootPart4.CFrame = v33.WorldPivot
+
+                wait(1)
+
+                v33.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.HoldDuration = 0
+                v33.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.MaxActivationDistance = 16
+
+                if v33.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.Enabled == true then
+                    v33.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt:InputHoldBegin()
+                    v33.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt:InputHoldEnd()
+                    wait(5)
+                    v33:Destroy()
+                end
+            end
+        end
+
+        if not v32 then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{9ed1}\u{4fdd}\u{9669}\u{672a}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{81ea}\u{52a8}\u{62a2}\u{5c0f}\u{5b9d}\u{7bb1}',
+    Default = false,
+    Callback = function(p34)
+        SmallChest1 = p34
+
+        if SmallChest1 then
+            SmallChest2()
+        end
+    end,
+})
+
+function SmallChest2()
+    while true do
+        if not SmallChest1 then
+            return
+        end
+
+        wait()
+
+        local _SmallChest = game:GetService('Workspace').Game.Entities.SmallChest
+        local v36, v37, v38 = pairs(_SmallChest:GetChildren())
+        local v39 = false
+
+        while true do
+            local v40
+
+            v38, v40 = v36(v37, v38)
+
+            if v38 == nil then
+                break
+            end
+            if v40.ClassName == 'Model' then
+                local _WorldPivot = v40.WorldPivot
+                local _HumanoidRootPart5 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+                _HumanoidRootPart5.CFrame = _WorldPivot
+
+                wait(0.3)
+                v40.Lock['Meshes/untitled_chest.002_Material.009 (4)'].Attachment.ProximityPrompt:InputHoldBegin()
+                v40.Lock['Meshes/untitled_chest.002_Material.009 (4)'].Attachment.ProximityPrompt:InputHoldEnd()
+                wait(0.3)
+
+                _HumanoidRootPart5.CFrame = CFrame.new(240.52850341796875, -120, -620)
+                v39 = true
+
+                break
+            end
+        end
+
+        if not v39 then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{5c0f}\u{5b9d}\u{7bb1}\u{672a}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{77ac}\u{79fb}\u{5927}\u{5b9d}\u{7bb1}',
+    Default = false,
+    Callback = function(p43)
+        LargeChest1 = p43
+
+        if LargeChest1 then
+            LargeChest2()
+        end
+    end,
+})
+
+function LargeChest2()
+    while true do
+        if not LargeChest1 then
+            return
+        end
+
+        wait()
+
+        local _LargeChest = game:GetService('Workspace').Game.Entities.LargeChest
+        local v45, v46, v47 = pairs(_LargeChest:GetChildren())
+        local v48 = false
+
+        while true do
+            local v49
+
+            v47, v49 = v45(v46, v47)
+
+            if v47 == nil then
+                break
+            end
+            if v49.ClassName == 'Model' then
+                local _WorldPivot2 = v49.WorldPivot
+                local _HumanoidRootPart6 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+                _HumanoidRootPart6.CFrame = _WorldPivot2
+
+                wait(0.3)
+                v49.Door['Meshes/LargeSafe1_Cube.002_Cube.003_None (3)'].Attachment.ProximityPrompt:InputHoldBegin()
+                v49.Door['Meshes/LargeSafe1_Cube.002_Cube.003_None (3)'].Attachment.ProximityPrompt:InputHoldEnd()
+                wait(0.3)
+
+                _HumanoidRootPart6.CFrame = CFrame.new(240.52850341796875, -120, -620)
+                v48 = true
+
+                break
+            end
+        end
+
+        if not v48 then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{5927}\u{5b9d}\u{7bb1}\u{672a}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{77ac}\u{79fb}\u{5c0f}\u{4fdd}\u{9669}+\u{79d2}\u{5f00}',
+    Default = false,
+    Callback = function(p52)
+        SmallSafe1 = p52
+
+        if SmallSafe1 then
+            SmallSafe2()
+        end
+    end,
+})
+
+function SmallSafe2()
+    while true do
+        if not SmallSafe1 then
+            return
+        end
+
+        wait(0.1)
+
+        local _SmallSafe = game:GetService('Workspace').Game.Entities.SmallSafe
+        local v54, v55, v56 = pairs(_SmallSafe:GetChildren())
+        local v57 = false
+
+        while true do
+            local v58
+
+            v56, v58 = v54(v55, v56)
+
+            if v56 == nil then
+                break
+            end
+            if v58.ClassName == 'Model' then
+                local _WorldPivot3 = v58.WorldPivot
+                local _HumanoidRootPart7 = game:GetService('Players').LocalPlayer.Character.HumanoidRootPart
+
+                _SmallSafe.SmallSafe.Door['Meshes/Safe1_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.HoldDuration = 0
+                _HumanoidRootPart7.CFrame = _WorldPivot3
+                v57 = true
+
+                break
+            end
+        end
+
+        if not v57 then
+            u1:MakeNotification({
+                Name = '\u{63d0}\u{793a}\u{ff1a}',
+                Content = '\u{5c0f}\u{4fdd}\u{9669}\u{672a}\u{5237}\u{65b0}\u{ff01}',
+                Image = 'rbxassetid://4483345998',
+                Time = 5,
+            })
+            wait(30)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{77ac}\u{79fb}\u{5370}\u{949e}\u{673a}',
+    Default = false,
+    Callback = function(p61)
+        MoneyPrint1 = p61
+
+        if MoneyPrint1 then
+            MoneyPrint2()
+        end
+    end,
+})
+
+function MoneyPrint2()
+    if not MoneyPrint1 then
+        return
+    end
+
+    wait(0.1)
+
+    local v62, v63, v64 = pairs(v72:GetChildren())
+
+    while true do
+        local v65
+
+        v64, v65 = v62(v63, v64)
+
+        if v64 == nil then
+            break
+        end
+
+        local _ = v65.ClassName == 'MeshPart'
+        local v66, v67, v68 = pairs(v65:GetChildren())
+
+        while true do
+            local v69
+
+            v68, v69 = v66(v67, v68)
+
+            if v68 == nil then
+                break
+            end
+            if v69.ClassName == 'ProximityPrompt' and v69.ObjectText == 'Money Printer' then
+                local _CFrame = v65.CFrame
+
+                game:GetService('Players').LocalPlayer.Character.HumanoidRootPart.CFrame = _CFrame
+            end
+        end
+    end
+
+    local v71, v72 = v85(v86, v71)
+
+    if v71 ~= nil then
+    else
+    end
+
+    wait(0.1)
+
+    local v73, v74, v75 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+
+    while true do
+        local v76
+
+        v75, v76 = v73(v74, v75)
+
+        if v75 == nil then
+            break
+        end
+
+        local v77, v78, v79 = pairs(v76:GetChildren())
+
+        while true do
+            local v80
+
+            v79, v80 = v77(v78, v79)
+
+            if v79 == nil then
+                break
+            end
+
+            local v81, v82, v83 = pairs(v80:GetChildren())
+
+            while true do
+                local v84
+
+                v83, v84 = v81(v82, v83)
+
+                if v83 == nil then
+                    break
+                end
+                if v84.ClassName == 'BillboardGui' then
+                    v84:Remove()
+                end
+            end
+        end
+    end
+
+    local v85, v86
+
+    v85, v86, v71 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+end
+
+v4:AddToggle({
+    Name = '\u{8fdc}\u{7a0b}\u{9ed1}\u{5e02}',
+    Default = false,
+    Callback = function(p87)
+        Dealer1 = p87
+
+        if Dealer1 then
+            Dealer2()
+        end
+    end,
+})
+v4:AddButton({
+    Name = '\u{77ac}\u{79fb}\u{5b9d}\u{85cf}+\u{79d2}\u{6316}',
+    Default = false,
+    Callback = function(p88)
+        Debris1 = p88
+
+        if Debris1 then
+            Debris2()
+        end
+    end,
+})
+
+function Debris2()
+    local _Debris = game:GetService('Workspace').Game.Local.Debris
+
+    if _Debris.TreasureMarker then
+        _Debris.TreasureMarker.ProximityPrompt.HoldDuration = 0
+        _Debris.TreasureMarker.ProximityPrompt.MaxActivationDistance = 40
+
+        local _CFrame2 = _Debris.TreasureMarker.CFrame
+
+        game:GetService('Players').LocalPlayer.Character.HumanoidRootPart.CFrame = _CFrame2
+    else
+        u1:MakeNotification({
+            Name = '\u{63d0}\u{793a}\u{ff1a}',
+            Content = '\u{60a8}\u{672a}\u{6301}\u{6709}\u{85cf}\u{5b9d}\u{56fe}\u{ff01}',
+            Image = 'rbxassetid://4483345998',
+            Time = 5,
+        })
+    end
+end
+
+v4:AddButton({
+    Name = '\u{8fdc}\u{7a0b}\u{4fdd}\u{9669}\u{ff08}Z\u{ff09}',
+    Value = false,
+    Callback = function(_)
+        game:GetService('Players').LocalPlayer.PlayerGui.Backpack.Holder.Locker.Visible = true
+    end,
+})
+v4:AddButton({
+    Name = '\u{79d2}\u{62ff}\u{73e0}\u{5b9d}\u{5e97}',
+    Callback = function()
+        local _HighYieldSpawns = game:GetService('Workspace').GemRobbery.JewelryCases.HighYieldSpawns
+        local v92, v93, v94 = pairs(_HighYieldSpawns:GetChildren())
+
+        while true do
+            local v95
+
+            v94, v95 = v92(v93, v94)
+
+            if v94 == nil then
+                break
+            end
+            if v95.ClassName == 'Model' then
+                local v96, v97, v98 = pairs(v95:GetChildren())
+
+                while true do
+                    local v99
+
+                    v98, v99 = v96(v97, v98)
+
+                    if v98 == nil then
+                        break
+                    end
+                    if v99.ClassName == 'Model' and v99.Name ~= 'Case' then
+                        if v99.Name ~= 'Emerald' then
+                            if v99.Name ~= 'Sapphire' then
+                                if v99.Name ~= 'Amethyst' then
+                                    if v99.Name ~= 'Topaz' then
+                                        if v99.Name ~= 'Diamond' then
+                                            if v99.Name ~= 'Gold Bar' then
+                                                if v99.Name ~= 'Ruby' then
+                                                    if v99:FindFirstChild('Box') and v99.Box:FindFirstChild('ProximityPrompt') then
+                                                        v99.Box.ProximityPrompt.HoldDuration = 0
+                                                    end
+                                                elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                                    v99.Handle.ProximityPrompt.HoldDuration = 0
+                                                end
+                                            elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                                v99.Handle.ProximityPrompt.HoldDuration = 0
+                                            end
+                                        elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                            v99.Handle.ProximityPrompt.HoldDuration = 0
+                                        end
+                                    elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                        v99.Handle.ProximityPrompt.HoldDuration = 0
+                                    end
+                                elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                    v99.Handle.ProximityPrompt.HoldDuration = 0
+                                end
+                            elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                                v99.Handle.ProximityPrompt.HoldDuration = 0
+                            end
+                        elseif v99:FindFirstChild('Handle') and v99.Handle:FindFirstChild('ProximityPrompt') then
+                            v99.Handle.ProximityPrompt.HoldDuration = 0
+                        end
+                    end
+                end
+            end
+        end
+
+        local _LowYieldSpawns = game:GetService('Workspace').GemRobbery.JewelryCases.LowYieldSpawns
+        local v101, v102, v103 = pairs(_LowYieldSpawns:GetChildren())
+
+        while true do
+            local v104
+
+            v103, v104 = v101(v102, v103)
+
+            if v103 == nil then
+                break
+            end
+            if v104.ClassName == 'Model' then
+                local v105, v106, v107 = pairs(v104:GetChildren())
+
+                while true do
+                    local v108
+
+                    v107, v108 = v105(v106, v107)
+
+                    if v107 == nil then
+                        break
+                    end
+                    if v108.ClassName == 'Model' and v108.Name ~= 'Case' then
+                        if v108.Name ~= 'Emerald' then
+                            if v108.Name ~= 'Sapphire' then
+                                if v108.Name ~= 'Amethyst' then
+                                    if v108.Name ~= 'Topaz' then
+                                        if v108.Name ~= 'Diamond' then
+                                            if v108.Name ~= 'Gold Bar' then
+                                                if v108.Name ~= 'Ruby' then
+                                                    if v108:FindFirstChild('Box') and v108.Box:FindFirstChild('ProximityPrompt') then
+                                                        v108.Box.ProximityPrompt.HoldDuration = 0
+                                                    end
+                                                elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                                    v108.Handle.ProximityPrompt.HoldDuration = 0
+                                                end
+                                            elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                                v108.Handle.ProximityPrompt.HoldDuration = 0
+                                            end
+                                        elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                            v108.Handle.ProximityPrompt.HoldDuration = 0
+                                        end
+                                    elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                        v108.Handle.ProximityPrompt.HoldDuration = 0
+                                    end
+                                elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                    v108.Handle.ProximityPrompt.HoldDuration = 0
+                                end
+                            elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                                v108.Handle.ProximityPrompt.HoldDuration = 0
+                            end
+                        elseif v108:FindFirstChild('Handle') and v108.Handle:FindFirstChild('ProximityPrompt') then
+                            v108.Handle.ProximityPrompt.HoldDuration = 0
+                        end
+                    end
+                end
+            end
+        end
+    end,
+})
+
+function Dealer2()
+    while Dealer1 do
+        wait(0.1)
+
+        game:GetService('Workspace').BlackMarket.Dealer.Dealer.ProximityPrompt.MaxActivationDistance = 100000
+    end
+    while not Dealer1 do
+        wait(0.1)
+
+        game:GetService('Workspace').BlackMarket.Dealer.Dealer.ProximityPrompt.MaxActivationDistance = 16
+    end
+end
+
+v4:AddButton({
+    Name = '\u{7a7a}\u{6295}\u{79d2}\u{62ff}(Q)',
+    Callback = function()
+        wait(0.1)
+
+        game:GetService('Workspace').Game.Airdrops.Airdrop.Airdrop.ProximityPrompt.HoldDuration = 0
+    end,
+})
+v4:AddButton({
+    Name = '\u{79d2}\u{5f00}\u{94f6}\u{884c}+\u{5fae}\u{8ddd}\u{79bb}(E)',
+    Callback = function()
+        game:GetService('Workspace').BankRobbery.VaultDoor.Door.Attachment.ProximityPrompt.HoldDuration = 0
+        game:GetService('Workspace').BankRobbery.VaultDoor.Door.Attachment.ProximityPrompt.MaxActivationDistance = 16
+        game:GetService('Workspasce').BankRobbery.BankCash.Main.Attachment.ProximityPrompt.MaxActivationDistance = 16
+    end,
+})
+v4:AddButton({
+    Name = '\u{79d2}\u{5f00}\u{91d1}\u{4fdd}\u{9669}(R)',
+    Callback = function()
+        while true do
+            wait(0.1)
+
+            local _GoldJewelSafe2 = game:GetService('Workspace').Game.Entities.GoldJewelSafe.GoldJewelSafe
+
+            _GoldJewelSafe2.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.HoldDuration = 0
+            _GoldJewelSafe2.Name = 'safeopen'
+        end
+    end,
+})
+Fram:AddButton({
+    Name = '\u{79d2}\u{5f00}\u{9ed1}\u{4fdd}\u{9669}(T)',
+    Callback = function()
+        while true do
+            wait(0.1)
+
+            local _JewelSafe2 = game:GetService('Workspace').Game.Entities.JewelSafe.JewelSafe
+
+            _JewelSafe2.Door['Meshes/LargeSafe_Cube.002_Cube.003_None (1)'].Attachment.ProximityPrompt.HoldDuration = 0
+            _JewelSafe2.Name = 'safeopen'
+        end
+    end,
+})
+v4:AddTextbox({
+    Name = '\u{8303}\u{56f4}',
+    Default = '',
+    TextDisappear = true,
+    Callback = function(p111)
+        _G.HeadSize = p111
+        _G.Disabled = true
+
+        game:GetService('RunService').RenderStepped:connect(function()
+            if _G.Disabled then
+                local v112 = next
+                local v113, v114 = game:GetService('Players'):GetPlayers()
+
+                while true do
+                    local u115
+
+                    v114, u115 = v112(v113, v114)
+
+                    if v114 == nil then
+                        break
+                    end
+                    if u115.Name ~= game:GetService('Players').LocalPlayer.Name then
+                        pcall(function()
+                            u115.Character.HumanoidRootPart.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                            u115.Character.HumanoidRootPart.Transparency = 0.7
+                            u115.Character.HumanoidRootPart.CanCollide = false
+                        end)
+                    end
+                end
+            end
+        end)
+    end,
+})
+v4:AddToggle({
+    Name = '\u{6b8b}\u{8840}\u{81ea}\u{52a8}\u{9003}\u{9038}',
+    Value = false,
+    Callback = function(p116)
+        paolu1 = p116
+
+        if paolu1 then
+            paolu2()
+        end
+    end,
+})
+
+function paolu2()
+    while paolu1 do
+        wait(0.1)
+
+        if game:GetService('Players').LocalPlayer.Character.Humanoid.Health <= 35 then
+            local v117 = CFrame.new(175.191, 13.937, -132.69)
+
+            game:GetService('Players').LocalPlayer.Character.HumanoidRootPart.CFrame = v117
+
+            wait(20)
+        end
+    end
+end
+
+v4:AddToggle({
+    Name = '\u{6700}\u{5927}\u{89c6}\u{91ce}',
+    Callback = function(p118)
+        Cam1 = p118
+
+        if Cam1 then
+            Cam2()
+        end
+    end,
+})
+
+function Cam2()
+    while Cam1 do
+        wait(0.1)
+
+        game:GetService('Players').LocalPlayer.CameraMaxZoomDistance = 1000
+    end
+    while not Cam1 do
+        wait(0.1)
+
+        game:GetService('Players').LocalPlayer.CameraMaxZoomDistance = 32
+    end
+end
+
+v4:AddButton({
+    Name = '\u{663e}\u{793a}\u{804a}\u{5929}\u{6846}',
+    Callback = function()
+        ChatSee()
+    end,
+})
+
+function ChatSee()
+    game:GetService('Players').LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame.Visible = true
+    game:GetService('Players').LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame.Position = UDim2.new(0, 0, 0, 40)
+end
+
+v4:AddButton({
+    Name = '\u{79fb}\u{9664}\u{969c}\u{788d}',
+    Callback = function()
+        game:GetService('Workspace').InviteSigns:Destroy()
+        game:GetService('Workspace').Game.Props['Trash Bag']:Destroy()
+        game:GetService('Workspace').Game.Props.Dumpster:Destroy()
+        game:GetService('Workspace').Game.Props['Traffic Cone']:Destroy()
+        game:GetService('Workspace').Game.Props['Wire Fence']:Destroy()
+        game:GetService('Workspace').Game.Props['Wood Crate']:Destroy()
+        game:GetService('Workspace').Game.Props.Hydrant:Destroy()
+        game:GetService('Workspace').Game.Props['Street Light']:Destroy()
+        game:GetService('Workspace').Game.Props['Power Line Pole']:Destroy()
+        game:GetService('Workspace').Game.Props['Wood Fence']:Destroy()
+        game:GetService('Workspace').Game.Props.BusStop:Destroy()
+        game:GetService('Workspace').Game.Props.Roadblock:Destroy()
+        game:GetService('Workspace').Game.Props.Bollard:Destroy()
+        game:GetService('Workspace').Game.Props.Light:Destroy()
+        game:GetService('Workspace').Game.Props.Roadblock:Destroy()
+        game:GetService('Workspace').Game.Props.Glass:Destroy()
+        game:GetService('Workspace').Game.Props.Bench:Destroy()
+        game:GetService('Workspace').Game.Props['Trash Bin']:Destroy()
+        game:GetService('Workspace').Game.Props.Bollard:Destroy()
+        game:GetService('Workspace').Game.Props['Office Chair']:Destroy()
+        game:GetService('Workspace').Game.Props.Table:Destroy()
+        game:GetService('Workspace').BankRobbery.BankWalls:Destroy()
+        game:GetService('Workspace').BankRobbery.AlarmLightModel:Destroy()
+        game:GetService('Workspace').BankRobbery.AlarmLights:Destroy()
+    end,
+})
+v4:AddButton({
+    Name = '\u{65e0}\u{76ae}\u{80a4}\u{67aa}\u{68b0}\u{65e0}\u{540e}+\u{5fae}\u{5c04}\u{901f}+\u{5de6}\u{952e}\u{8fde}\u{53d1}',
+    Callback = function()
+        while true do
+            wait(1)
+
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Raygun') and game.ReplicatedStorage.Models.Items.Raygun.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Raygun.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('M1911') and game.ReplicatedStorage.Models.Items.M1911.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.M1911.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Scar L') and game.ReplicatedStorage.Models.Items['Scar L'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['Scar L'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Glock') and game.ReplicatedStorage.Models.Items.Glock.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Glock.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Mossberg') and game.ReplicatedStorage.Models.Items.Mossberg.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Mossberg.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('RPG') and game.ReplicatedStorage.Models.Items.RPG.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.RPG.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('USP 45') and game.ReplicatedStorage.Models.Items['USP 45'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['USP 45'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Sawn Off') and game.ReplicatedStorage.Models.Items['Sawn Off'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['Sawn Off'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Minigun') and game.ReplicatedStorage.Models.Items.Minigun.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Minigun.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Stagecoach') and game.ReplicatedStorage.Models.Items.Stagecoach.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Stagecoach.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Deagle') and game.ReplicatedStorage.Models.Items.Deagle.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Deagle.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('RPK') and game.ReplicatedStorage.Models.Items.RPK.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.RPK.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Glock 18') and game.ReplicatedStorage.Models.Items['Glock 18'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['Glock 18'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('AK-47') and game.ReplicatedStorage.Models.Items['AK-47'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['AK-47'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Tommy Gun') and game.ReplicatedStorage.Models.Items['Tommy Gun'].Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items['Tommy Gun'].Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('M4A1') and game.ReplicatedStorage.Models.Items.M4A1.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.M4A1.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Uzi') and game.ReplicatedStorage.Models.Items.Uzi.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Uzi.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('MP7') and game.ReplicatedStorage.Models.Items.MP7.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.MP7.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('AUG') and game.ReplicatedStorage.Models.Items.AUG.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.AUG.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+            if game.ReplicatedStorage.Models.Items:FindFirstChild('Python') and game.ReplicatedStorage.Models.Items.Python.Handle.Muzzle:FindFirstChild('PointLight') then
+                game.ReplicatedStorage.Models.Items.Python.Handle.Muzzle.PointLight.Name = 'PointLight1'
+            end
+        end
+    end,
+})
+v4:AddButton({
+    Name = '\u{900f}\u{89c6}\u{7269}\u{54c1}',
+    Callback = function()
+        local v119, v120, v121 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+        local v122, v123, v124 = pairs(v130:GetChildren())
+
+        while true do
+            local v125
+
+            v124, v125 = v122(v123, v124)
+
+            if v124 == nil then
+                break
+            end
+
+            local _ = v125.ClassName == 'MeshPart'
+            local v126, v127, v128 = pairs(v125:GetChildren())
+
+            while true do
+                local v129
+
+                v128, v129 = v126(v127, v128)
+
+                if v128 == nil then
+                    break
+                end
+                if v129.ClassName == 'ProximityPrompt' and (v129.ObjectText == 'Military Armory Keycard' or (v129.ObjectText == 'Sawn Off' or (v129.ObjectText == 'Scar L' or (v129.ObjectText == 'Military Vest' or (v129.ObjectText == 'Raygun' or (v129.ObjectText == 'UPS 45' or (v129.ObjectText == 'Medium Vest' or (v129.ObjectText == 'Deagle' or (v129.ObjectText == 'Glock 18' or (v129.ObjectText == 'Heavy Vest' or (v129.ObjectText == 'Diamond Ring' or (v129.ObjectText == 'AS Val' or (v129.ObjectText == 'Money Printer' or (v129.ObjectText == 'Aug' or (v129.ObjectText == 'M4A1' or (v129.ObjectText == 'C4' or (v129.ObjectText == 'Stagecoach' or (v129.ObjectText == 'Diamond' or (v129.ObjectText == 'Void Gem' or (v129.ObjectText == 'Dark Matter Gem' or (v129.ObjectText == 'Gold AK-47' or (v129.ObjectText == 'Barrett M107' or (v129.ObjectText == 'Gold Deagle' or (v129.ObjectText == 'Double Barrel' or (v129.ObjectText == 'Dragunov' or (v129.ObjectText == 'RPK' or (v129.ObjectText == 'M249 SAW' or (v129.ObjectText == 'Flamethrower' or (v129.ObjectText == 'Police Armory Keycard' or (v129.ObjectText == 'RPG' or (v129.ObjectText == 'Saiga 12' or v129.ObjectText == 'Ammo Box'))))))))))))))))))))))))))))))) then
+                    xd = Instance.new('BillboardGui')
+                    xd.Parent = v125
+                    xd.AlwaysOnTop = true
+                    xd.Size = UDim2.new(0, 100, 0, 25)
+                    Frame = Instance.new('Frame')
+                    Frame.Parent = xd
+                    Frame.BackgroundColor3 = Color3.new(1, 1, 1)
+                    Frame.Size = UDim2.new(1, 0, 1, 0)
+                    Frame.BackgroundTransparency = 1
+                    text = Instance.new('TextLabel')
+                    text.TextScaled = true
+                    text.BackgroundColor3 = Color3.new(255, 0, 0)
+                    text.Parent = Frame
+                    text.Text = v129.ObjectText
+                    text.Size = UDim2.new(1, 0, 1, 0)
+                    text.BackgroundTransparency = 1
+                    text.TextColor3 = Color3.new(1, 1, 1)
+                end
+            end
+        end
+
+        local v130
+
+        v121, v130 = v119(v120, v121)
+
+        if v121 ~= nil then
+        else
+        end
+
+        wait()
+
+        local v131, v132, v133 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+
+        while true do
+            local v134
+
+            v133, v134 = v131(v132, v133)
+
+            if v133 == nil then
+                break
+            end
+
+            local v135, v136, v137 = pairs(v134:GetChildren())
+
+            while true do
+                local v138
+
+                v137, v138 = v135(v136, v137)
+
+                if v137 == nil then
+                    break
+                end
+
+                local v139, v140, v141 = pairs(v138:GetChildren())
+
+                while true do
+                    local v142
+
+                    v141, v142 = v139(v140, v141)
+
+                    if v141 == nil then
+                        break
+                    end
+                    if v142.ClassName == 'BillboardGui' then
+                        v142:Remove()
+                    end
+                end
+            end
+        end
+    end,
+})
+v4:AddButton({
+    Name = '\u{7ed8}\u{5236}\u{96f6}\u{4ef6}',
+    Callback = function()
+        local v143, v144, v145 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+        local v146, v147, v148 = pairs(v154:GetChildren())
+
+        while true do
+            local v149
+
+            v148, v149 = v146(v147, v148)
+
+            if v148 == nil then
+                break
+            end
+
+            local _ = v149.ClassName == 'MeshPart'
+            local v150, v151, v152 = pairs(v149:GetChildren())
+
+            while true do
+                local v153
+
+                v152, v153 = v150(v151, v152)
+
+                if v152 == nil then
+                    break
+                end
+                if v153.ClassName == 'ProximityPrompt' and (v153.ObjectText == 'Medical Supplies' or (v153.ObjectText == 'Weapon components' or (v153.ObjectText == 'Explosives' or (v153.ObjectText == 'Weapon Parts' or v153.ObjectText == 'Scrap')))) then
+                    xd = Instance.new('BillboardGui')
+                    xd.Parent = v149
+                    xd.AlwaysOnTop = true
+                    xd.Size = UDim2.new(0, 100, 0, 25)
+                    Frame = Instance.new('Frame')
+                    Frame.Parent = xd
+                    Frame.BackgroundColor3 = Color3.new(1, 1, 1)
+                    Frame.Size = UDim2.new(1, 0, 1, 0)
+                    Frame.BackgroundTransparency = 1
+                    text = Instance.new('TextLabel')
+                    text.TextScaled = true
+                    text.BackgroundColor3 = Color3.new(255, 0, 0)
+                    text.Parent = Frame
+                    text.Text = v153.ObjectText
+                    text.Size = UDim2.new(1, 0, 1, 0)
+                    text.BackgroundTransparency = 1
+                    text.TextColor3 = Color3.new(1, 1, 1)
+                end
+            end
+        end
+
+        local v154
+
+        v145, v154 = v143(v144, v145)
+
+        if v145 ~= nil then
+        else
+        end
+
+        wait()
+
+        local v155, v156, v157 = pairs(game:GetService('Workspace').Game.Entities.ItemPickup:GetChildren())
+
+        while true do
+            local v158
+
+            v157, v158 = v155(v156, v157)
+
+            if v157 == nil then
+                break
+            end
+
+            local v159, v160, v161 = pairs(v158:GetChildren())
+
+            while true do
+                local v162
+
+                v161, v162 = v159(v160, v161)
+
+                if v161 == nil then
+                    break
+                end
+
+                local v163, v164, v165 = pairs(v162:GetChildren())
+
+                while true do
+                    local v166
+
+                    v165, v166 = v163(v164, v165)
+
+                    if v165 == nil then
+                        break
+                    end
+                    if v166.ClassName == 'BillboardGui' then
+                        v166:Remove()
+                    end
+                end
+            end
+        end
+    end,
+})
+v4:AddButton({
+    Name = '\u{79d2}\u{586b}\u{5f39}\u{836f}\u{7bb1}',
+    Callback = function()
+        for _ = 1, 50 do
+            local _AmmoBox = game:GetService('Workspace').Game.Local.droppables['Ammo Box']
+
+            _AmmoBox.Handle.ProximityPrompt.HoldDuration = 0
+            _AmmoBox.Name = 'ammoopen'
+        end
+    end,
+})
