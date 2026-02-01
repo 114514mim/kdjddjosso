@@ -598,15 +598,17 @@ Night99Tab:CreateToggle({
     end
 })
 
--- 被遗弃区域完整整合修复版
-local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
+-- ==== 被遗弃区域完整修复版 ====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
--- ===== 状态表 =====
+-- ==== 创建 Tab ====
+local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
+
+-- ==== 状态表 ====
 local abandonedState = {
     infiniteStamina = false,
     killerInfiniteStamina = false,
@@ -616,10 +618,10 @@ local abandonedState = {
     espItems = false,
     espGenerators = false,
     autoRepair = false,
-    fixInterval = 0.5, -- 自动修机默认间隔
+    fixInterval = 0.5,
 }
 
--- ===== Sprint 模块 =====
+-- ==== Sprint 模块 ====
 local sprintModule
 local function tryLoadSprint()
     if sprintModule then return end
@@ -657,7 +659,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     setStamina()
 end)
 
--- ===== 无限体力 Toggle =====
+-- ==== 无限体力 Toggle ====
 AbandonedTab:CreateToggle({
     Name = "无限体力",
     CurrentValue = false,
@@ -676,7 +678,7 @@ AbandonedTab:CreateToggle({
     end
 })
 
--- ===== 反眩晕 Toggle =====
+-- ==== 反眩晕 Toggle ====
 AbandonedTab:CreateToggle({
     Name = "反眩晕/反减速",
     CurrentValue = false,
@@ -685,43 +687,42 @@ AbandonedTab:CreateToggle({
         local TARGET_SPEED = 20
         task.spawn(function()
             local player = LocalPlayer
-            local wsLoopConnection, charAddedConnection
+            local wsLoop, charAdded
             while abandonedState.antiDizzy do
                 local char = player.Character
                 if char then
                     local humanoid = char:FindFirstChild("Humanoid")
                     if humanoid then
                         humanoid.WalkSpeed = TARGET_SPEED
-                        if not wsLoopConnection then
-                            wsLoopConnection = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+                        if not wsLoop then
+                            wsLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
                                 humanoid.WalkSpeed = TARGET_SPEED
                             end)
                         end
                     end
                 end
-                if not charAddedConnection then
-                    charAddedConnection = player.CharacterAdded:Connect(function(newChar)
-                        if wsLoopConnection then wsLoopConnection:Disconnect() end
+                if not charAdded then
+                    charAdded = player.CharacterAdded:Connect(function(newChar)
+                        if wsLoop then wsLoop:Disconnect() end
                         local humanoid = newChar:WaitForChild("Humanoid")
                         humanoid.WalkSpeed = TARGET_SPEED
-                        wsLoopConnection = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+                        wsLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
                             humanoid.WalkSpeed = TARGET_SPEED
                         end)
                     end)
                 end
                 task.wait(0.1)
             end
-            -- 停止时重置
             if player.Character and player.Character:FindFirstChild("Humanoid") then
                 player.Character.Humanoid.WalkSpeed = 16
             end
-            if wsLoopConnection then wsLoopConnection:Disconnect() end
-            if charAddedConnection then charAddedConnection:Disconnect() end
+            if wsLoop then wsLoop:Disconnect() end
+            if charAdded then charAdded:Disconnect() end
         end)
     end
 })
 
--- ===== ESP 工具 =====
+-- ==== ESP 工具 ====
 local function setupHighlight(instance, color)
     if instance:FindFirstChildOfClass("Highlight") then return end
     local highlight = Instance.new("Highlight")
@@ -755,21 +756,20 @@ local function setupBillboard(instance)
     billboard.Parent = instance
 end
 
--- ===== ESP Toggle =====
 local function startESP(flag, getTargets, color)
     task.spawn(function()
         while flag() do
             local targets = getTargets()
-            for _, instance in ipairs(targets) do
-                setupHighlight(instance, color)
-                if color == Color3.new(1,1,0) then setupBillboard(instance) end
+            for _, inst in ipairs(targets) do
+                setupHighlight(inst, color)
+                if color == Color3.new(1,1,0) then setupBillboard(inst) end
             end
             task.wait(2)
         end
         local targets = getTargets()
-        for _, instance in ipairs(targets) do
-            removeHighlight(instance)
-            local label = instance:FindFirstChild("NameLabel")
+        for _, inst in ipairs(targets) do
+            removeHighlight(inst)
+            local label = inst:FindFirstChild("NameLabel")
             if label then label:Destroy() end
         end
     end)
@@ -833,11 +833,12 @@ AbandonedTab:CreateToggle({
     end
 })
 
--- ===== 自动修机（整合版，实时读取间隔） =====
-AbandonedTab:CreateTextbox({
-    Name = "修机间隔",
-    PlaceholderText = "秒数",
+-- ==== 自动修机输入框 + Toggle ====
+local FixInput = AbandonedTab:CreateTextbox({
+    Name = "修机间隔 (秒)",
+    PlaceholderText = "请输入修机间隔",
     Text = tostring(abandonedState.fixInterval),
+    RemoveTextAfterFocusLost = false,
     Callback = function(value)
         local num = tonumber(value)
         if num and num > 0 then
@@ -855,6 +856,7 @@ AbandonedTab:CreateToggle({
     Callback = function(v)
         abandonedState.autoRepair = v
         if v then
+            print("自动修机已开启")
             task.spawn(function()
                 local player = LocalPlayer
                 while abandonedState.autoRepair do
@@ -862,11 +864,9 @@ AbandonedTab:CreateToggle({
                         local mapFolder = workspace:FindFirstChild("Map")
                             and workspace.Map:FindFirstChild("Ingame")
                             and workspace.Map.Ingame:FindFirstChild("Map")
-
                         if mapFolder and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                             local closestGenerator, closestDistance = nil, math.huge
                             local playerPos = player.Character.HumanoidRootPart.Position
-
                             for _, g in ipairs(mapFolder:GetChildren()) do
                                 if g.Name == "Generator" and g:FindFirstChild("Progress") and g.Progress.Value < 100 then
                                     local mainPart = g:FindFirstChild("Main")
@@ -879,9 +879,11 @@ AbandonedTab:CreateToggle({
                                     end
                                 end
                             end
-
-                            if closestGenerator and closestGenerator:FindFirstChild("Remotes") and closestGenerator.Remotes:FindFirstChild("RE") then
-                                closestGenerator.Remotes.RE:FireServer()
+                            if closestGenerator then
+                                if closestGenerator:FindFirstChild("Remotes") and closestGenerator.Remotes:FindFirstChild("RE") then
+                                    closestGenerator.Remotes.RE:FireServer()
+                                end
+                                setupHighlight(closestGenerator, Color3.new(0,1,1)) -- 高亮当前修的 Generator
                             end
                         end
                     end)
@@ -889,7 +891,7 @@ AbandonedTab:CreateToggle({
                 end
             end)
         else
-            print("停止自动修机")
+            print("自动修机已关闭")
         end
     end
 })
