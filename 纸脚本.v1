@@ -872,7 +872,40 @@ AbandonedTab:CreateToggle({
 AbandonedTab:CreateToggle({
     Name = "ESP 发电机",
     Callback = function(v)
-        
+        if state then
+        for _,v in next,workspace.Map.Ingame.Map:GetChildren() do
+            if v.Name == "Generator" and v:IsA("Model") then
+                if v.Progress.Value < 99 then
+                    ESPGenerator("电机(未完成) 进度.."..v.Progress.Value,v,Color3.new(1,0,0))
+                elseif v.Progress.Value == 100 then
+                    ESPGenerator("电机(完成)",v,Color3.new(1,0,0))
+                end
+            end
+        end
+        workspace.Map.Ingame.Map.ChildAdded:Connect(function(v)
+            if v.Name == "Generator" and v:IsA("Model") and state then
+                if v.Progress.Value < 99 then
+                    ESPGenerator("电机(未完成) 进度.."..v.Progress.Value,v,Color3.new(1,0,0))
+                elseif v.Progress.Value == 100 then
+                    ESPGenerator("电机(完成)",v,Color3.new(1,0,0))
+                end
+            end
+        end)
+        while wait() and state do
+            for _,v in pairs(workspace.GeneratorESPFloder:GetChildren()) do
+                for _,i in pairs(v:GetChildren()) do
+                    if v.Progress.Value < 99 then
+                        v.Text = "电机(未完成) 进度.."..v.Progress.Value
+                        elseif v.Progress.Value == 100 then
+                        v.Text = "电机(完成)"
+                    end
+                end
+            end
+        end
+    else
+             for _,v in pairs(workspace.GeneratorESPFloder:GetChildren()) do
+                 v:Destroy()
+             end
     end
 })
 
