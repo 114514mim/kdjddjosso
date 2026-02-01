@@ -732,41 +732,42 @@ AbandonedTab:CreateToggle({
     end
 end
 
--- ===== ESP =====
-local espConnections = {}
-local function clearESP()
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        local hl = obj:FindFirstChild("ESP_HL")
-        if hl then hl:Destroy() end
-    end
-    for _, c in ipairs(espConnections) do c:Disconnect() end
-    table.clear(espConnections)
-end
-
-local function startESP(keyword, color)
-    clearESP()
-    local function apply(obj)
-        if obj:IsA("Model") and obj.Name:lower():find(keyword) and not obj:FindFirstChild("ESP_HL") then
-            local hl = Instance.new("Highlight")
-            hl.Name = "ESP_HL"
-            hl.FillColor = color
-            hl.OutlineColor = Color3.new(1,1,1)
-            hl.FillTransparency = 0.5
-            hl.OutlineTransparency = 0
-            hl.Adornee = obj
-            hl.Parent = workspace
-        end
-    end
-    for _, obj in ipairs(workspace:GetDescendants()) do apply(obj) end
-    table.insert(espConnections, workspace.DescendantAdded:Connect(apply))
-end
-
 AbandonedTab:CreateToggle({
     Name = "ESP 杀手",
     Callback = function(v)
-        abandonedState.espKillers = v
-        if v then startESP("killer", Color3.fromRGB(255,0,0)) else clearESP() end
+        
+    endkill = state  -- 同步阀门状态
+    
+    if state then
+       --  pawn(function()  -- 使用独立协程
+           while kill do  -- 检测阀门状态
+             local killFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Killers")
+               if killFolder then
+    -- 处理已存在的Model
+                              for _, child in ipairs(killFolder:GetChildren()) do
+                                  if child:IsA("Model") then
+                                      setupModelEffects(child)
+                                  end
+                              end
+               end
+               wait(2)
+           end
+    else
+                         -- local function cleanAllEffects()
+                              local killFolder = workspace:FindFirstChild("Players") 
+                                  and workspace.Players:FindFirstChild("Killers")
+    
+                              if killFolder then
+                                  for _, child in ipairs(killFolder:GetChildren()) do
+                                      if child:IsA("Model") then
+                                          removeModelEffects(child)
+                                      end
+                                  end
+                              end
+                        --  end
+
     end
+end)
 })
 
 AbandonedTab:CreateToggle({
