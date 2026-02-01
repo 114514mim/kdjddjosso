@@ -806,16 +806,73 @@ AbandonedTab:CreateToggle({
 AbandonedTab:CreateToggle({
     Name = "ESP 物品",
     Callback = function(v)
-        abandonedState.espItems = v
-        if v then startESP("item", Color3.fromRGB(0,0,255)) else clearESP() end
+        if state then
+       --  pawn(function()  -- 使用独立协程
+           while item do  -- 检测阀门状态
+                          local ingame = workspace:WaitForChild("Map"):WaitForChild("Ingame")
+
+                          for _, instance in ipairs(ingame:GetDescendants()) do
+                              if instance:IsA("Tool") then
+                                  -- 添加高光 (Highlight)
+                                  if not instance:FindFirstChildOfClass("Highlight") and item==true then
+                                      local highlight = Instance.new("Highlight")
+                                      highlight.Name = "Highlight"
+                                      highlight.FillColor = Color3.fromRGB(255, 255, 0) -- 黄色填充
+                                      highlight.OutlineColor = Color3.fromRGB(255, 165, 0) -- 橙色边框
+                                      highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- 始终显示在最上层
+                                      highlight.Parent = instance
+                                  end
+
+        -- 添加 3D 文字 (BillboardGui)
+                                  if not instance:FindFirstChild("NameLabel") and item==true then
+                                      local billboard = Instance.new("BillboardGui")
+                                      billboard.Name = "NameLabel"
+                                      billboard.Size = UDim2.new(0, 50, 0, 50) -- 显示区域大小
+                                      billboard.StudsOffset = Vector3.new(0, 1, 0) -- 在 Tool 上方 2 单位
+                                      billboard.AlwaysOnTop = true -- 始终显示在最上层
+            
+                                      local textLabel = Instance.new("TextLabel")
+                                      textLabel.Size = UDim2.new(1, 0, 1, 0) -- 占满整个 BillboardGui
+                                      textLabel.BackgroundTransparency = 1 -- 透明背景
+                                      textLabel.Text = instance.Name -- 显示 Tool 的名字
+                                      textLabel.Font = Enum.Font.SourceSansBold
+                                      textLabel.TextSize = 11
+                                      textLabel.TextColor3 = Color3.new(255, 165, 0) -- 白色文字
+                                      textLabel.Parent = billboard
+            
+                                      billboard.Parent = instance
+                                  end
+                              end
+                          end
+                          wait(2)
+           end
+    else
+            local ingame = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame")
+
+                          if ingame then
+                              for _, tool in ipairs(ingame:GetChildren()) do
+                                  if tool:IsA("Tool") then
+            -- 删除Highlight对象
+                                      local highlight = tool:FindFirstChild("Highlight")
+                                      if highlight then
+                                          highlight:Destroy()
+                                      end
+            
+            -- 删除NameLabel对象
+                                      local nameLabel = tool:FindFirstChild("NameLabel")
+                                      if nameLabel then
+                                          nameLabel:Destroy()
+                                      end
+                                  end
+                              end
+                          end
     end
 })
 
 AbandonedTab:CreateToggle({
     Name = "ESP 发电机",
     Callback = function(v)
-        abandonedState.espGenerators = v
-        if v then startESP("generator", Color3.fromRGB(255,255,0)) else clearESP() end
+        
     end
 })
 
