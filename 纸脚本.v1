@@ -767,14 +767,39 @@ AbandonedTab:CreateToggle({
                         --  end
 
     end
-end)
 })
 
 AbandonedTab:CreateToggle({
     Name = "ESP 幸存者",
     Callback = function(v)
-        abandonedState.espSurvivors = v
-        if v then startESP("survivor", Color3.fromRGB(0,255,0)) else clearESP() end
+        if state then
+       --  pawn(function()  -- 使用独立协程
+           while Survivors do  -- 检测阀门状态
+             local SurvivorsFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Survivors")
+               if SurvivorsFolder and Survivors==true then
+    -- 处理已存在的Model
+                              for _, child in ipairs(SurvivorsFolder:GetChildren()) do
+                                  if child:IsA("Model") then
+                                      setupSurvivorsModelEffects(child)
+                                  end
+                              end
+               end
+               wait(2)
+           end
+    else
+                         -- local function cleanAllEffects()
+                              local SurvivorsFolder = workspace:FindFirstChild("Players") 
+                                  and workspace.Players:FindFirstChild("Survivors")
+    
+                              if SurvivorsFolder then
+                                  for _, child in ipairs(SurvivorsFolder:GetChildren()) do
+                                      if child:IsA("Model") then
+                                          removeModelEffects(child)
+                                      end
+                                  end
+                              end
+                        --  end
+
     end
 })
 
