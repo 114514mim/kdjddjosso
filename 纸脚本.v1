@@ -334,40 +334,24 @@ BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
 end})
 
 -- Tab 9: 独家自瞄区域
-local AimbotTab = Window:CreateTab("独家子弹追踪区域", 4483362458)
+local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
 AimbotTab:CreateParagraph({
-    Title = "独家子弹追踪功能",
-    Content = "• Bullet Tracking + Aimbot\n• 队伍检测：默认关闭（全员瞄准，可手动只敌方）\n• 可设置白名单、视野范围、墙壁检测\n• 点击按钮切换开启/关闭"
+    Title = "独家自瞄功能",
+    Content = "• Silent Aim + Aimbot\n• 队伍检测：默认关闭（全员瞄准），可手动开启只敌方\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"
 })
 
--- 状态表
-local bulletTrackingEnabled = false
-local teamCheckEnabled = false
-local wallCheckEnabled = true
-local fovRadius = 200
-local whitelist = {}
-local highlightTarget = nil
+local aimbotEnabled = false
+local teamCheckEnabled = false  -- 默认关闭队伍检测（全员瞄准）
+local oldRaycast = nil
+local originalRaycast = nil
 
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 
--- ===== 工具函数 =====
 local function GetLocalTeam()
     if LocalPlayer.Team then return LocalPlayer.Team end
     return nil
-end
-
-local function IsVisible(part)
-    if not wallCheckEnabled then return true end
-    local origin = Camera.CFrame.Position
-    local direction = (part.Position - origin)
-    local rayParams = RaycastParams.new()
-    rayParams.FilterDescendantsInstances = {LocalPlayer.Character}
-    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
-    local ray = workspace:Raycast(origin, direction, rayParams)
-    return ray == nil or ray.Instance:IsDescendantOf(part.Parent)
 end
 
 local function GetNearestEnemyHead()
@@ -375,20 +359,19 @@ local function GetNearestEnemyHead()
     local closestDistance = math.huge
     local myHeadPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head.Position
     local localTeam = GetLocalTeam()
+
     if not myHeadPos then return nil end
 
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-            if whitelist[player.Name] then continue end
             local head = player.Character.Head
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
                 if teamCheckEnabled then
                     if player.Team == localTeam or player.Team == nil then continue end
                 end
-                if wallCheckEnabled and not IsVisible(head) then continue end
-                local distance = (Camera.CFrame.Position - head.Position).Magnitude
-                if distance < fovRadius and distance < closestDistance then
+                local distance = (myHeadPos - head.Position).Magnitude
+                if distance < closestDistance then
                     closestDistance = distance
                     closestPlayer = player
                 end
@@ -396,40 +379,21 @@ local function GetNearestEnemyHead()
         end
     end
 
-    return closestPlayer and closestPlayer.Character:FindFirstChild("Head") or nil
+    if closestPlayer then return closestPlayer.Character.Head end
+    return nil
 end
 
--- ===== 高亮目标 =====
-local function HighlightTarget(target)
-    if highlightTarget then
-        highlightTarget:Destroy()
-        highlightTarget = nil
-    end
-    if target then
-        local h = Instance.new("Highlight")
-        h.Name = "BulletTrackingTarget"
-        h.FillColor = Color3.fromRGB(0,255,255)
-        h.OutlineColor = Color3.fromRGB(0,255,255)
-        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        h.Parent = target.Parent
-        highlightTarget = h
-    end
-end
-
--- ===== 子弹追踪 Hook =====
-local oldRaycast, originalRaycast = nil, nil
-local function enableBulletTracking()
+local function enableAimbot()
     if oldRaycast then return end
     originalRaycast = getrawmetatable(game).__namecall
     setreadonly(getrawmetatable(game), false)
     getrawmetatable(game).__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
         local args = {...}
-        if not checkcaller() and method == "Raycast" and self == Workspace and bulletTrackingEnabled then
+        if not checkcaller() and method == "Raycast" and self == Workspace and aimbotEnabled then
             local origin = args[1]
             local direction = args[2]
             local targetHead = GetNearestEnemyHead()
-            HighlightTarget(targetHead)
             if targetHead then
                 local newDirection = (targetHead.Position - origin)
                 local distance = newDirection.Magnitude
@@ -437,7 +401,7 @@ local function enableBulletTracking()
                     Position = targetHead.Position,
                     Distance = distance,
                     Instance = targetHead,
-                    Normal = Vector3.new(0,1,0),
+                    Normal = Vector3.new(0, 1, 0),
                     Material = Enum.Material.Plastic,
                 }
                 return fakeResult
@@ -449,76 +413,37 @@ local function enableBulletTracking()
     oldRaycast = true
 end
 
-local function disableBulletTracking()
+local function disableAimbot()
     if oldRaycast then
         setreadonly(getrawmetatable(game), false)
         getrawmetatable(game).__namecall = originalRaycast
         setreadonly(getrawmetatable(game), true)
         oldRaycast = nil
         originalRaycast = nil
-        if highlightTarget then
-            highlightTarget:Destroy()
-            highlightTarget = nil
-        end
     end
 end
 
--- ===== UI 控制 =====
 AimbotTab:CreateButton({
-    Name = "切换独家子弹追踪",
+    Name = "切换独家自瞄 (Silent Aim)",
     Callback = function()
-        bulletTrackingEnabled = not bulletTrackingEnabled
-        if bulletTrackingEnabled then
-            enableBulletTracking()
-            Rayfield:Notify({Title = "子弹追踪", Content = "已开启！", Duration = 5})
+        aimbotEnabled = not aimbotEnabled
+        if aimbotEnabled then
+            enableAimbot()
+            Rayfield:Notify({Title = "子弹追踪", Content = "子弹追踪已开启！（当前全员瞄准）", Duration = 5})
         else
-            disableBulletTracking()
-            Rayfield:Notify({Title = "子弹追踪", Content = "已关闭！已完全还原", Duration = 5})
+            disableAimbot()
+            Rayfield:Notify({Title = "子弹追踪", Content = "自瞄已关闭！已完全还原", Duration = 5})
         end
     end
 })
 
 AimbotTab:CreateToggle({
     Name = "开启队伍检测（只瞄敌方）",
-    CurrentValue = false,
+    CurrentValue = false,  -- 默认关闭（全员瞄准）
     Flag = "TeamCheckToggle",
     Callback = function(Value)
         teamCheckEnabled = Value
         Rayfield:Notify({Title = "队伍检测", Content = "队伍检测已" .. (Value and "开启（只瞄敌方）" or "关闭（全员）"), Duration = 5})
-    end
-})
-
-AimbotTab:CreateToggle({
-    Name = "开启墙壁检测",
-    CurrentValue = true,
-    Callback = function(Value)
-        wallCheckEnabled = Value
-        Rayfield:Notify({Title = "墙壁检测", Content = "墙壁检测已" .. (Value and "开启" or "关闭"), Duration = 5})
-    end
-})
-
-AimbotTab:CreateSlider({
-    Name = "子弹追踪视野范围",
-    Min = 50,
-    Max = 1000,
-    CurrentValue = fovRadius,
-    Callback = function(Value)
-        fovRadius = Value
-        Rayfield:Notify({Title = "视野范围", Content = "子弹追踪范围已设置为 " .. math.floor(Value), Duration = 3})
-    end
-})
-
-AimbotTab:CreateTextbox({
-    Name = "白名单玩家 (英文逗号分隔)",
-    PlaceholderText = "示例: Player1,Player2",
-    Text = "",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(Value)
-        whitelist = {}
-        for name in Value:gmatch("[^,]+") do
-            whitelist[name:gsub("%s","")] = true
-        end
-        Rayfield:Notify({Title = "白名单", Content = "已更新白名单", Duration = 3})
     end
 })
 
