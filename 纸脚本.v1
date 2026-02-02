@@ -447,23 +447,6 @@ AimbotTab:CreateToggle({
     end
 })
 
--- ===== 高亮目标 =====
-local function HighlightTarget(target)
-    if highlightTarget then
-        highlightTarget:Destroy()
-        highlightTarget = nil
-    end
-    if target then
-        local h = Instance.new("Highlight")
-        h.Name = "BulletTrackingTarget"
-        h.FillColor = Color3.fromRGB(0,255,255)
-        h.OutlineColor = Color3.fromRGB(0,255,255)
-        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        h.Parent = target.Parent
-        highlightTarget = h
-    end
-end
-
 -- Tab: 99个夜晚区域
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
