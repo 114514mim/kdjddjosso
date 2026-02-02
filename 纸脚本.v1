@@ -333,10 +333,10 @@ BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
     Rayfield:Notify({Title = "建船寻宝", Content = "已尝试购买圣诞钩爪！", Duration = 5})
 end})
 
--- Tab 9: 独家自瞄区域
-local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
+-- Tab 9: 子弹追踪区域
+local AimbotTab = Window:CreateTab("子弹追踪区域", 4483362458)
 AimbotTab:CreateParagraph({
-    Title = "独家自瞄功能",
+    Title = "子弹追踪功能",
     Content = "• Silent Aim + Aimbot\n• 队伍检测：默认关闭（全员瞄准），可手动开启只敌方\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"
 })
 
@@ -424,7 +424,7 @@ local function disableAimbot()
 end
 
 AimbotTab:CreateButton({
-    Name = "切换独家自瞄 (Silent Aim)",
+    Name = "切换子弹追踪 (Silent Aim)",
     Callback = function()
         aimbotEnabled = not aimbotEnabled
         if aimbotEnabled then
@@ -432,7 +432,7 @@ AimbotTab:CreateButton({
             Rayfield:Notify({Title = "子弹追踪", Content = "子弹追踪已开启！（当前全员瞄准）", Duration = 5})
         else
             disableAimbot()
-            Rayfield:Notify({Title = "子弹追踪", Content = "自瞄已关闭！已完全还原", Duration = 5})
+            Rayfield:Notify({Title = "子弹追踪", Content = "子弹追踪已关闭！已完全还原", Duration = 5})
         end
     end
 })
@@ -446,6 +446,23 @@ AimbotTab:CreateToggle({
         Rayfield:Notify({Title = "队伍检测", Content = "队伍检测已" .. (Value and "开启（只瞄敌方）" or "关闭（全员）"), Duration = 5})
     end
 })
+
+-- ===== 高亮目标 =====
+local function HighlightTarget(target)
+    if highlightTarget then
+        highlightTarget:Destroy()
+        highlightTarget = nil
+    end
+    if target then
+        local h = Instance.new("Highlight")
+        h.Name = "BulletTrackingTarget"
+        h.FillColor = Color3.fromRGB(0,255,255)
+        h.OutlineColor = Color3.fromRGB(0,255,255)
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.Parent = target.Parent
+        highlightTarget = h
+    end
+end
 
 -- Tab: 99个夜晚区域
 local Players = game:GetService("Players")
