@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "终极合体脚本",
-    LoadingTitle = "加载中...",
+    Name = "纸脚本",
+    LoadingTitle = "欢迎使用",
     LoadingSubtitle = "纸飞机yut",
     ConfigurationSaving = {
         Enabled = true,
@@ -19,7 +19,7 @@ game:GetService('Players').LocalPlayer.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "afk加载好了",
+    Title = "已经帮你自动开启afk",
     Text = "已自动开启afk",
     Button1 = "好的",
     Duration = 5
@@ -598,7 +598,7 @@ Night99Tab:CreateToggle({
     end
 })
 
--- ==== 被遗弃区域完整修复版 ====
+-- ==== 被遗弃区域完整修复版（只保留自动发电机） ====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -617,8 +617,8 @@ local abandonedState = {
     espSurvivors = false,
     espItems = false,
     espGenerators = false,
-    autoRepair = false,
-    fixInterval = 0.5,
+    autoGenerator = false, -- 自动发电机状态
+    autoGeneratorInterval = 5, -- 每5秒触发一次
 }
 
 -- ==== Sprint 模块 ====
@@ -833,65 +833,56 @@ AbandonedTab:CreateToggle({
     end
 })
 
--- ==== 自动修机输入框 + Toggle ====
-local FixInput = AbandonedTab:CreateTextbox({
-    Name = "修机间隔 (秒)",
-    PlaceholderText = "请输入修机间隔",
-    Text = tostring(abandonedState.fixInterval),
-    RemoveTextAfterFocusLost = false,
-    Callback = function(value)
-        local num = tonumber(value)
-        if num and num > 0 then
-            abandonedState.fixInterval = num
-            print("修机间隔已设置为:", num)
-        else
-            warn("请输入有效数字")
-        end
-    end
-})
-
+-- ==== 自动发电机 Toggle（每5秒触发）====
 AbandonedTab:CreateToggle({
-    Name = "自动修机",
+    Name = "自动发电机",
     CurrentValue = false,
     Callback = function(v)
-        abandonedState.autoRepair = v
+        abandonedState.autoGenerator = v
         if v then
-            print("自动修机已开启")
+            print("自动发电机已开启，每 " .. abandonedState.autoGeneratorInterval .. " 秒触发一次")
             task.spawn(function()
-                local player = LocalPlayer
-                while abandonedState.autoRepair do
+                while abandonedState.autoGenerator do
                     pcall(function()
                         local mapFolder = workspace:FindFirstChild("Map")
                             and workspace.Map:FindFirstChild("Ingame")
                             and workspace.Map.Ingame:FindFirstChild("Map")
-                        if mapFolder and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                            local closestGenerator, closestDistance = nil, math.huge
-                            local playerPos = player.Character.HumanoidRootPart.Position
-                            for _, g in ipairs(mapFolder:GetChildren()) do
-                                if g.Name == "Generator" and g:FindFirstChild("Progress") and g.Progress.Value < 100 then
-                                    local mainPart = g:FindFirstChild("Main")
-                                    if mainPart then
-                                        local distance = (mainPart.Position - playerPos).Magnitude
-                                        if distance < closestDistance then
-                                            closestDistance = distance
-                                            closestGenerator = g
+                        if mapFolder and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            local closestGen, closestDistance = nil, math.huge
+                            local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
+                            for _, gen in ipairs(mapFolder:GetChildren()) do
+                                if gen:IsA("Model") and gen.Name == "Generator" and gen:FindFirstChild("Progress") then
+                                    if gen.Progress.Value < 100 then
+                                        local mainPart = gen:FindFirstChild("Main")
+                                        if mainPart then
+                                            local distance = (mainPart.Position - playerPos).Magnitude
+                                            if distance < closestDistance then
+                                                closestDistance = distance
+                                                closestGen = gen
+                                            end
                                         end
                                     end
                                 end
                             end
-                            if closestGenerator then
-                                if closestGenerator:FindFirstChild("Remotes") and closestGenerator.Remotes:FindFirstChild("RE") then
-                                    closestGenerator.Remotes.RE:FireServer()
+                            if closestGen and closestGen:FindFirstChild("Remotes") and closestGen.Remotes:FindFirstChild("RE") then
+                                closestGen.Remotes.RE:FireServer()
+                                if not closestGen:FindFirstChildOfClass("Highlight") then
+                                    local h = Instance.new("Highlight")
+                                    h.Name = "AutoGenHighlight"
+                                    h.FillColor = Color3.new(0,1,1)
+                                    h.OutlineColor = Color3.new(0,1,1)
+                                    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                                    h.Parent = closestGen
                                 end
-                                setupHighlight(closestGenerator, Color3.new(0,1,1)) -- 高亮当前修的 Generator
                             end
                         end
                     end)
-                    task.wait(abandonedState.fixInterval or 0.5)
+                    task.wait(abandonedState.autoGeneratorInterval)
                 end
+                print("自动发电机已关闭")
             end)
         else
-            print("自动修机已关闭")
+            print("自动发电机已关闭")
         end
     end
 })
