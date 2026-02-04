@@ -123,6 +123,26 @@ UniversalTab:CreateToggle({
     end
 })
 
+UniversalTab:CreateToggle({
+    Name = "无限视距 (Max Zoom)", 
+    CurrentValue = false, 
+    Callback = function(Value)
+        local player = game:GetService("Players").LocalPlayer
+        if Value then
+            -- 开启：取消缩放限制
+            player.CameraMaxZoomDistance = math.huge
+            player.CameraMode = Enum.CameraMode.Classic
+            
+            Rayfield:Notify({Title = "视觉增强", Content = "缩放限制已解除", Duration = 3})
+        else
+            -- 关闭：恢复默认缩放限制（通常为 128 或 70，这里设为 128）
+            player.CameraMaxZoomDistance = 128
+            
+            Rayfield:Notify({Title = "视觉增强", Content = "已恢复默认视距", Duration = 3})
+        end
+    end
+})
+
 -- ESP (高光 + 反隐身)
 local espEnabled = false
 local highlightTable = {}
