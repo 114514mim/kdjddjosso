@@ -89,6 +89,40 @@ UniversalTab:CreateToggle({Name = "开启加速 (WalkSpeed 100)", CurrentValue =
     end
 end})
 
+UniversalTab:CreateToggle({
+    Name = "秒交互", 
+    CurrentValue = false, 
+    Callback = function(state)
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                if state then
+                    -- 备份原始交互时间，防止关闭后无法恢复
+                    if not v:FindFirstChild("OriginalDuration") then
+                        local backup = Instance.new("NumberValue")
+                        backup.Name = "OriginalDuration"
+                        backup.Value = v.HoldDuration
+                        backup.Parent = v
+                    end
+                    v.HoldDuration = 0
+                else
+                    -- 恢复原始交互时间
+                    local backup = v:FindFirstChild("OriginalDuration")
+                    if backup then
+                        v.HoldDuration = backup.Value
+                    end
+                end
+            end
+        end
+
+        -- 弹出通知
+        Rayfield:Notify({
+            Title = "秒交互", 
+            Content = state and "已开启" or "已关闭", 
+            Duration = 3
+        })
+    end
+})
+
 -- ESP (高光 + 反隐身)
 local espEnabled = false
 local highlightTable = {}
