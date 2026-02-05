@@ -787,7 +787,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
-
 -- ==== 创建 Tab ====
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
 
@@ -1017,36 +1016,42 @@ AbandonedTab:CreateToggle({
 })
 
 -- ==== 自动发电机 Toggle（每5秒触发）====
+local AutoGeneratorActive = false -- 控制循环的全局状态
+local AutoGeneratorDelay = abandonedState.autoGeneratorInterval
+
 AbandonedTab:CreateToggle({
     Name = "自动发电机",
-    CurrentValue = false,
+    CurrentValue = abandonedState.autoGenerator,
     Callback = function(v)
         abandonedState.autoGenerator = v
-   local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local LocalPlayer = Players.LocalPlayer
+        AutoGeneratorActive = v
 
-local AutoGeneratorActive = true 
-local AutoGeneratorDelay = 5 -- 5秒执行一次
+        if v then
+            spawn(function()
+                local Players = game:GetService("Players")
+                local Workspace = game:GetService("Workspace")
+                local LocalPlayer = Players.LocalPlayer
 
-spawn(function()
-    while AutoGeneratorActive do
-        local map = Workspace:FindFirstChild("Map")
-        if map then
-            for _, gen in pairs(map:GetDescendants()) do
-                if gen.Name == "Generator" and gen:FindFirstChild("Progress") then
-                    if gen.Progress.Value < 100 then
-                        if gen:FindFirstChild("Remotes") and gen.Remotes:FindFirstChild("RE") then
-                            gen.Remotes.RE:FireServer()
+                while AutoGeneratorActive do
+                    local map = Workspace:FindFirstChild("Map")
+                    if map then
+                        for _, gen in pairs(map:GetDescendants()) do
+                            if gen.Name == "Generator" and gen:FindFirstChild("Progress") then
+                                if gen.Progress.Value < 100 then
+                                    if gen:FindFirstChild("Remotes") and gen.Remotes:FindFirstChild("RE") then
+                                        pcall(function()
+                                            gen.Remotes.RE:FireServer()
+                                        end)
+                                    end
+                                end
+                            end
                         end
                     end
+                    task.wait(AutoGeneratorDelay)
                 end
-            end
+            end)
         end
-        wait(AutoGeneratorDelay)
     end
-end)
-end
 })
 
 --==============================
