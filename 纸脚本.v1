@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+~local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "纸脚本",
@@ -461,97 +461,115 @@ PrisonTab:CreateButton({
     end
 })
 
-MainTab:CreateToggle({
-   Name = "反电击",
-   CurrentValue = false,
-   Flag = "NoRagdoll",
-   Callback = function(Value)
-      _G.NoRagdoll = Value
-      
-      if Value then
-          task.spawn(function()
-              local Player = game:GetService("Players").LocalPlayer
-              
-              while _G.NoRagdoll do
-                  local Character = Player.Character
-                  if Character then
-                      local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-                      if Humanoid then
-                          -- 1. 强制关闭 PlatformStand（防止身体变软）
-                          if Humanoid.PlatformStand then
-                              Humanoid.PlatformStand = false
-                          end
-                          
-                          -- 2. 禁用会导致倒地的几种状态
-                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
-                          
-                          -- 3. 如果已经进入了这些状态，立即切回“站立”
-                          local state = Humanoid:GetState()
-                          if state == Enum.HumanoidStateType.FallingDown or state == Enum.HumanoidStateType.Ragdoll then
-                              Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-                          end
-                      end
+-- 内部变量
+local settings = {
+    antiarrest = false,
+    antitase = false,
+    punchaura = false
+}
+local normalWS = 16
+local normalJP = 50
 
-                      -- 4. 配合之前的逻辑：删除服务器发送的电击锁定脚本
-                      local taser = Character:FindFirstChild("TaserActualWait")
-                      if taser then
-                          taser:Destroy()
-                      end
-                  end
-                  task.wait() -- 高频检测，确保瞬间起身
-              end
-          end)
-      end
-   end,
-})
+--- --- --- --- --- --- --- --- ---
+-- 核心逻辑：动画监测 (替换部分)
+--- --- --- --- --- --- --- --- ---
+LocalPlayer.CharacterAdded:Connect(function(char) 
+    local humanoid = char:WaitForChild("Humanoid") 
+    local animator = humanoid:WaitForChild("Animator") 
+
+    animator.AnimationPlayed:Connect(function(des) 
+        -- 1. 高级防逮捕 (监测手铐动画)
+        if settings.antiarrest and des.Animation.AnimationId == "rbxassetid://287112271" then 
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local cpos = char.HumanoidRootPart.CFrame -- 记录当前位置
+                
+                -- 立即执行死亡以重置状态
+                humanoid:ChangeState(Enum.HumanoidStateType.Dead) 
+                
+                Rayfield:Notify({Title = "触发防逮捕", Content = "检测到手铐动作，正在重生并回位", Duration = 3})
+                
+                -- 等待重生并回位
+                LocalPlayer.CharacterAdded:Wait() 
+                local newChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local hrp = newChar:WaitForChild("HumanoidRootPart", 10)
+                if hrp then
+                    task.wait(0.5)
+                    hrp.CFrame = cpos
+                end
+            end
+        end
+
+        -- 2. 高级防电击 (监测电击动画)
+        if settings.antitase and des.Animation.AnimationId == "rbxassetid://279227693" then 
+            des:Stop() 
+            des:Destroy() 
+            
+            -- 恢复控制
+            humanoid.PlatformStand = false 
+            humanoid.Sit = false 
+            
+            -- 恢复速度与跳跃
+            task.wait()
+            humanoid.WalkSpeed = normalWS 
+            humanoid.JumpPower = normalJP 
+            
+            -- 尝试启用控制脚本（监狱人生专用）
+            local clientInput = LocalPlayer.Character:FindFirstChild("ClientInputHandler")
+            if clientInput then
+                clientInput.Disabled = false 
+            end
+
+            Rayfield:Notify({Title = "防电击生效", Content = "已拦截电击动画并恢复控制", Duration = 2})
+        end 
+    end) 
+end)
+
+--- --- --- --- --- --- --- --- ---
+-- UI 交互按钮
+--- --- --- --- --- --- --- --- ---
 
 MainTab:CreateToggle({
    Name = "反手铐",
    CurrentValue = false,
-   Flag = "AntiArrestSuicide",
+   Flag = "AntiArrest",
    Callback = function(Value)
-      _G.AntiArrestSuicide = Value
-      
+      settings.antiarrest = Value
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "反电击",
+   CurrentValue = false,
+   Flag = "AntiTase",
+   Callback = function(Value)
+      settings.antitase = Value
+   end,
+})
+
+-- 保留之前的拳击光环
+MainTab:CreateToggle({
+   Name = "拳击光环 (Punch Aura)",
+   CurrentValue = false,
+   Flag = "PunchAura",
+   Callback = function(Value)
+      settings.punchaura = Value
       if Value then
           task.spawn(function()
-              local Player = game:GetService("Players").LocalPlayer
-              
-              while _G.AntiArrestSuicide do
-                  if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                      -- 检测手铐状态 (监狱人生常见的逮捕标识)
-                      local isCuffed = Player.Character:FindFirstChild("Arrested") or 
-                                       Player.Character:FindFirstChild("Handcuffed") or
-                                       (Player.Character:FindFirstChild("Model") and Player.Character.Model:FindFirstChild("MeshId")) -- 手铐模型检测
-
-                      if isCuffed then
-                          -- 1. 记录当前位置
-                          local lastPos = Player.Character.HumanoidRootPart.CFrame
-                          
-                          -- 2. 执行自杀 (通过将生命值设为 0)
-                          if Player.Character:FindFirstChild("Humanoid") then
-                              Player.Character.Humanoid.Health = 0
-                          end
-                          
-                          Rayfield:Notify({
-                              Title = "触发防抓自杀",
-                              Content = "正在重新部署并返回原位...",
-                              Duration = 3
-                          })
-
-                          -- 3. 等待重生并传回原位
-                          Player.CharacterAdded:Wait() -- 等待新角色加载
-                          local newChar = Player.Character or Player.CharacterAdded:Wait()
-                          local hrp = newChar:WaitForChild("HumanoidRootPart", 5)
-                          
-                          if hrp then
-                              task.wait(0.5) -- 稍微延迟确保物理引擎加载完毕
-                              hrp.CFrame = lastPos
+              while settings.punchaura do
+                  local target = nil
+                  local dist = 15
+                  for _, p in pairs(Players:GetPlayers()) do
+                      if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                          local h = p.Character:FindFirstChild("Humanoid")
+                          if h and h.Health > 0 then
+                              local d = (LocalPlayer.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                              if d < dist then target = p dist = d end
                           end
                       end
                   end
-                  task.wait(0.1) -- 扫描频率
+                  if target then ReplicatedStorage:WaitForChild("meleeEvent"):FireServer(target) end
+                  task.wait(0.1)
               end
           end)
       end
