@@ -256,56 +256,57 @@ PrisonTab:CreateButton({
 PrisonTab:CreateButton({
     Name = "拳击光环",
     Callback = function()
-       local Players = game:GetService("Players")
-       local ReplicatedStorage = game:GetService("ReplicatedStorage")
-       local LocalPlayer = Players.LocalPlayer
-       local MeleeEvent = ReplicatedStorage:WaitForChild("meleeEvent")
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local LocalPlayer = Players.LocalPlayer
+        local MeleeEvent = ReplicatedStorage:WaitForChild("meleeEvent")
 
--- 配置参数
-local ATTACK_RANGE = 15 -- 攻击范围（单位：螺柱）
+        -- 配置参数
+        local ATTACK_RANGE = 15 -- 攻击范围
 
--- 获取范围内最近玩家的函数
-local function getClosestPlayer()
-    local closestPlayer = nil
-    local shortestDistance = ATTACK_RANGE
+        -- 获取范围内最近玩家的函数
+        local function getClosestPlayer()
+            local closestPlayer = nil
+            local shortestDistance = ATTACK_RANGE
 
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            -- 检查目标是否存活
-            if player.Character.Humanoid.Health > 0 then
-                local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                if distance < shortestDistance then
-                    closestPlayer = player
-                    shortestDistance = distance
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    -- 检查目标是否存活
+                    local humanoid = player.Character:FindFirstChild("Humanoid")
+                    if humanoid and humanoid.Health > 0 then
+                        local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                        if distance < shortestDistance then
+                            closestPlayer = player
+                            shortestDistance = distance
+                        end
+                    end
                 end
             end
+            return closestPlayer
         end
-    end
-    return closestPlayer
-end
 
--- 循环触发攻击
--- 注意：这里使用 task.wait() 避免游戏崩溃，你可以根据需要调整频率
-while task.wait(0.1) do
-    local target = getClosestPlayer()
-    
-    if target then
-        -- 构造通用参数：[目标玩家, 伤害倍率, 某种标识]
-        local args = {
-            target,
-            1, -- 伤害通常在这里定义
-            1
-        }
-        MeleeEvent:FireServer(unpack(args))
-    end
-end     
+        -- 提示已开启
         Rayfield:Notify({
-            Title = "击杀指令已发送", 
-            Content = "尝试击杀 " .. tostring(killCount) .. " 名玩家", 
+            Title = "拳击光环已启动", 
+            Content = "正在自动攻击范围内的玩家", 
             Duration = 5
         })
-    end
-})
+
+        -- 循环触发攻击
+        -- 使用 task.spawn 包裹循环，防止阻塞主线程（这样按钮响应更快）
+        task.spawn(function()
+            while task.wait(0.1) do
+                local target = getClosestPlayer()
+                if target then
+                    local args = {
+                        [1] = target
+                    }
+                    MeleeEvent:FireServer(unpack(args))
+                end
+            end
+        end)
+    end -- 结束 Callback 函数
+}) -- 结束 CreateButton 参数
 
 -- ==========================================
 -- 3. 自动抓犯人 (带停止按钮)
