@@ -461,6 +461,52 @@ PrisonTab:CreateButton({
     end
 })
 
+MainTab:CreateToggle({
+   Name = "反电击",
+   CurrentValue = false,
+   Flag = "NoRagdoll",
+   Callback = function(Value)
+      _G.NoRagdoll = Value
+      
+      if Value then
+          task.spawn(function()
+              local Player = game:GetService("Players").LocalPlayer
+              
+              while _G.NoRagdoll do
+                  local Character = Player.Character
+                  if Character then
+                      local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                      if Humanoid then
+                          -- 1. 强制关闭 PlatformStand（防止身体变软）
+                          if Humanoid.PlatformStand then
+                              Humanoid.PlatformStand = false
+                          end
+                          
+                          -- 2. 禁用会导致倒地的几种状态
+                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                          Humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
+                          
+                          -- 3. 如果已经进入了这些状态，立即切回“站立”
+                          local state = Humanoid:GetState()
+                          if state == Enum.HumanoidStateType.FallingDown or state == Enum.HumanoidStateType.Ragdoll then
+                              Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                          end
+                      end
+
+                      -- 4. 配合之前的逻辑：删除服务器发送的电击锁定脚本
+                      local taser = Character:FindFirstChild("TaserActualWait")
+                      if taser then
+                          taser:Destroy()
+                      end
+                  end
+                  task.wait() -- 高频检测，确保瞬间起身
+              end
+          end)
+      end
+   end,
+})
+
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
 local LogicInput = LogicTab:CreateInput({Name = "逻辑代码", PlaceholderText = "-- 写你的代码", RemoveTextAfterFocusLost = false, Flag = "CustomCode", Callback = function() end})
