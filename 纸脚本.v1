@@ -966,12 +966,12 @@ Night99Tab:CreateToggle({
     end
 })
 
--- ==== 被遗弃区域完整修复版（只保留自动发电机） ====
+-- ==== 被遗弃区域 最终整合修复版 ====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
+
 -- ==== 创建 Tab ====
 local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
 
@@ -984,26 +984,51 @@ local abandonedState = {
     espSurvivors = false,
     espItems = false,
     espGenerators = false,
-    autoGenerator = false, -- 自动发电机状态
-    autoGeneratorInterval = 5, -- 每5秒触发一次
+    autoGenerator = false,
+    fixtime = 3
 }
 
--- ==== Sprint 模块 ====
+-- ==== 核心视觉处理函数 (适配杀手/物品/幸存者) ====
+local function setupModelEffects(model, color, labelText)
+    if not model:IsA("Model") then return end
+    
+    -- 高光处理
+    local h = model:FindFirstChild("Highlight") or Instance.new("Highlight")
+    h.Name = "Highlight"
+    h.FillColor = color or Color3.fromRGB(255, 0, 0)
+    h.OutlineColor = Color3.fromRGB(255, 255, 255)
+    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Parent = model
+    
+    -- 标签处理
+    local b = model:FindFirstChild("NameLabel") or Instance.new("BillboardGui")
+    b.Name = "NameLabel"
+    b.Size = UDim2.new(0, 50, 0, 50)
+    b.StudsOffset = Vector3.new(0, 2, 0)
+    b.AlwaysOnTop = true
+    
+    local tl = b:FindFirstChild("TextLabel") or Instance.new("TextLabel")
+    tl.Name = "TextLabel"
+    tl.Size = UDim2.new(1, 0, 1, 0)
+    tl.BackgroundTransparency = 1
+    tl.Text = labelText or model.Name
+    tl.Font = Enum.Font.SourceSansBold
+    tl.TextSize = 11
+    tl.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    tl.Parent = b
+    b.Parent = model
+end
+
+local function removeModelEffects(model)
+    if model:FindFirstChild("Highlight") then model.Highlight:Destroy() end
+    if model:FindFirstChild("NameLabel") then model.NameLabel:Destroy() end
+end
+
+-- ==== 体力模块逻辑 ====
 local sprintModule
 local function tryLoadSprint()
     if sprintModule then return end
-    local ok, mod = pcall(function()
-        local sys = ReplicatedStorage:FindFirstChild("Systems")
-        if not sys then return end
-        local char = sys:FindFirstChild("Character")
-        if not char then return end
-        local gameFolder = char:FindFirstChild("Game")
-        if not gameFolder then return end
-        local sprint = gameFolder:FindFirstChild("Sprinting")
-        if not sprint then return end
-        return require(sprint)
-    end)
-    if ok then sprintModule = mod end
+    pcall(function() sprintModule = require(ReplicatedStorage.Systems.Character.Game.Sprinting) end)
 end
 
 local function setStamina()
@@ -1014,225 +1039,184 @@ local function setStamina()
         sprintModule.MinStamina = abandonedState.killerInfiniteStamina and -1e6 or 0
     end)
 end
+task.spawn(function() while task.wait(0.5) do pcall(setStamina) end end)
 
-task.spawn(function()
-    while task.wait(0.5) do
-        pcall(setStamina)
-    end
-end)
+-- ==========================================
+--                核心功能开关
+-- ==========================================
 
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    setStamina()
-end)
-
--- ==== 无限体力 Toggle ====
-AbandonedTab:CreateToggle({
-    Name = "无限体力",
-    CurrentValue = false,
-    Callback = function(v)
-        abandonedState.infiniteStamina = v
-        setStamina()
-    end
-})
-
-AbandonedTab:CreateToggle({
-    Name = "杀手无限体力",
-    CurrentValue = false,
-    Callback = function(v)
-        abandonedState.killerInfiniteStamina = v
-        setStamina()
-    end
-})
-
--- ==== 反眩晕 Toggle ====
+-- 1. 2. 3. 体力与反眩晕
+AbandonedTab:CreateToggle({Name = "无限体力", Callback = function(v) abandonedState.infiniteStamina = v; setStamina() end})
+AbandonedTab:CreateToggle({Name = "杀手无限体力", Callback = function(v) abandonedState.killerInfiniteStamina = v; setStamina() end})
 AbandonedTab:CreateToggle({
     Name = "反眩晕/反减速",
-    CurrentValue = false,
     Callback = function(v)
         abandonedState.antiDizzy = v
-        local TARGET_SPEED = 20
-        task.spawn(function()
-            local player = LocalPlayer
-            local wsLoop, charAdded
-            while abandonedState.antiDizzy do
-                local char = player.Character
-                if char then
-                    local humanoid = char:FindFirstChild("Humanoid")
-                    if humanoid then
-                        humanoid.WalkSpeed = TARGET_SPEED
-                        if not wsLoop then
-                            wsLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                                humanoid.WalkSpeed = TARGET_SPEED
-                            end)
-                        end
+        if v then
+            task.spawn(function()
+                while abandonedState.antiDizzy do
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                        LocalPlayer.Character.Humanoid.WalkSpeed = 20
                     end
+                    task.wait(0.1)
                 end
-                if not charAdded then
-                    charAdded = player.CharacterAdded:Connect(function(newChar)
-                        if wsLoop then wsLoop:Disconnect() end
-                        local humanoid = newChar:WaitForChild("Humanoid")
-                        humanoid.WalkSpeed = TARGET_SPEED
-                        wsLoop = humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-                            humanoid.WalkSpeed = TARGET_SPEED
-                        end)
-                    end)
-                end
-                task.wait(0.1)
-            end
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = 16
-            end
-            if wsLoop then wsLoop:Disconnect() end
-            if charAdded then charAdded:Disconnect() end
-        end)
+            end)
+        end
     end
 })
 
--- ==== ESP 工具 ====
-local function setupHighlight(instance, color)
-    if instance:FindFirstChildOfClass("Highlight") then return end
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "Highlight"
-    highlight.FillColor = color
-    highlight.OutlineColor = color
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Parent = instance
-end
-
-local function removeHighlight(instance)
-    local h = instance:FindFirstChild("Highlight")
-    if h then h:Destroy() end
-end
-
-local function setupBillboard(instance)
-    if instance:FindFirstChild("NameLabel") then return end
-    local billboard = Instance.new("BillboardGui")
-    billboard.Name = "NameLabel"
-    billboard.Size = UDim2.new(0, 50, 0, 50)
-    billboard.StudsOffset = Vector3.new(0, 1, 0)
-    billboard.AlwaysOnTop = true
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1,0,1,0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = instance.Name
-    textLabel.Font = Enum.Font.SourceSansBold
-    textLabel.TextSize = 11
-    textLabel.TextColor3 = Color3.new(1, 0.647, 0)
-    textLabel.Parent = billboard
-    billboard.Parent = instance
-end
-
-local function startESP(flag, getTargets, color)
-    task.spawn(function()
-        while flag() do
-            local targets = getTargets()
-            for _, inst in ipairs(targets) do
-                setupHighlight(inst, color)
-                if color == Color3.new(1,1,0) then setupBillboard(inst) end
-            end
-            task.wait(2)
-        end
-        local targets = getTargets()
-        for _, inst in ipairs(targets) do
-            removeHighlight(inst)
-            local label = inst:FindFirstChild("NameLabel")
-            if label then label:Destroy() end
-        end
-    end)
-end
-
+-- 4. ESP 杀手 (红色 - 使用你提供的逻辑)
 AbandonedTab:CreateToggle({
     Name = "ESP 杀手",
-    Callback = function(v)
-        abandonedState.espKillers = v
-        startESP(function() return abandonedState.espKillers end, function()
-            return (workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Killers") or {}):GetChildren()
-        end, Color3.new(1,0,0))
+    Callback = function(state)
+        abandonedState.espKillers = state
+        if state then
+            task.spawn(function()
+                while abandonedState.espKillers do
+                    local killFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Killers")
+                    if killFolder then
+                        for _, child in ipairs(killFolder:GetChildren()) do
+                            if child:IsA("Model") then
+                                setupModelEffects(child, Color3.fromRGB(255, 0, 0), "杀手")
+                            end
+                        end
+                    end
+                    task.wait(2)
+                end
+            end)
+        else
+            local killFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Killers")
+            if killFolder then
+                for _, child in ipairs(killFolder:GetChildren()) do
+                    removeModelEffects(child)
+                end
+            end
+        end
     end
 })
 
+-- 5. ESP 幸存者 (绿色)
 AbandonedTab:CreateToggle({
     Name = "ESP 幸存者",
-    Callback = function(v)
-        abandonedState.espSurvivors = v
-        startESP(function() return abandonedState.espSurvivors end, function()
-            return (workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Survivors") or {}):GetChildren()
-        end, Color3.new(0,1,0))
+    Callback = function(state)
+        abandonedState.espSurvivors = state
+        if state then
+            task.spawn(function()
+                while abandonedState.espSurvivors do
+                    local survFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Survivors")
+                    if survFolder then
+                        for _, child in ipairs(survFolder:GetChildren()) do
+                            if child:IsA("Model") and child.Name ~= LocalPlayer.Name then
+                                setupModelEffects(child, Color3.fromRGB(0, 255, 0), child.Name)
+                            end
+                        end
+                    end
+                    task.wait(2)
+                end
+            end)
+        else
+            local survFolder = workspace:FindFirstChild("Players") and workspace.Players:FindFirstChild("Survivors")
+            if survFolder then
+                for _, child in ipairs(survFolder:GetChildren()) do
+                    removeModelEffects(child)
+                end
+            end
+        end
     end
 })
 
+-- 6. ESP 物品 (白色文字 + 黄色高光 - 优化版)
 AbandonedTab:CreateToggle({
     Name = "ESP 物品",
-    Callback = function(v)
-        abandonedState.espItems = v
-        startESP(function() return abandonedState.espItems end, function()
-            local ingame = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame")
-            if ingame then
-                local tools = {}
-                for _, t in ipairs(ingame:GetDescendants()) do
-                    if t:IsA("Tool") then table.insert(tools, t) end
-                end
-                return tools
-            end
-            return {}
-        end, Color3.new(1,1,0))
-    end
-})
-
-AbandonedTab:CreateToggle({
-    Name = "ESP 发电机",
-    Callback = function(v)
-        abandonedState.espGenerators = v
-        startESP(function() return abandonedState.espGenerators end, function()
-            local mapFolder = workspace:FindFirstChild("Map")
-                and workspace.Map:FindFirstChild("Ingame")
-                and workspace.Map.Ingame:FindFirstChild("Map")
-            if mapFolder then
-                local gens = {}
-                for _, g in ipairs(mapFolder:GetChildren()) do
-                    if g:IsA("Model") and g.Name == "Generator" then table.insert(gens, g) end
-                end
-                return gens
-            end
-            return {}
-        end, Color3.new(1,0,0))
-    end
-})
-
--- ==== 自动发电机 Toggle（每5秒触发）====
-local AutoGeneratorActive = false -- 控制循环的全局状态
-local AutoGeneratorDelay = abandonedState.autoGeneratorInterval
-
-AbandonedTab:CreateToggle({
-    Name = "自动发电机",
-    CurrentValue = abandonedState.autoGenerator,
-    Callback = function(v)
-        abandonedState.autoGenerator = v
-        AutoGeneratorActive = v
-
-        if v then
-            spawn(function()
-                local Players = game:GetService("Players")
-                local Workspace = game:GetService("Workspace")
-                local LocalPlayer = Players.LocalPlayer
-
-                while AutoGeneratorActive do
-                    local map = Workspace:FindFirstChild("Map")
-                    if map then
-                        for _, gen in pairs(map:GetDescendants()) do
-                            if gen.Name == "Generator" and gen:FindFirstChild("Progress") then
-                                if gen.Progress.Value < 100 then
-                                    if gen:FindFirstChild("Remotes") and gen.Remotes:FindFirstChild("RE") then
-                                        pcall(function()
-                                            gen.Remotes.RE:FireServer()
-                                        end)
-                                    end
+    Callback = function(state)
+        abandonedState.espItems = state
+        if state then
+            task.spawn(function()
+                while abandonedState.espItems do
+                    local ingame = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame")
+                    if ingame then
+                        for _, instance in ipairs(ingame:GetDescendants()) do
+                            if instance:IsA("Tool") then
+                                setupModelEffects(instance, Color3.fromRGB(255, 255, 0), instance.Name)
+                                -- 强制将工具文字设为白色
+                                if instance:FindFirstChild("NameLabel") then
+                                    instance.NameLabel.TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
                                 end
                             end
                         end
                     end
-                    task.wait(AutoGeneratorDelay)
+                    task.wait(2)
+                end
+            end)
+        else
+            local ingame = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame")
+            if ingame then
+                for _, tool in ipairs(ingame:GetDescendants()) do
+                    if tool:IsA("Tool") then removeModelEffects(tool) end
+                end
+            end
+        end
+    end
+})
+
+-- 7. ESP 发电机 (蓝色实时进度)
+AbandonedTab:CreateToggle({
+    Name = "ESP 发电机",
+    Callback = function(state)
+        abandonedState.espGenerators = state
+        local genColor = Color3.fromRGB(0, 16, 176)
+        if state then
+            task.spawn(function()
+                while abandonedState.espGenerators do
+                    local mapFolder = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
+                    if mapFolder then
+                        for _, v in ipairs(mapFolder:GetChildren()) do
+                            if v.Name == "Generator" and v:IsA("Model") then
+                                local progress = v:FindFirstChild("Progress") and v.Progress.Value or 0
+                                local label = (progress < 100) and ("电机(未完成) 进度.." .. progress) or "电机(完成)"
+                                setupModelEffects(v, genColor, label)
+                            end
+                        end
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        else
+            local mapFolder = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
+            if mapFolder then
+                for _, v in ipairs(mapFolder:GetChildren()) do removeModelEffects(v) end
+            end
+        end
+    end
+})
+
+-- 8. 自动发电机 (3秒一次)
+AbandonedTab:CreateToggle({
+    Name = "自动发电机",
+    Callback = function(state)
+        abandonedState.autoGenerator = state
+        if state then
+            task.spawn(function()
+                while abandonedState.autoGenerator do
+                    task.wait(abandonedState.fixtime)
+                    local rootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    local mapFolder = workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Ingame") and workspace.Map.Ingame:FindFirstChild("Map")
+                    if mapFolder and rootPart then
+                        local closestGenerator, closestDistance = nil, math.huge
+                        for _, g in ipairs(mapFolder:GetChildren()) do
+                            if g.Name == "Generator" and g:FindFirstChild("Progress") and g.Progress.Value < 100 then
+                                local main = g:FindFirstChild("Main") or g:FindFirstChild("PrimaryPart")
+                                if main then
+                                    local dist = (main.Position - rootPart.Position).Magnitude
+                                    if dist < closestDistance then
+                                        closestDistance = dist
+                                        closestGenerator = g
+                                    end
+                                end
+                            end
+                        end
+                        if closestGenerator then pcall(function() closestGenerator.Remotes.RE:FireServer() end) end
+                    end
                 end
             end)
         end
