@@ -256,28 +256,49 @@ PrisonTab:CreateButton({
 PrisonTab:CreateButton({
     Name = "拳击光环",
     Callback = function()
-        local players = game:GetService("Players")
-        local localPlayer = players.LocalPlayer
-        local meleeEvent = game:GetService("ReplicatedStorage"):FindFirstChild("meleeEvent")
+       local Players = game:GetService("Players")
+       local ReplicatedStorage = game:GetService("ReplicatedStorage")
+       local LocalPlayer = Players.LocalPlayer
+       local MeleeEvent = ReplicatedStorage:WaitForChild("meleeEvent")
 
-        if not meleeEvent then
-            Rayfield:Notify({Title = "错误", Content = "未找到伤害事件，该功能可能已失效。", Duration = 5})
-            return
-        end
+-- 配置参数
+local ATTACK_RANGE = 15 -- 攻击范围（单位：螺柱）
 
-        local killCount = 0
-        for _, target in pairs(players:GetPlayers()) do
-            -- 排除自己，并确保目标有角色和生命值
-            if target ~= localPlayer and target.Character and target.Character:FindFirstChild("Humanoid") then
-                -- 只有目标活着时才攻击
-                if target.Character.Humanoid.Health > 0 then
-                    -- 监狱人生典型的远程攻击参数
-                    meleeEvent:FireServer(target)
-                    killCount = killCount + 1
+-- 获取范围内最近玩家的函数
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = ATTACK_RANGE
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            -- 检查目标是否存活
+            if player.Character.Humanoid.Health > 0 then
+                local distance = (LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                if distance < shortestDistance then
+                    closestPlayer = player
+                    shortestDistance = distance
                 end
             end
         end
-        
+    end
+    return closestPlayer
+end
+
+-- 循环触发攻击
+-- 注意：这里使用 task.wait() 避免游戏崩溃，你可以根据需要调整频率
+while task.wait(0.1) do
+    local target = getClosestPlayer()
+    
+    if target then
+        -- 构造通用参数：[目标玩家, 伤害倍率, 某种标识]
+        local args = {
+            target,
+            1, -- 伤害通常在这里定义
+            1
+        }
+        MeleeEvent:FireServer(unpack(args))
+    end
+end     
         Rayfield:Notify({
             Title = "击杀指令已发送", 
             Content = "尝试击杀 " .. tostring(killCount) .. " 名玩家", 
