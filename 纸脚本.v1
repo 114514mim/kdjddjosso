@@ -529,7 +529,7 @@ end)
 -- UI 交互按钮
 --- --- --- --- --- --- --- --- ---
 
-MainTab:CreateToggle({
+PrisonTab:CreateButton({
    Name = "反手铐",
    CurrentValue = false,
    Flag = "AntiArrest",
@@ -538,41 +538,12 @@ MainTab:CreateToggle({
    end,
 })
 
-MainTab:CreateToggle({
+PrisonTab:CreateButton({
    Name = "反电击",
    CurrentValue = false,
    Flag = "AntiTase",
    Callback = function(Value)
       settings.antitase = Value
-   end,
-})
-
--- 保留之前的拳击光环
-MainTab:CreateToggle({
-   Name = "拳击光环 (Punch Aura)",
-   CurrentValue = false,
-   Flag = "PunchAura",
-   Callback = function(Value)
-      settings.punchaura = Value
-      if Value then
-          task.spawn(function()
-              while settings.punchaura do
-                  local target = nil
-                  local dist = 15
-                  for _, p in pairs(Players:GetPlayers()) do
-                      if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                          local h = p.Character:FindFirstChild("Humanoid")
-                          if h and h.Health > 0 then
-                              local d = (LocalPlayer.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                              if d < dist then target = p dist = d end
-                          end
-                      end
-                  end
-                  if target then ReplicatedStorage:WaitForChild("meleeEvent"):FireServer(target) end
-                  task.wait(0.1)
-              end
-          end)
-      end
    end,
 })
 
