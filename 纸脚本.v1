@@ -390,7 +390,7 @@ PrisonTab:CreateButton({
 -- 5. 无限弹药 & 射击增强
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "无限弹药(拿着枪执行)",
+    Name = "无限弹药(拿着枪执行，客户端)",
     Callback = function()
         local success, err = pcall(function()
             local players = game:GetService("Players")
@@ -501,6 +501,57 @@ MainTab:CreateToggle({
                       end
                   end
                   task.wait() -- 高频检测，确保瞬间起身
+              end
+          end)
+      end
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "反手铐",
+   CurrentValue = false,
+   Flag = "AntiArrestSuicide",
+   Callback = function(Value)
+      _G.AntiArrestSuicide = Value
+      
+      if Value then
+          task.spawn(function()
+              local Player = game:GetService("Players").LocalPlayer
+              
+              while _G.AntiArrestSuicide do
+                  if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+                      -- 检测手铐状态 (监狱人生常见的逮捕标识)
+                      local isCuffed = Player.Character:FindFirstChild("Arrested") or 
+                                       Player.Character:FindFirstChild("Handcuffed") or
+                                       (Player.Character:FindFirstChild("Model") and Player.Character.Model:FindFirstChild("MeshId")) -- 手铐模型检测
+
+                      if isCuffed then
+                          -- 1. 记录当前位置
+                          local lastPos = Player.Character.HumanoidRootPart.CFrame
+                          
+                          -- 2. 执行自杀 (通过将生命值设为 0)
+                          if Player.Character:FindFirstChild("Humanoid") then
+                              Player.Character.Humanoid.Health = 0
+                          end
+                          
+                          Rayfield:Notify({
+                              Title = "触发防抓自杀",
+                              Content = "正在重新部署并返回原位...",
+                              Duration = 3
+                          })
+
+                          -- 3. 等待重生并传回原位
+                          Player.CharacterAdded:Wait() -- 等待新角色加载
+                          local newChar = Player.Character or Player.CharacterAdded:Wait()
+                          local hrp = newChar:WaitForChild("HumanoidRootPart", 5)
+                          
+                          if hrp then
+                              task.wait(0.5) -- 稍微延迟确保物理引擎加载完毕
+                              hrp.CFrame = lastPos
+                          end
+                      end
+                  end
+                  task.wait(0.1) -- 扫描频率
               end
           end)
       end
