@@ -229,9 +229,215 @@ InfyiffTab:CreateButton({Name = "加载 SimpleSpy V3", Callback = function() loa
 InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))() Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
 
--- Tab 5: 监狱人生脚本
+-- [[ 监狱人生 终极整合版 ]]
+
 local PrisonTab = Window:CreateTab("监狱人生脚本", 4483362458)
-PrisonTab:CreateButton({Name = "加载监狱人生脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))() Rayfield:Notify({Title = "监狱人生", Content = "已加载！", Duration = 5}) end})
+
+-- ==========================================
+-- 1. 加载外部大型脚本
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "加载监狱人生脚本 (外部中心)",
+    Callback = function()
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))()
+        end)
+        if success then
+            Rayfield:Notify({Title = "脚本中心", Content = "外部脚本已加载！", Duration = 5})
+        else
+            Rayfield:Notify({Title = "加载失败", Content = "无法获取远程代码。", Duration = 5})
+        end
+    end
+})
+
+-- ==========================================
+-- 2. 一键击杀所有人 (Kill All)
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "一键击杀所有人 (Kill All)",
+    Callback = function()
+        local players = game:GetService("Players")
+        local localPlayer = players.LocalPlayer
+        local meleeEvent = game:GetService("ReplicatedStorage"):FindFirstChild("meleeEvent")
+
+        if not meleeEvent then
+            Rayfield:Notify({Title = "错误", Content = "未找到伤害事件，该功能可能已失效。", Duration = 5})
+            return
+        end
+
+        local killCount = 0
+        for _, target in pairs(players:GetPlayers()) do
+            -- 排除自己，并确保目标有角色和生命值
+            if target ~= localPlayer and target.Character and target.Character:FindFirstChild("Humanoid") then
+                -- 只有目标活着时才攻击
+                if target.Character.Humanoid.Health > 0 then
+                    -- 监狱人生典型的远程攻击参数
+                    meleeEvent:FireServer(target)
+                    killCount = killCount + 1
+                end
+            end
+        end
+        
+        Rayfield:Notify({
+            Title = "击杀指令已发送", 
+            Content = "尝试击杀 " .. tostring(killCount) .. " 名玩家", 
+            Duration = 5
+        })
+    end
+})
+
+-- ==========================================
+-- 3. 自动抓犯人 (带停止按钮)
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "运行自动抓捕 (Auto Arrest)",
+    Callback = function()
+        shared.autoArrest = true
+        Rayfield:Notify({Title = "自动抓捕", Content = "正在开启...", Duration = 3})
+
+        task.spawn(function()
+            local playersService = game:GetService('Players')
+            local replicatedStorage = game:GetService('ReplicatedStorage')
+            local lplr = playersService.LocalPlayer
+
+            while shared.autoArrest do
+                for _, v in pairs(playersService:GetPlayers()) do
+                    if not shared.autoArrest then break end
+                    if v ~= lplr and v.Team and v.Team.Name == 'Criminals' then
+                        if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character.Humanoid.Health > 0 then
+                            -- 传送并抓捕循环
+                            for i = 1, 6 do
+                                if not shared.autoArrest or v.Team.Name ~= 'Criminals' then break end
+                                lplr.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+                                replicatedStorage.Remotes.ArrestPlayer:InvokeServer(v)
+                                task.wait(0.1)
+                            end
+                        end
+                    end
+                end
+                task.wait(1)
+            end
+        end)
+    end
+})
+
+PrisonTab:CreateButton({
+    Name = "停止自动抓捕",
+    Callback = function()
+        shared.autoArrest = false
+        Rayfield:Notify({Title = "自动抓捕", Content = "已停止", Duration = 3})
+    end
+})
+
+-- ==========================================
+-- 4. 获得钥匙卡 (自动维护)
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "获得钥匙卡 (Keycard)",
+    Callback = function()
+        Rayfield:Notify({Title = "钥匙卡", Content = "自动维护已开启", Duration = 5})
+        
+        task.spawn(function()
+            local TOOL_NAME = "Key card"
+            while true do
+                local lplr = game:GetService("Players").LocalPlayer
+                local bp = lplr:FindFirstChild("Backpack")
+                
+                if bp and not bp:FindFirstChild(TOOL_NAME) and not (lplr.Character and lplr.Character:FindFirstChild(TOOL_NAME)) then
+                    -- 尝试克隆
+                    local source = game:GetService("ReplicatedStorage"):FindFirstChild("Key card", true)
+                    if source then
+                        source:Clone().Parent = bp
+                    else
+                        -- 伪造卡
+                        local t = Instance.new("Tool")
+                        t.Name = TOOL_NAME
+                        local h = Instance.new("Part")
+                        h.Name = "Handle"
+                        h.Parent = t
+                        t.Parent = bp
+                    end
+                end
+                task.wait(3)
+            end
+        end)
+    end
+})
+
+-- ==========================================
+-- 5. 无限弹药 & 射击增强
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "开启无限弹药 & 快速射击",
+    Callback = function()
+        local success, err = pcall(function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            
+            -- 监狱人生的枪械通常通过这些元表或状态来控制
+            for _, v in pairs(getgc(true)) do
+                if type(v) == 'table' and rawget(v, 'MaxAmmo') then
+                    -- 修改弹药数据
+                    v.MaxAmmo = math.huge      -- 最大弹药无限
+                    v.CurrentAmmo = math.huge  -- 当前弹药无限
+                    v.AmmoPerClip = math.huge  -- 弹夹容量无限
+                    
+                    -- 修改射击性能
+                    v.FireRate = 0.05          -- 射速极快
+                    v.Range = 1000             -- 射程加长
+                    v.ReloadTime = 0           -- 秒换弹
+                    v.BulletDamage = 50        -- 增加伤害 (部分版本有效)
+                    v.AutoFire = true          -- 强制全自动
+                end
+            end
+        end)
+
+        if success then
+            Rayfield:Notify({Title = "武器增强", Content = "无限弹药与射速增强已激活！", Duration = 5})
+        else
+            Rayfield:Notify({Title = "错误", Content = "未能成功修改，请确保你手里拿着枪或枪在背包里。", Duration = 5})
+            warn(err)
+        end
+    end
+})
+
+-- ==========================================
+-- 6. 快速射击 & 暴力增强 (Fire Rate)
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "开启暴力射速 (快速射击/全自动)",
+    Callback = function()
+        local success, err = pcall(function()
+            -- 扫描内存中的枪械模块数据
+            for _, v in pairs(getgc(true)) do
+                if type(v) == 'table' and rawget(v, 'FireRate') then
+                    -- 射速：0.05 是非常恐怖的速度，几乎是瞬间清空弹匣
+                    v.FireRate = 0.05 
+                    
+                    -- 强制开启全自动模式 (即使是手枪也会变冲锋枪)
+                    v.AutoFire = true
+                    
+                    -- 移除后坐力 (射击不抖动)
+                    if rawget(v, 'MaxRecoil') then v.MaxRecoil = 0 end
+                    if rawget(v, 'MinRecoil') then v.MinRecoil = 0 end
+                    
+                    -- 辅助增强：扩散/偏移设为 0 (子弹指哪打哪)
+                    if rawget(v, 'ShootCone') then v.ShootCone = 0 end
+                end
+            end
+        end)
+
+        if success then
+            Rayfield:Notify({
+                Title = "火力全开", 
+                Content = "快速射击、全自动、无后坐力已激活！", 
+                Duration = 5
+            })
+        else
+            Rayfield:Notify({Title = "错误", Content = "修改失败，请重试。", Duration = 5})
+        end
+    end
+})
 
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
