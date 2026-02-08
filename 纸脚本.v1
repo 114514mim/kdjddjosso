@@ -1092,6 +1092,56 @@ AbandonedTab:CreateToggle({
     end
 })
 
+-- ==== Gingerbread 触碰领取功能 ====
+AbandonedTab:CreateToggle({
+    Name = "姜饼人自动农场",
+    CurrentValue = false,
+    Callback = function(state)
+        abandonedState.autoGingerbread = state
+        
+        if state then
+            task.spawn(function()
+                while abandonedState.autoGingerbread do
+                    local character = LocalPlayer.Character
+                    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+                    
+                    if rootPart then
+                        -- 全局搜索姜饼人
+                        local gingerbread = nil
+                        for _, obj in ipairs(workspace:GetDescendants()) do
+                            -- 匹配名字，并且确保它还没被领走（仍在场景中）
+                            if obj.Name == "Gingerbread" and (obj:IsA("Model") or obj:IsA("BasePart")) then
+                                gingerbread = obj
+                                break
+                            end
+                        end
+
+                        if gingerbread then
+                            -- 获取目标坐标
+                            local targetPos
+                            if gingerbread:IsA("Model") then
+                                targetPos = gingerbread:GetModelCFrame()
+                            else
+                                targetPos = gingerbread.CFrame
+                            end
+                            
+                            -- 核心：传送到模型位置（稍微重叠以确保触碰）
+                            rootPart.CFrame = targetPos
+                            
+                            -- 这里的延迟是为了给服务器时间检测触碰
+                            task.wait(0.5) 
+                        else
+                            -- 如果没找到，提示一下
+                            -- print("等待 Gingerbread 刷新...")
+                        end
+                    end
+                    task.wait(0.1) -- 扫描频率
+                end
+            end)
+        end
+    end
+})
+
 --==============================
 -- 战争大亨区域
 --==============================
