@@ -254,7 +254,7 @@ PrisonTab:CreateButton({
 -- 2. 一键击杀所有人 (Kill All)
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "一键击杀所有人 (Kill All)",
+    Name = "拳击光环",
     Callback = function()
         local players = game:GetService("Players")
         local localPlayer = players.LocalPlayer
@@ -290,7 +290,7 @@ PrisonTab:CreateButton({
 -- 3. 自动抓犯人 (带停止按钮)
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "运行自动抓捕 (Auto Arrest)",
+    Name = "自动抓捕 (Auto Arrest)",
     Callback = function()
         shared.autoArrest = true
         Rayfield:Notify({Title = "自动抓捕", Content = "正在开启...", Duration = 3})
@@ -333,7 +333,7 @@ PrisonTab:CreateButton({
 -- 4. 获得钥匙卡 (自动维护)
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "获得钥匙卡 (Keycard)",
+    Name = "获得钥匙卡",
     Callback = function()
         Rayfield:Notify({Title = "钥匙卡", Content = "自动维护已开启", Duration = 5})
         
@@ -368,7 +368,7 @@ PrisonTab:CreateButton({
 -- 5. 无限弹药 & 射击增强
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "开启无限弹药 & 快速射击",
+    Name = "无限弹药(拿着枪执行)",
     Callback = function()
         local success, err = pcall(function()
             local players = game:GetService("Players")
@@ -405,7 +405,7 @@ PrisonTab:CreateButton({
 -- 6. 快速射击 & 暴力增强 (Fire Rate)
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "开启暴力射速 (快速射击/全自动)",
+    Name = "快速射击(拿着枪执行)",
     Callback = function()
         local success, err = pcall(function()
             -- 扫描内存中的枪械模块数据
