@@ -416,6 +416,39 @@ PrisonTab:CreateButton({
     end
 })
 
+-- ==========================================
+-- 7. 快速装弹 (秒换弹)
+-- ==========================================
+PrisonTab:CreateButton({
+    Name = "快速装弹 (拿着枪执行)",
+    Callback = function()
+        local success, err = pcall(function()
+            local found = false
+            -- 扫描内存中的枪械数据表
+            for _, v in pairs(getgc(true)) do
+                if type(v) == 'table' and rawget(v, 'ReloadTime') then
+                    v.ReloadTime = 0    -- 将换弹时间设为 0
+                    found = true
+                end
+            end
+            
+            if found then
+                Rayfield:Notify({
+                    Title = "武器增强", 
+                    Content = "秒换弹已激活！现在换弹不再有延迟。", 
+                    Duration = 5
+                })
+            else
+                Rayfield:Notify({
+                    Title = "未检测到武器", 
+                    Content = "请确保你手里拿着枪或枪在背包里。", 
+                    Duration = 5
+                })
+            end
+        end)
+    end
+})
+
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
 local LogicInput = LogicTab:CreateInput({Name = "逻辑代码", PlaceholderText = "-- 写你的代码", RemoveTextAfterFocusLost = false, Flag = "CustomCode", Callback = function() end})
