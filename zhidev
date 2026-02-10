@@ -1,0 +1,60 @@
+-- 获取相关服务
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui") -- 尝试放在 CoreGui 以防被普通 UI 覆盖
+
+-- 1. 创建 UI 容器
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SystemLoader"
+-- 尝试放在 PlayerGui，如果报错则放在 CoreGui
+local parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+screenGui.Parent = parent
+screenGui.IgnoreGuiInset = true 
+
+-- 2. 创建黑色全屏背景
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.BorderSizePixel = 0
+bg.Active = true -- 阻止点击穿透
+bg.Parent = screenGui
+
+-- 3. 创建提示文字
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 0, 100)
+label.Position = UDim2.new(0, 0, 0.5, -50)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.new(1, 1, 1)
+label.Font = Enum.Font.SourceSansBold
+label.TextSize = 35
+label.Text = "正在开启反作弊中：)请等待(不一定所有服务器支持)"
+label.Parent = bg
+
+-- --- 逻辑处理流程 ---
+
+-- 1. 先加载第一个“绕过”脚本
+task.spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/%E7%BB%95%E8%BF%87%E5%8F%8D%E4%BD%9C%E5%BC%8A%E7%B3%BB%E7%BB%9F"))()
+    end)
+end)
+
+-- 2. 等待大约 6 秒（模拟第一阶段时间）
+task.wait(6)
+
+label.Text = "请多多支持纸脚本：)"
+
+task.wait(1)
+
+-- 3. 修改文字
+label.Text = "反作弊加载好了，现在正在加载脚本"
+
+-- 4. 再等待 4 秒（凑满 10 秒总时长）
+task.wait(2)
+
+-- 5. 移除黑屏 UI
+screenGui:Destroy()
+
+-- 6. 执行最终的“纸脚本”
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/纸脚本.v1"))()
+end)
