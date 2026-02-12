@@ -228,6 +228,7 @@ local InfyiffTab = Window:CreateTab("infyiff 脚本", 4483362458)
 InfyiffTab:CreateButton({Name = "加载 SimpleSpy V3", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))() Rayfield:Notify({Title = "SimpleSpy", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))() Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
+InfyiffTab:CreateButton({Name = "dex++", Callback = function() loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))() Rayfield:Notify({Title = "dex++", Content = "已加载！", Duration = 5}) end})
 
 -- [[ 监狱人生 完整整合脚本 - Gemini 优化版 ]]
 
