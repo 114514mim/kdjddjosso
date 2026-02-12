@@ -421,7 +421,7 @@ PrisonTab:CreateButton({
 -- 7. 快速装弹 (秒换弹)
 -- ==========================================
 PrisonTab:CreateButton({
-    Name = "快速装弹 (拿着枪执行)",
+    Name = "快速装弹 (拿着枪执行，客户端)",
     Callback = function()
         local success, err = pcall(function()
             local found = false
