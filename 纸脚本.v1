@@ -1232,40 +1232,53 @@ WarTab:CreateButton({
     end
 })
 
-local FishTab = Window:CreateTab("Fish", 4483362458)
+local FishTab = Window:CreateTab("Fish 专项", 4483362458)
 
 -- ==========================================
---    核心：自动钓鱼 (完全照搬走马源码逻辑)
+--    核心：最精准的自动钓鱼 (同步你提供的收抛参数)
 -- ==========================================
 FishTab:CreateToggle({
-    Name = "全自动钓鱼 (走马原版逻辑)",
+    Name = "全自动钓鱼 (暴力收抛版)",
     CurrentValue = false,
     Callback = function(state)
-        _G.abbfia = state -- 走马脚本核心控制变量
+        _G.abbfia = state
         
         if state then
             task.spawn(function()
                 while _G.abbfia do
                     pcall(function()
                         local lp = game:GetService("Players").LocalPlayer
+                        local rs = game:GetService("ReplicatedStorage")
                         local reel = lp.PlayerGui:FindFirstChild("reel")
                         local popup = lp.PlayerGui:FindFirstChild("popup")
                         
-                        -- 逻辑 A：如果没在钓鱼，就抛竿
-                        if not reel then
-                            local tool = lp.Character:FindFirstChildOfClass("Tool")
-                            if tool and tool:FindFirstChild("events") and tool.events:FindFirstChild("cast") then
-                                tool.events.cast:FireServer()
-                            end
+                        -- 1. 逻辑：如果没有在钓鱼，则执行你提供的暴力抛竿
+                        if not reel and not popup then
+                            local castArgs = {
+                                [1] = 99.99999999999999, 
+                                [2] = 1, 
+                                [3] = true
+                            }
+                            rs.castAsync:InvokeServer(unpack(castArgs))
                         end
                         
-                        -- 逻辑 B：检测到上钩 popup，延迟 1.95s 直接秒收
+                        -- 2. 逻辑：监听到上钩延迟秒收 (同步你提供的最新参数)
                         if popup then
-                            task.wait(1.95)
-                            game:GetService("ReplicatedStorage"):WaitForChild("events"):WaitForChild("reelfinished"):FireServer(100, true)
+                            task.wait(1.95) -- 模拟人类延迟，防止检测
+                            
+                            -- 这是你提供的最新收竿参数
+                            local reelArgs = {
+                                [1] = {
+                                    ["e"] = 100.16956611722708, 
+                                    ["p"] = false, 
+                                    ["l"] = {}
+                                }
+                            }
+                            -- 精准触发 RE/Reel/Finish
+                            rs["RE/Reel/Finish"]:FireServer(unpack(reelArgs))
                         end
                     end)
-                    task.wait(0.1) -- 高频检测
+                    task.wait(0.5) 
                 end
             end)
         end
@@ -1273,7 +1286,7 @@ FishTab:CreateToggle({
 })
 
 -- ==========================================
---    核心：自动卖鱼 (完全照搬走马源码逻辑)
+--    核心：全自动卖鱼
 -- ==========================================
 FishTab:CreateToggle({
     Name = "全自动卖鱼",
@@ -1284,7 +1297,6 @@ FishTab:CreateToggle({
             task.spawn(function()
                 while _G.AutoSell do
                     pcall(function()
-                        -- 走马逻辑：循环触发 1 到 5 级鱼类
                         for i = 1, 5 do
                             game:GetService("ReplicatedStorage").events.sell:FireServer(i)
                         end
@@ -1297,62 +1309,35 @@ FishTab:CreateToggle({
 })
 
 -- ==========================================
---    核心：无视环境 (照搬走马 oxygen/temperature)
+--    生存：环境与行走
 -- ==========================================
 FishTab:CreateToggle({
-    Name = "无视环境 (Oxygen/Temp)",
+    Name = "无视环境/水上行走",
     CurrentValue = false,
     Callback = function(state)
-        _G.NoEnv = state
-        if state then
-            task.spawn(function()
-                while _G.NoEnv do
-                    for _, v in pairs(workspace:GetDescendants()) do
-                        if v.Name == "temperature" or v.Name == "oxygen" then
-                            v.Disabled = true
-                        end
+        _G.FishMod = state
+        task.spawn(function()
+            while _G.FishMod do
+                -- 环境免疫
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v.Name == "temperature" or v.Name == "oxygen" then
+                        v.Disabled = true
                     end
-                    task.wait(2)
                 end
-            end)
-        else
-            -- 恢复默认
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v.Name == "temperature" or v.Name == "oxygen" then
-                    v.Disabled = false
+                -- 水面碰撞
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj.Name == "Ocean" or obj.Name == "Deep Ocean" then
+                        obj.CanCollide = true
+                    end
                 end
-            end
-        end
-    end
-})
-
--- ==========================================
---    核心：水上行走 (Ocean Walk)
--- ==========================================
-FishTab:CreateToggle({
-    Name = "水上行走",
-    CurrentValue = false,
-    Callback = function(state)
-        _G.OceanWalk = state
-        -- 走马脚本的碰撞逻辑
-        for _, ocean in pairs(workspace:GetDescendants()) do
-            if ocean.Name == "Ocean" or ocean.Name == "Deep Ocean" then
-                ocean.CanCollide = state
-            end
-        end
-        -- 走马脚本 fishing 区域逻辑
-        pcall(function()
-            for _, fPart in pairs(workspace.zones.fishing:GetDescendants()) do
-                if fPart:IsA("Part") then
-                    fPart.CanCollide = state
-                end
+                task.wait(3)
             end
         end)
     end
 })
 
 -- ==========================================
---    附加：游泳加速
+--    辅助：游泳加速
 -- ==========================================
 FishTab:CreateSlider({
     Name = "游泳速度",
