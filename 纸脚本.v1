@@ -124,7 +124,7 @@ UniversalTab:CreateToggle({
 })
 
 UniversalTab:CreateToggle({
-    Name = "无限视距 (Max Zoom)", 
+    Name = "无限视野", 
     CurrentValue = false, 
     Callback = function(Value)
         local player = game:GetService("Players").LocalPlayer
@@ -512,8 +512,8 @@ NaturalDisasterTab:CreateButton({Name = "切换防跌落伤害", Callback = func
 end})
 
 -- Tab 8: 建船寻宝区域
-local BuildBoatTab = Window:CreateTab("建船寻宝区域", 4483362458)
-BuildBoatTab:CreateParagraph({Title = "建船寻宝功能", Content = "• 刷钱脚本：自动点击 Floppa + 路径传送 + 无碰撞 + 防跌落\n• 关闭开关时自动死亡\n• 购买圣诞钩爪：点击按钮购买"})
+local BuildBoatTab = Window:CreateTab("建船寻宝", 4483362458)
+BuildBoatTab:CreateParagraph({Title = "功能", Content = "• 刷钱"})
 local moneyFarmEnabled = false
 local noclipConn = nil
 local antiFallBV = nil
@@ -1095,7 +1095,7 @@ AbandonedTab:CreateToggle({
 
 -- 8. 自动发电机 (3秒一次)
 AbandonedTab:CreateToggle({
-    Name = "自动发电机",
+    Name = "自动修发电机",
     Callback = function(state)
         abandonedState.autoGenerator = state
         if state then
@@ -1126,60 +1126,11 @@ AbandonedTab:CreateToggle({
     end
 })
 
--- ==== Gingerbread 触碰领取功能 ====
-AbandonedTab:CreateToggle({
-    Name = "姜饼人自动农场",
-    CurrentValue = false,
-    Callback = function(state)
-        abandonedState.autoGingerbread = state
-        
-        if state then
-            task.spawn(function()
-                while abandonedState.autoGingerbread do
-                    local character = LocalPlayer.Character
-                    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-                    
-                    if rootPart then
-                        -- 全局搜索姜饼人
-                        local gingerbread = nil
-                        for _, obj in ipairs(workspace:GetDescendants()) do
-                            -- 匹配名字，并且确保它还没被领走（仍在场景中）
-                            if obj.Name == "Gingerbread" and (obj:IsA("Model") or obj:IsA("BasePart")) then
-                                gingerbread = obj
-                                break
-                            end
-                        end
-
-                        if gingerbread then
-                            -- 获取目标坐标
-                            local targetPos
-                            if gingerbread:IsA("Model") then
-                                targetPos = gingerbread:GetModelCFrame()
-                            else
-                                targetPos = gingerbread.CFrame
-                            end
-                            
-                            -- 核心：传送到模型位置（稍微重叠以确保触碰）
-                            rootPart.CFrame = targetPos
-                            
-                            -- 这里的延迟是为了给服务器时间检测触碰
-                            task.wait(0.5) 
-                        else
-                            -- 如果没找到，提示一下
-                            -- print("等待 Gingerbread 刷新...")
-                        end
-                    end
-                    task.wait(0.1) -- 扫描频率
-                end
-            end)
-        end
-    end
-})
 
 --==============================
 -- 战争大亨区域
 --==============================
-local WarTab = Window:CreateTab("战争大亨区域", 4483362458)
+local WarTab = Window:CreateTab("战争大亨", 4483362458)
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1280,3 +1231,105 @@ WarTab:CreateButton({
         })
     end
 })
+
+local FishTab = Window:CreateTab("Fish", 4483362458)
+
+-- 1. 水上行走 (Ocean Walk)
+FishTab:CreateToggle({
+    Name = "水上行走 (Ocean Walk)",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.OceanWalk = state
+        pcall(function()
+            for _, obj in pairs(workspace:GetDescendants()) do
+                if obj.Name == "Ocean" or obj.Name == "Deep Ocean" then
+                    obj.CanCollide = state
+                end
+            end
+            local fZone = workspace:FindFirstChild("zones") and workspace.zones:FindFirstChild("fishing")
+            if fZone then
+                for _, p in pairs(fZone:GetDescendants()) do
+                    if p:IsA("Part") then p.CanCollide = state end
+                end
+            end
+        end)
+    end
+})
+
+-- 2. 自动秒钓 (含 1.95s 延迟)
+FishTab:CreateToggle({
+    Name = "自动秒钓 (上钩即拉)",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.AutoFish = state
+        task.spawn(function()
+            while _G.AutoFish do
+                pcall(function()
+                    local hook = LocalPlayer.PlayerGui:FindFirstChild("popup")
+                    if hook then
+                        task.wait(1.95)
+                        game:GetService("ReplicatedStorage").events.reelfinished:FireServer(100, true)
+                    end
+                end)
+                task.wait(0.15)
+            end
+        end)
+    end
+})
+
+-- 3. 无视温度/氧气
+FishTab:CreateToggle({
+    Name = "无视温度/氧气限制",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.NoEnv = state
+        task.spawn(function()
+            while _G.NoEnv do
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if (v.Name == "temperature" or v.Name == "oxygen") then
+                        v.Disabled = true
+                    end
+                end
+                task.wait(2)
+            end
+        end)
+    end
+})
+
+-- 4. 水下除雾
+FishTab:CreateToggle({
+    Name = "水下除雾 (高清视野)",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.NoFog = state
+        task.spawn(function()
+            while _G.NoFog do
+                game:GetService("Lighting").FogEnd = 100000
+                local atm = game:GetService("Lighting"):FindFirstChild("Atmosphere")
+                if atm then atm.Density = 0 end
+                task.wait(1)
+            end
+        end)
+    end
+})
+
+-- 5. 游泳速度控制
+FishTab:CreateSlider({
+    Name = "游泳速度",
+    Min = 16,
+    Max = 150,
+    CurrentValue = 30,
+    Callback = function(v) _G.SwimSpd = v end,
+})
+
+-- 游泳加速逻辑后台运行
+task.spawn(function()
+    while task.wait(0.1) do
+        local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+        if hum and hum:GetState() == Enum.HumanoidStateType.Swimming then
+            hum.WalkSpeed = _G.SwimSpd or 30
+        end
+    end
+end)
+
+
