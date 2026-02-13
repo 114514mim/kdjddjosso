@@ -1232,41 +1232,46 @@ WarTab:CreateButton({
     end
 })
 
-local FishTab = Window:CreateTab("Fish", 4483362458)
+local FishTab = Window:CreateTab("Fish 专项", 4483362458)
 
--- 1. 水上行走 (Ocean Walk)
+-- ==========================================
+--    核心功能：自动卖鱼 (同步走马逻辑)
+-- ==========================================
+
 FishTab:CreateToggle({
-    Name = "水上行走 (Ocean Walk)",
+    Name = "全自动卖鱼",
     CurrentValue = false,
     Callback = function(state)
-        _G.OceanWalk = state
-        pcall(function()
-            for _, obj in pairs(workspace:GetDescendants()) do
-                if obj.Name == "Ocean" or obj.Name == "Deep Ocean" then
-                    obj.CanCollide = state
-                end
-            end
-            local fZone = workspace:FindFirstChild("zones") and workspace.zones:FindFirstChild("fishing")
-            if fZone then
-                for _, p in pairs(fZone:GetDescendants()) do
-                    if p:IsA("Part") then p.CanCollide = state end
-                end
+        _G.AutoSell = state
+        task.spawn(function()
+            while _G.AutoSell do
+                pcall(function()
+                    -- 走马脚本逻辑：循环触发 1 到 5 级的鱼全部卖掉
+                    for i = 1, 5 do
+                        game:GetService("ReplicatedStorage").events.sell:FireServer(i)
+                    end
+                end)
+                task.wait(2) -- 每2秒清理一次背包
             end
         end)
     end
 })
 
--- 2. 自动秒钓 (含 1.95s 延迟)
+-- ==========================================
+--    核心功能：自动秒钓 (Popup 检测版)
+-- ==========================================
+
 FishTab:CreateToggle({
-    Name = "自动秒钓 (上钩即拉)",
+    Name = "自动秒拉 (上钩即拉)",
     CurrentValue = false,
     Callback = function(state)
         _G.AutoFish = state
         task.spawn(function()
             while _G.AutoFish do
                 pcall(function()
-                    local hook = LocalPlayer.PlayerGui:FindFirstChild("popup")
-                    if hook then
+                    local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+                    -- 监听 popup 弹窗，这是走马脚本成功的关键
+                    if playerGui:FindFirstChild("popup") then
                         task.wait(1.95)
                         game:GetService("ReplicatedStorage").events.reelfinished:FireServer(100, true)
                     end
@@ -1277,59 +1282,62 @@ FishTab:CreateToggle({
     end
 })
 
--- 3. 无视温度/氧气
+-- ==========================================
+--    辅助功能：环境限制与行走
+-- ==========================================
+
+-- 无视温度/氧气 (走马脚本也有类似逻辑)
 FishTab:CreateToggle({
-    Name = "无视温度/氧气限制",
+    Name = "无视环境限制",
     CurrentValue = false,
     Callback = function(state)
         _G.NoEnv = state
         task.spawn(function()
             while _G.NoEnv do
                 for _, v in pairs(workspace:GetDescendants()) do
-                    if (v.Name == "temperature" or v.Name == "oxygen") then
+                    if v.Name == "temperature" or v.Name == "oxygen" then
                         v.Disabled = true
                     end
                 end
-                task.wait(2)
+                task.wait(3)
             end
         end)
     end
 })
 
--- 4. 水下除雾
+-- 水上行走
 FishTab:CreateToggle({
-    Name = "水下除雾 (高清视野)",
+    Name = "水上行走",
     CurrentValue = false,
     Callback = function(state)
-        _G.NoFog = state
-        task.spawn(function()
-            while _G.NoFog do
-                game:GetService("Lighting").FogEnd = 100000
-                local atm = game:GetService("Lighting"):FindFirstChild("Atmosphere")
-                if atm then atm.Density = 0 end
-                task.wait(1)
+        _G.OceanWalk = state
+        local function update()
+            for _, obj in pairs(workspace:GetDescendants()) do
+                if obj.Name == "Ocean" or obj.Name == "Deep Ocean" then
+                    obj.CanCollide = _G.OceanWalk
+                end
             end
-        end)
+        end
+        update()
     end
 })
 
--- 5. 游泳速度控制
+-- ==========================================
+--    移动：游泳加速
+-- ==========================================
+
 FishTab:CreateSlider({
     Name = "游泳速度",
-    Min = 16,
-    Max = 150,
-    CurrentValue = 30,
+    Min = 16, Max = 150, CurrentValue = 30,
     Callback = function(v) _G.SwimSpd = v end,
 })
 
--- 游泳加速逻辑后台运行
+-- 游泳加速后台逻辑
 task.spawn(function()
     while task.wait(0.1) do
-        local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
         if hum and hum:GetState() == Enum.HumanoidStateType.Swimming then
             hum.WalkSpeed = _G.SwimSpd or 30
         end
     end
 end)
-
-
