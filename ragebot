@@ -1,0 +1,95 @@
+-- [[ Prison Life 10M CQR Ragebot Framework ]] --
+-- 功能：10米范围静默瞄准 + 内存级射速修改 + 协议层自动射击
+
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- 配置参数
+_G.AimbotEnabled = true
+_G.TeamCheck = true
+_G.MaxDistance = 35 -- 约10米 (Roblox单位)
+
+-- 1. 寻找 10 米内最近的敌人
+local function GetNearestEnemy()
+    local closestTarget = nil
+    local shortestDistance = _G.MaxDistance
+    local character = LocalPlayer.Character
+    if not character or not character:FindFirstChild("Head") then return nil end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            -- 阵营校验
+            if _G.TeamCheck and player.Team == LocalPlayer.Team then continue end
+            -- 存活校验
+            if humanoid and humanoid.Health > 0 then
+                local dist = (character.Head.Position - player.Character.Head.Position).Magnitude
+                if dist < shortestDistance then
+                    shortestDistance = dist
+                    closestTarget = player.Character.Head
+                end
+            end
+        end
+    end
+    return closestTarget
+end
+
+-- 2. 内存注入：修改全枪械属性 (GC扫描)
+local function ModGuns()
+    for _, v in pairs(getgc(true)) do
+        if type(v) == 'table' and rawget(v, 'FireRate') then
+            v.FireRate = 0.05 -- 极速爆发
+            v.AutoFire = true
+            v.MaxRecoil = 0
+            v.MinRecoil = 0
+            v.ShootCone = 0
+            v.AmmoCapacity = 999
+        end
+    end
+end
+ModGuns()
+
+-- 3. 底层拦截：Raycast 静默瞄准 (Metatable Hook)
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    if not checkcaller() and method == "Raycast" and _G.AimbotEnabled then
+        local target = GetNearestEnemy()
+        if target then
+            -- 这里的 args[1] 是原射线的起点
+            local origin = args[1]
+            local newDirection = (target.Position - origin).Unit * 1000
+            args[2] = newDirection -- 强制将射线方向指向敌人头部
+            return oldNamecall(self, unpack(args))
+        end
+    end
+    return oldNamecall(self, ...)
+end))
+
+-- 4. 协议层：全自动射击循环 (10米禁区)
+local ShootEvent = ReplicatedStorage:FindFirstChild("ShootEvent")
+RunService.Heartbeat:Connect(function()
+    if _G.AimbotEnabled then
+        local target = GetNearestEnemy()
+        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+        
+        -- 只有手里拿着枪且10米内有目标时触发
+        if target and tool and ShootEvent then
+            ShootEvent:FireServer({
+                {
+                    ["RayObject"] = Ray.new(Vector3.new(0,0,0), Vector3.new(0,0,0)),
+                    ["Distance"] = (target.Position - LocalPlayer.Character.Head.Position).Magnitude,
+                    ["CFrame"] = target.CFrame,
+                    ["Hit"] = target
+                }
+            }, tool)
+        end
+    end
+end)
+
+print("Ragebot Loaded: 10M Zone Active")
