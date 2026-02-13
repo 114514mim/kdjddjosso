@@ -31,7 +31,7 @@ AuthorTab:CreateParagraph({Title = "作者信息", Content = "脚本作者：纸
 AuthorTab:CreateButton({Name = "复制 B站主页链接", Callback = function() setclipboard("https://b23.tv/oROqXeB") Rayfield:Notify({Title = "已复制", Content = "链接已复制到剪贴板！", Duration = 5}) end})
 
 -- Tab 2: 通用脚本加载
-local UniversalTab = Window:CreateTab("通用脚本加载", 4483362458)
+local UniversalTab = Window:CreateTab("通用", 4483362458)
 
 -- 穿墙
 local noclipEnabled = false
@@ -220,11 +220,11 @@ UniversalTab:CreateButton({Name = "加载飞行脚本", Callback = function() lo
 UniversalTab:CreateButton({Name = "绕过大多数游戏反作弊", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/绕过反作弊系统"))() Rayfield:Notify({Title = "绕过大多数游戏反作弊脚本", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 3: 新 Slap 脚本
-local SlapTab = Window:CreateTab("新 Slap 脚本", 4483362458)
+local SlapTab = Window:CreateTab("光环编制塔", 4483362458)
 SlapTab:CreateButton({Name = "点击加载新 Slap 脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/aaaaaaappppiii"))() Rayfield:Notify({Title = "新 Slap", Content = "已加载执行！", Duration = 5}) end})
 
 -- Tab 4: infyiff 脚本
-local InfyiffTab = Window:CreateTab("infyiff 脚本", 4483362458)
+local InfyiffTab = Window:CreateTab("iy", 4483362458)
 InfyiffTab:CreateButton({Name = "加载 SimpleSpy V3", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))() Rayfield:Notify({Title = "SimpleSpy", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/infinite-yield-save-fix.lua"))() Rayfield:Notify({Title = "Infinite Yield", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
@@ -232,7 +232,7 @@ InfyiffTab:CreateButton({Name = "dex++", Callback = function() loadstring(game:H
 
 -- [[ 监狱人生 完整整合脚本 - Gemini 优化版 ]]
 
-local PrisonTab = Window:CreateTab("监狱人生脚本", 4483362458)
+local PrisonTab = Window:CreateTab("监狱人生", 4483362458)
 
 -- 变量初始化
 local Players = game:GetService("Players")
@@ -475,7 +475,7 @@ LogicToggle.Callback = function(Value)
 end
 
 -- Tab 7: 自然灾害区域
-local NaturalDisasterTab = Window:CreateTab("自然灾害区域", 4483362458)
+local NaturalDisasterTab = Window:CreateTab("自然灾害模拟器", 4483362458)
 NaturalDisasterTab:CreateButton({Name = "加载黑洞脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/9898898"))() Rayfield:Notify({Title = "黑洞脚本", Content = "已加载！", Duration = 5}) end})
 NaturalDisasterTab:CreateButton({Name = "切换防跌落伤害", Callback = function()
     antiFallEnabled = not antiFallEnabled
@@ -605,7 +605,7 @@ BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
 end})
 
 -- Tab 9: 独家自瞄区域
-local AimbotTab = Window:CreateTab("独家自瞄区域", 4483362458)
+local AimbotTab = Window:CreateTab("子弹追踪", 4483362458)
 AimbotTab:CreateParagraph({
     Title = "独家自瞄功能",
     Content = "• Silent Aim + Aimbot\n• 队伍检测：默认关闭（全员瞄准），可手动开启只敌方\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"
@@ -695,7 +695,7 @@ local function disableAimbot()
 end
 
 AimbotTab:CreateButton({
-    Name = "切换独家自瞄 (Silent Aim)",
+    Name = "开启子弹追踪",
     Callback = function()
         aimbotEnabled = not aimbotEnabled
         if aimbotEnabled then
@@ -724,7 +724,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 
-local Night99Tab = Window:CreateTab("99个夜晚区域", 4483362458)
+local Night99Tab = Window:CreateTab("99个夜晚", 4483362458)
 
 -- 锁血
 Night99Tab:CreateButton({
@@ -876,7 +876,7 @@ local workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
 -- ==== 创建 Tab ====
-local AbandonedTab = Window:CreateTab("被遗弃区域", 4483362458)
+local AbandonedTab = Window:CreateTab("被遗弃", 4483362458)
 
 -- ==== 状态表 ====
 local abandonedState = {
@@ -1232,112 +1232,140 @@ WarTab:CreateButton({
     end
 })
 
-local FishTab = Window:CreateTab("Fish 专项", 4483362458)
+local FishTab = Window:CreateTab("Fish", 4483362458)
 
 -- ==========================================
---    核心功能：自动卖鱼 (同步走马逻辑)
+--    核心：自动钓鱼 (完全照搬走马源码逻辑)
 -- ==========================================
+FishTab:CreateToggle({
+    Name = "全自动钓鱼 (走马原版逻辑)",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.abbfia = state -- 走马脚本核心控制变量
+        
+        if state then
+            task.spawn(function()
+                while _G.abbfia do
+                    pcall(function()
+                        local lp = game:GetService("Players").LocalPlayer
+                        local reel = lp.PlayerGui:FindFirstChild("reel")
+                        local popup = lp.PlayerGui:FindFirstChild("popup")
+                        
+                        -- 逻辑 A：如果没在钓鱼，就抛竿
+                        if not reel then
+                            local tool = lp.Character:FindFirstChildOfClass("Tool")
+                            if tool and tool:FindFirstChild("events") and tool.events:FindFirstChild("cast") then
+                                tool.events.cast:FireServer()
+                            end
+                        end
+                        
+                        -- 逻辑 B：检测到上钩 popup，延迟 1.95s 直接秒收
+                        if popup then
+                            task.wait(1.95)
+                            game:GetService("ReplicatedStorage"):WaitForChild("events"):WaitForChild("reelfinished"):FireServer(100, true)
+                        end
+                    end)
+                    task.wait(0.1) -- 高频检测
+                end
+            end)
+        end
+    end
+})
 
+-- ==========================================
+--    核心：自动卖鱼 (完全照搬走马源码逻辑)
+-- ==========================================
 FishTab:CreateToggle({
     Name = "全自动卖鱼",
     CurrentValue = false,
     Callback = function(state)
         _G.AutoSell = state
-        task.spawn(function()
-            while _G.AutoSell do
-                pcall(function()
-                    -- 走马脚本逻辑：循环触发 1 到 5 级的鱼全部卖掉
-                    for i = 1, 5 do
-                        game:GetService("ReplicatedStorage").events.sell:FireServer(i)
-                    end
-                end)
-                task.wait(2) -- 每2秒清理一次背包
-            end
-        end)
+        if state then
+            task.spawn(function()
+                while _G.AutoSell do
+                    pcall(function()
+                        -- 走马逻辑：循环触发 1 到 5 级鱼类
+                        for i = 1, 5 do
+                            game:GetService("ReplicatedStorage").events.sell:FireServer(i)
+                        end
+                    end)
+                    task.wait(2)
+                end
+            end)
+        end
     end
 })
 
 -- ==========================================
---    核心功能：自动秒钓 (Popup 检测版)
+--    核心：无视环境 (照搬走马 oxygen/temperature)
 -- ==========================================
-
 FishTab:CreateToggle({
-    Name = "自动秒拉 (上钩即拉)",
-    CurrentValue = false,
-    Callback = function(state)
-        _G.AutoFish = state
-        task.spawn(function()
-            while _G.AutoFish do
-                pcall(function()
-                    local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-                    -- 监听 popup 弹窗，这是走马脚本成功的关键
-                    if playerGui:FindFirstChild("popup") then
-                        task.wait(1.95)
-                        game:GetService("ReplicatedStorage").events.reelfinished:FireServer(100, true)
-                    end
-                end)
-                task.wait(0.15)
-            end
-        end)
-    end
-})
-
--- ==========================================
---    辅助功能：环境限制与行走
--- ==========================================
-
--- 无视温度/氧气 (走马脚本也有类似逻辑)
-FishTab:CreateToggle({
-    Name = "无视环境限制",
+    Name = "无视环境 (Oxygen/Temp)",
     CurrentValue = false,
     Callback = function(state)
         _G.NoEnv = state
-        task.spawn(function()
-            while _G.NoEnv do
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v.Name == "temperature" or v.Name == "oxygen" then
-                        v.Disabled = true
+        if state then
+            task.spawn(function()
+                while _G.NoEnv do
+                    for _, v in pairs(workspace:GetDescendants()) do
+                        if v.Name == "temperature" or v.Name == "oxygen" then
+                            v.Disabled = true
+                        end
                     end
+                    task.wait(2)
                 end
-                task.wait(3)
+            end)
+        else
+            -- 恢复默认
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v.Name == "temperature" or v.Name == "oxygen" then
+                    v.Disabled = false
+                end
             end
-        end)
+        end
     end
 })
 
--- 水上行走
+-- ==========================================
+--    核心：水上行走 (Ocean Walk)
+-- ==========================================
 FishTab:CreateToggle({
     Name = "水上行走",
     CurrentValue = false,
     Callback = function(state)
         _G.OceanWalk = state
-        local function update()
-            for _, obj in pairs(workspace:GetDescendants()) do
-                if obj.Name == "Ocean" or obj.Name == "Deep Ocean" then
-                    obj.CanCollide = _G.OceanWalk
-                end
+        -- 走马脚本的碰撞逻辑
+        for _, ocean in pairs(workspace:GetDescendants()) do
+            if ocean.Name == "Ocean" or ocean.Name == "Deep Ocean" then
+                ocean.CanCollide = state
             end
         end
-        update()
+        -- 走马脚本 fishing 区域逻辑
+        pcall(function()
+            for _, fPart in pairs(workspace.zones.fishing:GetDescendants()) do
+                if fPart:IsA("Part") then
+                    fPart.CanCollide = state
+                end
+            end
+        end)
     end
 })
 
 -- ==========================================
---    移动：游泳加速
+--    附加：游泳加速
 -- ==========================================
-
 FishTab:CreateSlider({
     Name = "游泳速度",
     Min = 16, Max = 150, CurrentValue = 30,
     Callback = function(v) _G.SwimSpd = v end,
 })
 
--- 游泳加速后台逻辑
 task.spawn(function()
-    while task.wait(0.1) do
+    while true do
         local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
         if hum and hum:GetState() == Enum.HumanoidStateType.Swimming then
             hum.WalkSpeed = _G.SwimSpd or 30
         end
+        task.wait(0.1)
     end
 end)
