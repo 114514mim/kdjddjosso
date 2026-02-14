@@ -451,67 +451,10 @@ PrisonTab:CreateButton({
 })
 
 PrisonTab:CreateToggle({
-    Name = "愤怒机器人",
+    Name = "开启反电击",
     CurrentValue = false,
-    Callback = function(Value)
-        _G.AngryBot = Value -- 使用全局变量控制循环开关
-        
-        -- 这里的逻辑仅在 Toggle 状态改变时触发一次
-        -- 实际的 Heartbeat 循环通常写在脚本末尾或外部
-    end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/%E7%9B%91%E7%8B%B1%E4%BA%BA%E7%94%9Fragebot"))()
 })
-
--- 保持你的原有逻辑在 UI 外部运行，并受 _G.AngryBot 控制
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local LocalPlayer = Players.LocalPlayer
-local ShootEvent = ReplicatedStorage:WaitForChild("GunRemotes"):WaitForChild("ShootEvent")
-local MaxDistance = 1500
-
-local function getNearestTarget()
-    local char = LocalPlayer.Character
-    local myPosHRP = char and char:FindFirstChild("HumanoidRootPart")
-    if not myPosHRP then return nil end
-
-    local nearest, minDist = nil, MaxDistance
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Team ~= LocalPlayer.Team then
-            local targetChar = plr.Character
-            if targetChar and targetChar:FindFirstChild("Head") and targetChar:FindFirstChild("Humanoid") and targetChar.Humanoid.Health > 0 then
-                local dist = (targetChar.Head.Position - myPosHRP.Position).Magnitude
-                if dist < minDist then
-                    minDist = dist
-                    nearest = targetChar.Head
-                end
-            end
-        end
-    end
-    return nearest
-end
-
-RunService.Heartbeat:Connect(function()
-    if not _G.AngryBot then return end -- 修复点：UI没开启时不执行逻辑
-
-    local char = LocalPlayer.Character
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    local tool = char and char:FindFirstChildOfClass("Tool")
-    
-    if not hrp or not tool or tool:GetAttribute("ToolType") ~= "Gun" then return end
-
-    local targetHead = getNearestTarget()
-    if not targetHead then return end
-
-    pcall(function()
-        ShootEvent:FireServer({
-            {
-                hrp.Position,
-                targetHead.Position,
-                targetHead
-            }
-        })
-    end)
-end)
 
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
