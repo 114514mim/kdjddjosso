@@ -450,11 +450,29 @@ PrisonTab:CreateButton({
     end
 })
 
+local RagebotActive = false -- 全局开关变量
+
 PrisonTab:CreateToggle({
-    Name = "开启反电击",
+    Name = "愤怒机器人 (Ragebot)",
     CurrentValue = false,
-loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/%E7%9B%91%E7%8B%B1%E4%BA%BA%E7%94%9Fragebot"))()
+    Flag = "RagebotToggle",
+    Callback = function(Value)
+        RagebotActive = Value -- 更新开关状态
+        
+        if RagebotActive then
+            -- 提示：如果脚本太大，建议还是用 loadstring 启动
+            -- 但如果脚本内没有检查 RagebotActive 变量，它开启后就停不下来
+            task.spawn(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/%E7%9B%91%E7%8B%B1%E4%BA%BA%E7%94%9Fragebot"))()
+            end)
+        else
+            -- 既然是开源的，你可以进那个链接看看它有没有关闭函数
+            -- 比如：_G.RagebotLoop = false 或类似的全局变量
+            print("注意：外部脚本可能需要手动重置或重新进入游戏才能彻底关闭")
+        end
+    end,
 })
+
 
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
