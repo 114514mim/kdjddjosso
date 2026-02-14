@@ -450,43 +450,36 @@ PrisonTab:CreateButton({
     end
 })
 
-PrisonTab:CreateToggle({
-    Name = "愤怒机器人 (Rage Bot)",
-    CurrentValue = false,
-    Flag = "RageBotToggle", -- 唯一标识符
-    Callback = function(Value)
-        _G.RageEnabled = Value -- 使用全局变量控制循环
-        
-        if Value then
-            -- 开启时提示
-            print("愤怒模式已激活 - 拿起枪开始收割")
-        end
-    end,
-})
+-- 1. 定义控制变量
+local RageBotEnabled = false
 
--- 核心逻辑逻辑（放在 Toggle 外部，只运行一次，通过变量控制）
+-- 2. 获取服务
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local ShootEvent = ReplicatedStorage:WaitForChild("GunRemotes"):WaitForChild("ShootEvent")
 
--- 监狱人生专用目标检测
+local MaxDistance = 1500
+
+-- 3. 目标获取逻辑
 local function getNearestTarget()
     local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return nil end
-    local myPos = char.HumanoidRootPart.Position
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
 
-    local nearest, minDist = nil, 1500 -- 最大范围 1500
-
+    local nearest, minDist = nil, MaxDistance
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Team ~= LocalPlayer.Team then
-            local tChar = plr.Character
-            if tChar and tChar:FindFirstChild("Head") and tChar:FindFirstChild("Humanoid") and tChar.Humanoid.Health > 0 then
-                local dist = (tChar.Head.Position - myPos).Magnitude
+            local targetChar = plr.Character
+            local head = targetChar and targetChar:FindFirstChild("Head")
+            local hum = targetChar and targetChar:FindFirstChild("Humanoid")
+
+            if head and hum and hum.Health > 0 then
+                local dist = (head.Position - hrp.Position).Magnitude
                 if dist < minDist then
                     minDist = dist
-                    nearest = tChar.Head
+                    nearest = head
                 end
             end
         end
@@ -494,40 +487,38 @@ local function getNearestTarget()
     return nearest
 end
 
--- 狂射循环
+-- 4. 创建 UI (修正了语法嵌套)
+PrisonTab:CreateToggle({
+    Name = "愤怒机器人",
+    CurrentValue = false,
+    Flag = "RageBotToggle", -- 建议添加标识符
+    Callback = function(Value)
+        RageBotEnabled = Value -- 将 UI 状态同步到变量
+    end,
+})
+
+-- 5. 独立运行循环
 RunService.Heartbeat:Connect(function()
-    if not _G.RageEnabled then return end
+    if not RageBotEnabled then return end -- 如果开关没开，直接跳过
 
     local char = LocalPlayer.Character
-    if not char then return end
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    -- 确保手里拿着枪 (根据你的逻辑判断 ToolType)
+    local tool = char and char:FindFirstChildOfClass("Tool")
     
-    -- 监狱人生检测是否拿枪：通常检查 Tool 里是否有 GunCursor 或特定子节点
-    local tool = char:FindFirstChildOfClass("Tool")
-    if not tool or not (tool:FindFirstChild("GunCursor") or tool:FindFirstChild("Bullet")) then 
-        return 
-    end
-
-    local targetHead = getNearestTarget()
-    if not targetHead then return end
-
-    -- 构造监狱人生标准的远程参数
-    -- 注意：监狱人生的 ShootEvent 期望的是一个包含子弹信息的 table
-    local myPos = char.HumanoidRootPart.Position
-    local hitPos = targetHead.Position
-    
-    local shootArgs = {
-        {
-            ["Hit"] = targetHead,
-            ["Distance"] = (hitPos - myPos).Magnitude,
-            ["Cframe"] = CFrame.new(myPos, hitPos),
-            ["RayObject"] = Ray.new(Vector3.new(0,0,0), Vector3.new(0,0,0))
-        }
-    }
-
-    -- 愤怒模式核心：一帧内多次发包 (循环 5 次 = 5 倍射速)
-    -- 如果被踢出，请将 5 改小
-    for i = 1, 5 do
-        ShootEvent:FireServer(shootArgs)
+    if hrp and tool and targetHead ~= nil then
+        local targetHead = getNearestTarget()
+        if targetHead then
+            pcall(function()
+                ShootEvent:FireServer({
+                    {
+                        hrp.Position,
+                        targetHead.Position,
+                        targetHead
+                    }
+                })
+            end)
+        end
     end
 end)
 
