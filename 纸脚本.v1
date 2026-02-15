@@ -453,6 +453,9 @@ PrisonTab:CreateButton({
 local RagebotActive = false
 local RagebotRunning = false
 
+local RagebotActive = false
+local RagebotRunning = false
+
 PrisonTab:CreateToggle({
     Name = "愤怒机器人 (Ragebot)",
     CurrentValue = false,
@@ -463,22 +466,33 @@ PrisonTab:CreateToggle({
         if RagebotActive and not RagebotRunning then
             RagebotRunning = true
             task.spawn(function()
-                -- 提取自原作者 JsYb666 的核心 Rage 逻辑
-                -- 修正了死循环，现在它会跟随 Toggle 开关停止
                 while RagebotActive do
-                    pcall(function()
+                    -- 检查玩家背包里是否有武器 (Prison Life 需要武器才能触发伤害)
+                    local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") or game.Players.LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+                    
+                    if tool and tool:FindFirstChild("RemoteEvent") then
                         for _, v in pairs(game.Players:GetPlayers()) do
+                            -- 目标过滤：不是自己、有角色、活着、不是队友 (可选)
                             if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
-                                -- 核心杀人逻辑 (针对 Prison Life 远程事件)
-                                local args = {
-                                    [1] = v.Character.HumanoidRootPart
-                                }
-                                -- 这里的路径根据原脚本的杀人协议：
-                                game:GetService("ReplicatedStorage").MainEvent:FireServer("Kill", args[1])
+                                
+                                -- 典型的 Prison Life 远程事件调用逻辑
+                                pcall(function()
+                                    local args = {
+                                        [1] = {
+                                            ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
+                                            ["Distance"] = 0, 
+                                            ["Cframe"] = v.Character.HumanoidRootPart.CFrame, 
+                                            ["Hit"] = v.Character.HumanoidRootPart
+                                        }
+                                    }
+                                    -- 触发武器的远程事件
+                                    tool.RemoteEvent:FireServer(unpack(args))
+                                end)
+                                
                             end
                         end
-                    end)
-                    task.wait(0.1) -- 攻击频率，可以根据需要调低
+                    end
+                    task.wait(0.05) -- 稍微提高频率以达到 "Rage" 效果
                 end
                 RagebotRunning = false
             end)
