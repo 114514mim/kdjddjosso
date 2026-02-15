@@ -450,25 +450,38 @@ PrisonTab:CreateButton({
     end
 })
 
-local RagebotActive = false -- 全局开关变量
+local RagebotActive = false
+local RagebotRunning = false
 
 PrisonTab:CreateToggle({
     Name = "愤怒机器人 (Ragebot)",
     CurrentValue = false,
     Flag = "RagebotToggle",
     Callback = function(Value)
-        RagebotActive = Value -- 更新开关状态
+        RagebotActive = Value
         
-        if RagebotActive then
-            -- 提示：如果脚本太大，建议还是用 loadstring 启动
-            -- 但如果脚本内没有检查 RagebotActive 变量，它开启后就停不下来
+        if RagebotActive and not RagebotRunning then
+            RagebotRunning = true
             task.spawn(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/%E7%9B%91%E7%8B%B1%E4%BA%BA%E7%94%9Fragebot"))()
+                -- 提取自原作者 JsYb666 的核心 Rage 逻辑
+                -- 修正了死循环，现在它会跟随 Toggle 开关停止
+                while RagebotActive do
+                    pcall(function()
+                        for _, v in pairs(game.Players:GetPlayers()) do
+                            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+                                -- 核心杀人逻辑 (针对 Prison Life 远程事件)
+                                local args = {
+                                    [1] = v.Character.HumanoidRootPart
+                                }
+                                -- 这里的路径根据原脚本的杀人协议：
+                                game:GetService("ReplicatedStorage").MainEvent:FireServer("Kill", args[1])
+                            end
+                        end
+                    end)
+                    task.wait(0.1) -- 攻击频率，可以根据需要调低
+                end
+                RagebotRunning = false
             end)
-        else
-            -- 既然是开源的，你可以进那个链接看看它有没有关闭函数
-            -- 比如：_G.RagebotLoop = false 或类似的全局变量
-            print("注意：外部脚本可能需要手动重置或重新进入游戏才能彻底关闭")
         end
     end,
 })
