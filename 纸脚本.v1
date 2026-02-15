@@ -473,6 +473,89 @@ PrisonTab:CreateToggle({
     end,
 })
 
+PrisonTab:CreateButton({
+    Name = "红蓝渐变视觉 (枪械/子弹)",
+    Callback = function()
+        -- 核心逻辑
+        local TRACER_TRANSPARENCY = 0.6               
+        local CUSTOM_SOUND = "rbxassetid://123168396269735" 
+        local CHANGE_SPEED = 2 
+
+        local function getDynamicColor()
+            local hue = (math.sin(os.clock() * CHANGE_SPEED) + 1) / 2 * 0.6
+            return Color3.fromHSV(hue, 1, 1)
+        end
+
+        local RunService = game:GetService("RunService")
+        local Player = game.Players.LocalPlayer
+        local Workspace = game:GetService("Workspace")
+
+        task.spawn(function()
+            while task.wait(0.1) do
+                local currentColor = getDynamicColor()
+                local tool = Player.Character and Player.Character:FindFirstChildOfClass("Tool")
+                if tool then
+                    for _, obj in pairs(tool:GetDescendants()) do
+                        if obj:IsA("BasePart") then
+                            obj.Color = currentColor
+                            obj.Material = Enum.Material.Glass
+                            obj.Transparency = TRACER_TRANSPARENCY
+                            if obj:IsA("MeshPart") then obj.TextureID = "" end
+                        elseif obj:IsA("PointLight") or obj.Name == "Flare" then
+                            obj.Color = currentColor
+                        elseif obj:IsA("Sound") then
+                            if obj.SoundId ~= CUSTOM_SOUND then
+                                obj.SoundId = CUSTOM_SOUND
+                                obj.Volume = 2
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+
+        RunService.RenderStepped:Connect(function()
+            local currentColor = getDynamicColor()
+            local ignoreFolder = Workspace:FindFirstChild("RayCastIgnore")
+            if ignoreFolder then
+                for _, obj in pairs(ignoreFolder:GetChildren()) do
+                    if obj:IsA("BasePart") and obj.Size.X < 0.25 and obj.Size.Y < 0.25 and obj.Size.Z > 1 then
+                        obj.Color = currentColor
+                        obj.Material = Enum.Material.Glass
+                        obj.Transparency = TRACER_TRANSPARENCY
+                        obj.CanCollide = false
+                        if not obj:FindFirstChild("BulletLaserSound") then
+                            local s = Instance.new("Sound")
+                            s.Name = "BulletLaserSound"
+                            s.SoundId = CUSTOM_SOUND
+                            s.Volume = 1.5
+                            s.Parent = obj
+                            s:Play()
+                        end
+                    end
+                end
+            end
+        end)
+
+        Workspace.DescendantAdded:Connect(function(obj)
+            if obj:IsA("BasePart") and obj:IsDescendantOf(Workspace:FindFirstChild("RayCastIgnore")) then
+                if obj.Size.X < 0.25 then
+                    obj.Color = getDynamicColor()
+                    obj.Transparency = TRACER_TRANSPARENCY
+                    obj.Material = Enum.Material.Glass
+                end
+            end
+        end)
+
+        -- 对应你脚本里的 Rayfield 通知风格
+        Rayfield:Notify({
+            Title = "开启成功",
+            Content = "渐变视觉已应用",
+            Duration = 2,
+            Image = 4483362458,
+        })
+    end,
+})
 
 -- Tab 6: 自定义逻辑
 local LogicTab = Window:CreateTab("自定义逻辑", 4483362458)
