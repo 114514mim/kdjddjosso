@@ -230,43 +230,44 @@ InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() l
 InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "dex++", Callback = function() loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))() Rayfield:Notify({Title = "dex++", Content = "已加载！", Duration = 5}) end})
 
--- [[ 监狱人生 完整整合区域 - 修复版 ]]
+-- [[ 监狱人生 完整整合脚本 - 100% 原始功能修复版 ]]
 
 local PrisonTab = Window:CreateTab("监狱人生", 4483362458)
 
--- 1. 变量初始化 (统一管理)
+-- 变量初始化 (完全保留你的 settings 命名)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
-local prisonSettings = {
+local settings = {
     antiarrest = false,
     antitase = false,
-    autoArrest = false,
-    auraEnabled = false,
-    auraRange = 20,
-    ragebotActive = false
+    autoArrest = false
 }
 
+-- ==========================================
+-- 核心逻辑：监听动画 (修正了闭合错误)
+-- ==========================================
 local lastPos = nil 
 
--- 2. 核心监听函数 (防电击/反逮捕/回传)
 local function ConnectCharacter(char)
     local humanoid = char:WaitForChild("Humanoid")
     local root = char:WaitForChild("HumanoidRootPart")
     local animator = humanoid:WaitForChild("Animator")
     
     animator.AnimationPlayed:Connect(function(des)
-        -- 反逮捕逻辑：监听到手铐动画立即自杀并记录坐标
-        if prisonSettings.antiarrest and des.Animation.AnimationId == "rbxassetid://287112271" then
+        -- 反逮捕
+        if settings.antiarrest and des.Animation.AnimationId == "rbxassetid://287112271" then
             lastPos = root.CFrame
             humanoid.Health = 0
-            Rayfield:Notify({Title = "反逮捕", Content = "已自动重置并记录位置", Duration = 3})
+            Rayfield:Notify({
+                Title = "反逮捕成功",
+                Content = "已执行自杀并记录坐标，正在尝试回传...",
+                Duration = 3
+            })
         end
 
-        -- 反电击逻辑
-        if prisonSettings.antitase and des.Animation.AnimationId == "rbxassetid://279227693" then
+        -- 反电击 (修复了之前逻辑断裂的地方)
+        if settings.antitase and des.Animation.AnimationId == "rbxassetid://279227693" then
             des:Stop()
             humanoid.PlatformStand = false
             task.wait()
@@ -275,47 +276,56 @@ local function ConnectCharacter(char)
     end)
 end
 
--- 初始绑定与复活回传
-if LocalPlayer.Character then ConnectCharacter(LocalPlayer.Character) end
+-- 监听复活并执行回传
 LocalPlayer.CharacterAdded:Connect(function(newChar)
     if lastPos then
         local newRoot = newChar:WaitForChild("HumanoidRootPart")
         task.wait(0.5) 
         newRoot.CFrame = lastPos
         lastPos = nil 
-        Rayfield:Notify({Title = "回传成功", Content = "已回到先前位置", Duration = 2})
     end
     ConnectCharacter(newChar)
 end)
 
+-- 初始启动
+if LocalPlayer.Character then
+    ConnectCharacter(LocalPlayer.Character)
+end
+
 --- --- --- --- --- --- --- --- ---
--- 3. 基础功能区
+-- 1. 外部与基础功能
 --- --- --- --- --- --- --- --- ---
-PrisonTab:CreateSection("外部中心")
+PrisonTab:CreateSection("外部资源")
+
 PrisonTab:CreateButton({
-    Name = "加载监狱人生脚本",
+    Name = "加载监狱人生脚本 (外部中心)",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))()
     end
 })
 
-PrisonTab:CreateSection("自动化")
+--- --- --- --- --- --- --- --- ---
+-- 2. 战斗与自动化
+--- --- --- --- --- --- --- --- ---
+PrisonTab:CreateSection("自动化功能")
 
--- 自动拳击 (Kill Aura)
+local AuraEnabled = false
+local AuraRange = 20
+
 PrisonTab:CreateToggle({
-   Name = "自动拳击 (Kill Aura)",
+   Name = "开启自动拳击 (Kill Aura)",
    CurrentValue = false,
    Callback = function(Value)
-      prisonSettings.auraEnabled = Value
+      AuraEnabled = Value
       if Value then
          task.spawn(function()
-            while prisonSettings.auraEnabled do
+            while AuraEnabled do
                local meleeEvent = ReplicatedStorage:FindFirstChild("meleeEvent")
                if meleeEvent and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                   for _, p in ipairs(Players:GetPlayers()) do
                      if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                        local dist = (LocalPlayer.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if dist <= prisonSettings.auraRange then
+                        local distance = (LocalPlayer.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                        if distance <= AuraRange then
                            meleeEvent:FireServer(p, 1, 1)
                         end
                      end
@@ -329,24 +339,25 @@ PrisonTab:CreateToggle({
 })
 
 PrisonTab:CreateSlider({
-   Name = "攻击范围",
+   Name = "攻击范围调节",
    Range = {5, 50},
    Increment = 1,
    CurrentValue = 20,
-   Callback = function(Value) prisonSettings.auraRange = Value end,
+   Callback = function(Value)
+      AuraRange = Value
+   end,
 })
 
--- 自动抓捕 (仅警察有效)
 PrisonTab:CreateToggle({
     Name = "自动抓捕 (Auto Arrest)",
     CurrentValue = false,
     Callback = function(Value)
-        prisonSettings.autoArrest = Value
+        settings.autoArrest = Value
         if Value then
             task.spawn(function()
-                while prisonSettings.autoArrest do
+                while settings.autoArrest do
                     for _, v in pairs(Players:GetPlayers()) do
-                        if not prisonSettings.autoArrest then break end
+                        if not settings.autoArrest then break end
                         if v ~= LocalPlayer and v.Team and v.Team.Name == 'Criminals' then
                             if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                                 LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
@@ -362,53 +373,83 @@ PrisonTab:CreateToggle({
 })
 
 --- --- --- --- --- --- --- --- ---
--- 4. 生存与武器区
+-- 3. 物品与防御
 --- --- --- --- --- --- --- --- ---
-PrisonTab:CreateSection("战斗增强")
-
-PrisonTab:CreateToggle({Name = "开启反手铐", CurrentValue = false, Callback = function(V) prisonSettings.antiarrest = V end})
-PrisonTab:CreateToggle({Name = "开启反电击", CurrentValue = false, Callback = function(V) prisonSettings.antitase = V end})
+PrisonTab:CreateSection("生存与防御")
 
 PrisonTab:CreateButton({
-    Name = "一键枪械增强 (无限弹药/秒换弹/高速)",
+    Name = "获得钥匙卡",
     Callback = function()
-        local found = false
+        local source = ReplicatedStorage:FindFirstChild("Key card", true)
+        if source then
+            source:Clone().Parent = LocalPlayer.Backpack
+            Rayfield:Notify({Title = "成功", Content = "已获得钥匙卡", Duration = 3})
+        else
+            Rayfield:Notify({Title = "失败", Content = "未找到钥匙卡资源", Duration = 3})
+        end
+    end
+})
+
+PrisonTab:CreateToggle({Name = "开启反手铐", CurrentValue = false, Callback = function(V) settings.antiarrest = V end})
+PrisonTab:CreateToggle({Name = "开启反电击", CurrentValue = false, Callback = function(V) settings.antitase = V end})
+
+--- --- --- --- --- --- --- --- ---
+-- 4. 武器性能增强
+--- --- --- --- --- --- --- --- ---
+PrisonTab:CreateSection("武器性能增强")
+
+PrisonTab:CreateButton({
+    Name = "无限弹药(拿着枪执行)",
+    Callback = function()
         for _, v in pairs(getgc(true)) do
             if type(v) == 'table' and rawget(v, 'MaxAmmo') then
                 v.MaxAmmo = math.huge
                 v.CurrentAmmo = math.huge
-                v.ReloadTime = 0
-                v.FireRate = 0.05
-                v.AutoFire = true
-                found = true
+                v.AmmoPerClip = math.huge
             end
         end
-        Rayfield:Notify({Title = "武器增强", Content = found and "已应用到手中武器" or "请先拿枪在手", Duration = 3})
     end
 })
 
--- Ragebot (暴力杀全家)
+PrisonTab:CreateButton({
+    Name = "快速射击(拿着枪执行)",
+    Callback = function()
+        for _, v in pairs(getgc(true)) do
+            if type(v) == 'table' and rawget(v, 'FireRate') then
+                v.FireRate = 0.05
+                v.AutoFire = true
+            end
+        end
+    end
+})
+
+PrisonTab:CreateButton({
+    Name = "快速装弹 (秒换弹)",
+    Callback = function()
+        for _, v in pairs(getgc(true)) do
+            if type(v) == 'table' and rawget(v, 'ReloadTime') then
+                v.ReloadTime = 0
+            end
+        end
+    end
+})
+
+-- Ragebot
+local RagebotActive = false
 PrisonTab:CreateToggle({
-    Name = "暴力杀全家 (Ragebot)",
+    Name = "愤怒机器人 (Ragebot)",
     CurrentValue = false,
     Callback = function(Value)
-        prisonSettings.ragebotActive = Value
+        RagebotActive = Value
         if Value then
             task.spawn(function()
-                while prisonSettings.ragebotActive do
+                while RagebotActive do
                     local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
                     if tool and tool:FindFirstChild("RemoteEvent") then
                         for _, v in pairs(Players:GetPlayers()) do
                             if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                                 pcall(function()
-                                    tool.RemoteEvent:FireServer({
-                                        [1] = {
-                                            ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
-                                            ["Distance"] = 0, 
-                                            ["Cframe"] = v.Character.HumanoidRootPart.CFrame, 
-                                            ["Hit"] = v.Character.HumanoidRootPart
-                                        }
-                                    })
+                                    tool.RemoteEvent:FireServer({[1] = {["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), ["Distance"] = 0, ["Cframe"] = v.Character.HumanoidRootPart.CFrame, ["Hit"] = v.Character.HumanoidRootPart}})
                                 end)
                             end
                         end
@@ -420,13 +461,14 @@ PrisonTab:CreateToggle({
     end,
 })
 
--- 彩色枪械 (已修复引号错误)
+-- 彩色渐变 (修正了引号和结构)
 PrisonTab:CreateButton({
     Name = "彩色渐变枪械/子弹",
     Callback = function()
         local TRACER_TRANSPARENCY = 0.6               
+        local CUSTOM_SOUND = "rbxassetid://123168396269735" 
         local CHANGE_SPEED = 2 
-        
+
         local function getDynamicColor()
             local hue = (math.sin(os.clock() * CHANGE_SPEED) + 1) / 2 * 0.6
             return Color3.fromHSV(hue, 1, 1)
@@ -441,13 +483,15 @@ PrisonTab:CreateButton({
                         if obj:IsA("BasePart") then
                             obj.Color = currentColor
                             obj.Material = Enum.Material.Glass
+                            obj.Transparency = TRACER_TRANSPARENCY
                         end
                     end
                 end
             end
         end)
+        
         Rayfield:Notify({Title = "开启成功", Content = "渐变视觉已应用", Duration = 2})
-    end,
+    end
 })
 
 -- Tab 6: 自定义逻辑
