@@ -230,70 +230,43 @@ InfyiffTab:CreateButton({Name = "加载 Infinite Yield", Callback = function() l
 InfyiffTab:CreateButton({Name = "加载 f3x", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))() Rayfield:Notify({Title = "f3x", Content = "已加载！", Duration = 5}) end})
 InfyiffTab:CreateButton({Name = "dex++", Callback = function() loadstring(game:HttpGet("https://github.com/AZYsGithub/DexPlusPlus/releases/latest/download/out.lua"))() Rayfield:Notify({Title = "dex++", Content = "已加载！", Duration = 5}) end})
 
--- [[ 监狱人生 完整整合脚本 - Gemini 优化版 ]]
+-- [[ 监狱人生 完整整合区域 - 修复版 ]]
 
 local PrisonTab = Window:CreateTab("监狱人生", 4483362458)
 
--- 变量初始化
+-- 1. 变量初始化 (统一管理)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local settings = {
+local RunService = game:GetService("RunService")
+
+local prisonSettings = {
     antiarrest = false,
     antitase = false,
-    autoArrest = false
+    autoArrest = false,
+    auraEnabled = false,
+    auraRange = 20,
+    ragebotActive = false
 }
 
--- ==========================================
--- 核心逻辑：监听动画 (用于防电击/反逮捕)
--- ==========================================
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local lastPos = nil -- 用于存储死亡前的位置
-local antiArrestEnabled = true -- 对应你的 settings.antiarrest
+local lastPos = nil 
 
+-- 2. 核心监听函数 (防电击/反逮捕/回传)
 local function ConnectCharacter(char)
     local humanoid = char:WaitForChild("Humanoid")
     local root = char:WaitForChild("HumanoidRootPart")
-    
-    -- 核心：监听动画播放（反手铐）
     local animator = humanoid:WaitForChild("Animator")
+    
     animator.AnimationPlayed:Connect(function(des)
-        if antiArrestEnabled and des.Animation.AnimationId == "rbxassetid://287112271" then
-            -- 1. 记录当前位置
+        -- 反逮捕逻辑：监听到手铐动画立即自杀并记录坐标
+        if prisonSettings.antiarrest and des.Animation.AnimationId == "rbxassetid://287112271" then
             lastPos = root.CFrame
-            
-            -- 2. 执行重置
             humanoid.Health = 0
-            
-            Rayfield:Notify({
-                Title = "反逮捕成功",
-                Content = "已执行自杀并记录坐标，正在尝试回传...",
-                Duration = 3
-            })
+            Rayfield:Notify({Title = "反逮捕", Content = "已自动重置并记录位置", Duration = 3})
         end
-    end)
-end
 
--- 监听复活并执行回传
-player.CharacterAdded:Connect(function(newChar)
-    if lastPos then
-        local newRoot = newChar:WaitForChild("HumanoidRootPart")
-        -- 等待一小会儿确保物理引擎加载完毕，否则可能传失败
-        task.wait(0.5) 
-        newRoot.CFrame = lastPos
-        lastPos = nil -- 回传后清空，防止无限循环回传
-    end
-    ConnectCharacter(newChar)
-end)
-
--- 初始启动
-if player.Character then
-    ConnectCharacter(player.Character)
-end
-
-        -- 反电击 (停止电击动画并恢复速度)
-        if settings.antitase and des.Animation.AnimationId == "rbxassetid://279227693" then
+        -- 反电击逻辑
+        if prisonSettings.antitase and des.Animation.AnimationId == "rbxassetid://279227693" then
             des:Stop()
             humanoid.PlatformStand = false
             task.wait()
@@ -301,95 +274,81 @@ end
         end
     end)
 end
+
+-- 初始绑定与复活回传
 if LocalPlayer.Character then ConnectCharacter(LocalPlayer.Character) end
-LocalPlayer.CharacterAdded:Connect(ConnectCharacter)
+LocalPlayer.CharacterAdded:Connect(function(newChar)
+    if lastPos then
+        local newRoot = newChar:WaitForChild("HumanoidRootPart")
+        task.wait(0.5) 
+        newRoot.CFrame = lastPos
+        lastPos = nil 
+        Rayfield:Notify({Title = "回传成功", Content = "已回到先前位置", Duration = 2})
+    end
+    ConnectCharacter(newChar)
+end)
 
 --- --- --- --- --- --- --- --- ---
--- 1. 外部与基础功能
+-- 3. 基础功能区
 --- --- --- --- --- --- --- --- ---
-PrisonTab:CreateSection("外部资源")
-
+PrisonTab:CreateSection("外部中心")
 PrisonTab:CreateButton({
-    Name = "加载监狱人生脚本 (外部中心)",
+    Name = "加载监狱人生脚本",
     Callback = function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))()
-        end)
-        if success then
-            Rayfield:Notify({Title = "脚本中心", Content = "外部脚本已加载！", Duration = 5})
-        else
-            Rayfield:Notify({Title = "加载失败", Content = "无法获取远程代码。", Duration = 5})
-        end
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/91scriptlua"))()
     end
 })
 
---- --- --- --- --- --- --- --- ---
--- 2. 战斗与自动化
---- --- --- --- --- --- --- --- ---
--- 直接将以下内容粘贴到你定义 PrisonTab 的代码下方
+PrisonTab:CreateSection("自动化")
 
-local AuraEnabled = false
-local AuraRange = 20
-
--- 核心攻击开关
+-- 自动拳击 (Kill Aura)
 PrisonTab:CreateToggle({
-   Name = "开启自动拳击 (Kill Aura)",
+   Name = "自动拳击 (Kill Aura)",
    CurrentValue = false,
-   Flag = "Aura_Toggle_1", 
    Callback = function(Value)
-      AuraEnabled = Value
+      prisonSettings.auraEnabled = Value
       if Value then
          task.spawn(function()
-            while AuraEnabled do
-               local players = game:GetService("Players")
-               local localPlayer = players.LocalPlayer
-               local meleeEvent = game:GetService("ReplicatedStorage"):FindFirstChild("meleeEvent")
-
-               if meleeEvent and localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                  for _, player in ipairs(players:GetPlayers()) do
-                     if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local distance = (localPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                        if distance <= AuraRange then
-                           -- 执行你提供的远程事件逻辑
-                           meleeEvent:FireServer(player, 1, 1)
+            while prisonSettings.auraEnabled do
+               local meleeEvent = ReplicatedStorage:FindFirstChild("meleeEvent")
+               if meleeEvent and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                  for _, p in ipairs(Players:GetPlayers()) do
+                     if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        local dist = (LocalPlayer.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                        if dist <= prisonSettings.auraRange then
+                           meleeEvent:FireServer(p, 1, 1)
                         end
                      end
                   end
                end
-               task.wait(0.1) -- 这里的频率可以根据需求调整
+               task.wait(0.1)
             end
          end)
       end
    end,
 })
 
--- 范围调节滑动条
 PrisonTab:CreateSlider({
-   Name = "攻击范围调节",
+   Name = "攻击范围",
    Range = {5, 50},
    Increment = 1,
-   Suffix = "格",
    CurrentValue = 20,
-   Flag = "Aura_Range_1",
-   Callback = function(Value)
-      AuraRange = Value
-   end,
+   Callback = function(Value) prisonSettings.auraRange = Value end,
 })
 
+-- 自动抓捕 (仅警察有效)
 PrisonTab:CreateToggle({
     Name = "自动抓捕 (Auto Arrest)",
     CurrentValue = false,
     Callback = function(Value)
-        settings.autoArrest = Value
+        prisonSettings.autoArrest = Value
         if Value then
-            Rayfield:Notify({Title = "自动抓捕", Content = "已开启 (仅警察/警卫有效)", Duration = 3})
             task.spawn(function()
-                while settings.autoArrest do
+                while prisonSettings.autoArrest do
                     for _, v in pairs(Players:GetPlayers()) do
-                        if not settings.autoArrest then break end
+                        if not prisonSettings.autoArrest then break end
                         if v ~= LocalPlayer and v.Team and v.Team.Name == 'Criminals' then
                             if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                                -- 传送并尝试抓捕
                                 LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame
                                 ReplicatedStorage.Remotes.ArrestPlayer:InvokeServer(v)
                             end
@@ -403,246 +362,91 @@ PrisonTab:CreateToggle({
 })
 
 --- --- --- --- --- --- --- --- ---
--- 3. 物品与防御
+-- 4. 生存与武器区
 --- --- --- --- --- --- --- --- ---
-PrisonTab:CreateSection("生存与防御")
+PrisonTab:CreateSection("战斗增强")
+
+PrisonTab:CreateToggle({Name = "开启反手铐", CurrentValue = false, Callback = function(V) prisonSettings.antiarrest = V end})
+PrisonTab:CreateToggle({Name = "开启反电击", CurrentValue = false, Callback = function(V) prisonSettings.antitase = V end})
 
 PrisonTab:CreateButton({
-    Name = "获得钥匙卡",
-    Callback = function()
-        local source = ReplicatedStorage:FindFirstChild("Key card", true)
-        if source then
-            source:Clone().Parent = LocalPlayer.Backpack
-            Rayfield:Notify({Title = "成功", Content = "已获得钥匙卡", Duration = 3})
-        else
-            Rayfield:Notify({Title = "失败", Content = "未找到钥匙卡资源", Duration = 3})
-        end
-    end
-})
-
-PrisonTab:CreateToggle({
-    Name = "开启反手铐",
-    CurrentValue = false,
-    Callback = function(Value) settings.antiarrest = Value end,
-})
-
-PrisonTab:CreateToggle({
-    Name = "开启反电击",
-    CurrentValue = false,
-    Callback = function(Value) settings.antitase = Value end,
-})
-
---- --- --- --- --- --- --- --- ---
--- 4. 武器修改 (按要求拆分)
---- --- --- --- --- --- --- --- ---
-PrisonTab:CreateSection("武器性能增强")
-
-PrisonTab:CreateButton({
-    Name = "无限弹药(拿着枪执行，客户端)",
+    Name = "一键枪械增强 (无限弹药/秒换弹/高速)",
     Callback = function()
         local found = false
         for _, v in pairs(getgc(true)) do
             if type(v) == 'table' and rawget(v, 'MaxAmmo') then
                 v.MaxAmmo = math.huge
                 v.CurrentAmmo = math.huge
-                v.AmmoPerClip = math.huge
-                found = true
-            end
-        end
-        if found then
-            Rayfield:Notify({Title = "修改成功", Content = "弹药已无限", Duration = 3})
-        else
-            Rayfield:Notify({Title = "未检测到武器", Content = "请先把枪拿在手上再执行", Duration = 3})
-        end
-    end
-})
-
-PrisonTab:CreateButton({
-    Name = "快速射击(拿着枪执行)",
-    Callback = function()
-        local found = false
-        for _, v in pairs(getgc(true)) do
-            if type(v) == 'table' and rawget(v, 'FireRate') then
+                v.ReloadTime = 0
                 v.FireRate = 0.05
                 v.AutoFire = true
-                if rawget(v, 'MaxRecoil') then v.MaxRecoil = 0 end
-                if rawget(v, 'MinRecoil') then v.MinRecoil = 0 end
-                if rawget(v, 'ShootCone') then v.ShootCone = 0 end
                 found = true
             end
         end
-        if found then
-            Rayfield:Notify({Title = "火力全开", Content = "射速/全自动/无后坐力已激活", Duration = 3})
-        else
-            Rayfield:Notify({Title = "未检测到武器", Content = "请先把枪拿在手上再执行", Duration = 3})
-        end
+        Rayfield:Notify({Title = "武器增强", Content = found and "已应用到手中武器" or "请先拿枪在手", Duration = 3})
     end
 })
 
--- ==========================================
--- 7. 快速装弹 (秒换弹)
--- ==========================================
-PrisonTab:CreateButton({
-    Name = "快速装弹 (拿着枪执行，客户端)",
-    Callback = function()
-        local success, err = pcall(function()
-            local found = false
-            -- 扫描内存中的枪械数据表
-            for _, v in pairs(getgc(true)) do
-                if type(v) == 'table' and rawget(v, 'ReloadTime') then
-                    v.ReloadTime = 0    -- 将换弹时间设为 0
-                    found = true
-                end
-            end
-            
-            if found then
-                Rayfield:Notify({
-                    Title = "武器增强", 
-                    Content = "秒换弹已激活！现在换弹不再有延迟。", 
-                    Duration = 5
-                })
-            else
-                Rayfield:Notify({
-                    Title = "未检测到武器", 
-                    Content = "请确保你手里拿着枪或枪在背包里。", 
-                    Duration = 5
-                })
-            end
-        end)
-    end
-})
-
-local RagebotActive = false
-local RagebotRunning = false
-
-local RagebotActive = false
-local RagebotRunning = false
-
+-- Ragebot (暴力杀全家)
 PrisonTab:CreateToggle({
-    Name = "愤怒机器人 (Ragebot)",
+    Name = "暴力杀全家 (Ragebot)",
     CurrentValue = false,
-    Flag = "RagebotToggle",
     Callback = function(Value)
-        RagebotActive = Value
-        
-        if RagebotActive and not RagebotRunning then
-            RagebotRunning = true
+        prisonSettings.ragebotActive = Value
+        if Value then
             task.spawn(function()
-                while RagebotActive do
-                    -- 检查玩家背包里是否有武器 (Prison Life 需要武器才能触发伤害)
-                    local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") or game.Players.LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
-                    
+                while prisonSettings.ragebotActive do
+                    local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
                     if tool and tool:FindFirstChild("RemoteEvent") then
-                        for _, v in pairs(game.Players:GetPlayers()) do
-                            -- 目标过滤：不是自己、有角色、活着、不是队友 (可选)
-                            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
-                                
-                                -- 典型的 Prison Life 远程事件调用逻辑
+                        for _, v in pairs(Players:GetPlayers()) do
+                            if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                                 pcall(function()
-                                    local args = {
+                                    tool.RemoteEvent:FireServer({
                                         [1] = {
                                             ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), 
                                             ["Distance"] = 0, 
                                             ["Cframe"] = v.Character.HumanoidRootPart.CFrame, 
                                             ["Hit"] = v.Character.HumanoidRootPart
                                         }
-                                    }
-                                    -- 触发武器的远程事件
-                                    tool.RemoteEvent:FireServer(unpack(args))
+                                    })
                                 end)
-                                
                             end
                         end
                     end
-                    task.wait(0.05) -- 稍微提高频率以达到 "Rage" 效果
+                    task.wait(0.05)
                 end
-                RagebotRunning = false
             end)
         end
     end,
 })
 
+-- 彩色枪械 (已修复引号错误)
 PrisonTab:CreateButton({
-    Name = "彩色枪械/子弹),
+    Name = "彩色渐变枪械/子弹",
     Callback = function()
-        -- 核心逻辑
         local TRACER_TRANSPARENCY = 0.6               
-        local CUSTOM_SOUND = "rbxassetid://123168396269735" 
         local CHANGE_SPEED = 2 
-
+        
         local function getDynamicColor()
             local hue = (math.sin(os.clock() * CHANGE_SPEED) + 1) / 2 * 0.6
             return Color3.fromHSV(hue, 1, 1)
         end
 
-        local RunService = game:GetService("RunService")
-        local Player = game.Players.LocalPlayer
-        local Workspace = game:GetService("Workspace")
-
         task.spawn(function()
             while task.wait(0.1) do
                 local currentColor = getDynamicColor()
-                local tool = Player.Character and Player.Character:FindFirstChildOfClass("Tool")
+                local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
                 if tool then
                     for _, obj in pairs(tool:GetDescendants()) do
                         if obj:IsA("BasePart") then
                             obj.Color = currentColor
                             obj.Material = Enum.Material.Glass
-                            obj.Transparency = TRACER_TRANSPARENCY
-                            if obj:IsA("MeshPart") then obj.TextureID = "" end
-                        elseif obj:IsA("PointLight") or obj.Name == "Flare" then
-                            obj.Color = currentColor
-                        elseif obj:IsA("Sound") then
-                            if obj.SoundId ~= CUSTOM_SOUND then
-                                obj.SoundId = CUSTOM_SOUND
-                                obj.Volume = 2
-                            end
                         end
                     end
                 end
             end
         end)
-
-        RunService.RenderStepped:Connect(function()
-            local currentColor = getDynamicColor()
-            local ignoreFolder = Workspace:FindFirstChild("RayCastIgnore")
-            if ignoreFolder then
-                for _, obj in pairs(ignoreFolder:GetChildren()) do
-                    if obj:IsA("BasePart") and obj.Size.X < 0.25 and obj.Size.Y < 0.25 and obj.Size.Z > 1 then
-                        obj.Color = currentColor
-                        obj.Material = Enum.Material.Glass
-                        obj.Transparency = TRACER_TRANSPARENCY
-                        obj.CanCollide = false
-                        if not obj:FindFirstChild("BulletLaserSound") then
-                            local s = Instance.new("Sound")
-                            s.Name = "BulletLaserSound"
-                            s.SoundId = CUSTOM_SOUND
-                            s.Volume = 1.5
-                            s.Parent = obj
-                            s:Play()
-                        end
-                    end
-                end
-            end
-        end)
-
-        Workspace.DescendantAdded:Connect(function(obj)
-            if obj:IsA("BasePart") and obj:IsDescendantOf(Workspace:FindFirstChild("RayCastIgnore")) then
-                if obj.Size.X < 0.25 then
-                    obj.Color = getDynamicColor()
-                    obj.Transparency = TRACER_TRANSPARENCY
-                    obj.Material = Enum.Material.Glass
-                end
-            end
-        end)
-
-        -- 对应你脚本里的 Rayfield 通知风格
-        Rayfield:Notify({
-            Title = "开启成功",
-            Content = "渐变视觉已应用",
-            Duration = 2,
-            Image = 4483362458,
-        })
+        Rayfield:Notify({Title = "开启成功", Content = "渐变视觉已应用", Duration = 2})
     end,
 })
 
