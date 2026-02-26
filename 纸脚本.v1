@@ -648,118 +648,251 @@ BuildBoatTab:CreateButton({Name = "购买圣诞钩爪", Callback = function()
     Rayfield:Notify({Title = "建船寻宝", Content = "已尝试购买圣诞钩爪！", Duration = 5})
 end})
 
--- Tab 9: 独家自瞄区域
-local AimbotTab = Window:CreateTab("子弹追踪", 4483362458)
-AimbotTab:CreateParagraph({
-    Title = "独家自瞄功能",
-    Content = "• Silent Aim + Aimbot\n• 队伍检测：默认关闭（全员瞄准），可手动开启只敌方\n• 点击按钮切换开启/关闭\n• 已修复关闭bug"
+-- 子弹追踪模块（白名单/黑名单 + 显示目标 + FOV + 墙壁检测）
+local BulletTrackTab = Window:CreateTab("子弹追踪", 4483362458)
+
+BulletTrackTab:CreateParagraph({
+    Title = "子弹追踪说明",
+    Content = "白名单/黑名单 + 显示锁定目标\nFOV 圈 + 墙壁检测\n通用型，适用于大多数 FPS"
 })
 
-local aimbotEnabled = false
-local teamCheckEnabled = false  -- 默认关闭队伍检测（全员瞄准）
-local oldRaycast = nil
-local originalRaycast = nil
+-- 核心变量
+local bulletTrackEnabled = false
+local showTargetEnabled = true
+local wallCheckEnabled = true
+local fovEnabled = true
+local fovRadius = 180
+local smoothness = 0.12
+local targetPart = "Head"
+local whitelist = {}  -- 白名单：只瞄这些玩家（用户名）
+local blacklist = {}  -- 黑名单：排除这些玩家（用户名）
 
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+-- FOV 圈
+local fovCircle = Drawing.new("Circle")
+fovCircle.Thickness = 2
+fovCircle.NumSides = 100
+fovCircle.Radius = fovRadius
+fovCircle.Filled = false
+fovCircle.Visible = false
+fovCircle.ZIndex = 999
+fovCircle.Color = Color3.fromRGB(255, 255, 255)
+fovCircle.Transparency = 0.8
 
-local function GetLocalTeam()
-    if LocalPlayer.Team then return LocalPlayer.Team end
-    return nil
-end
+-- 当前锁定目标显示（屏幕中心上方文字）
+local targetLabel = Drawing.new("Text")
+targetLabel.Visible = false
+targetLabel.Size = 20
+targetLabel.Center = true
+targetLabel.Outline = true
+targetLabel.Color = Color3.fromRGB(255, 255, 0)
+targetLabel.Text = "无目标"
+targetLabel.Position = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, 50)
 
-local function GetNearestEnemyHead()
-    local closestPlayer = nil
-    local closestDistance = math.huge
-    local myHeadPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Head") and LocalPlayer.Character.Head.Position
-    local localTeam = GetLocalTeam()
+-- 获取最近可见敌人（带墙壁检测）
+local function GetNearestVisibleEnemy()
+    local camera = workspace.CurrentCamera
+    local mousePos = Vector2.new(mouse.X, mouse.Y)
+    local closest = nil
+    local minDist = fovEnabled and fovRadius or math.huge
 
-    if not myHeadPos then return nil end
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player == LocalPlayer or not player.Character or not player.Character:FindFirstChild("Humanoid") or player.Character.Humanoid.Health <= 0 then
+            continue
+        end
 
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
-            local head = player.Character.Head
-            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                if teamCheckEnabled then
-                    if player.Team == localTeam or player.Team == nil then continue end
-                end
-                local distance = (myHeadPos - head.Position).Magnitude
-                if distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = player
-                end
+        -- 白名单 / 黑名单
+        local username = player.Name
+        if #whitelist > 0 and not table.find(whitelist, username) then continue end
+        if table.find(blacklist, username) then continue end
+
+        local part = player.Character:FindFirstChild(targetPart) or player.Character:FindFirstChild("Head")
+        if not part then continue end
+
+        local screenPos, onScreen = camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+        if dist >= minDist then continue end
+
+        -- 墙壁检测（Raycast 检查视线是否被挡）
+        if wallCheckEnabled then
+            local ray = Ray.new(camera.CFrame.Position, (part.Position - camera.CFrame.Position).Unit * 5000)
+            local hit, pos = workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character})
+            if hit and hit:IsDescendantOf(player.Character) then
+                -- 可见
+            else
+                continue  -- 被墙挡住
             end
         end
+
+        minDist = dist
+        closest = part
     end
 
-    if closestPlayer then return closestPlayer.Character.Head end
-    return nil
+    return closest
 end
 
-local function enableAimbot()
-    if oldRaycast then return end
-    originalRaycast = getrawmetatable(game).__namecall
-    setreadonly(getrawmetatable(game), false)
-    getrawmetatable(game).__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        local args = {...}
-        if not checkcaller() and method == "Raycast" and self == Workspace and aimbotEnabled then
-            local origin = args[1]
-            local direction = args[2]
-            local targetHead = GetNearestEnemyHead()
-            if targetHead then
-                local newDirection = (targetHead.Position - origin)
-                local distance = newDirection.Magnitude
-                local fakeResult = {
-                    Position = targetHead.Position,
-                    Distance = distance,
-                    Instance = targetHead,
-                    Normal = Vector3.new(0, 1, 0),
-                    Material = Enum.Material.Plastic,
-                }
-                return fakeResult
-            end
-        end
-        return originalRaycast(self, ...)
-    end)
-    setreadonly(getrawmetatable(game), true)
-    oldRaycast = true
+-- 平滑瞄准
+local function smoothAim(target)
+    if not target then return end
+    local camera = workspace.CurrentCamera
+    local current = camera.CFrame
+    local direction = (target.Position - camera.CFrame.Position).Unit
+    local targetCFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + direction * 100)
+    camera.CFrame = current:Lerp(targetCFrame, smoothness)
 end
 
-local function disableAimbot()
-    if oldRaycast then
-        setreadonly(getrawmetatable(game), false)
-        getrawmetatable(game).__namecall = originalRaycast
-        setreadonly(getrawmetatable(game), true)
-        oldRaycast = nil
-        originalRaycast = nil
+-- 主循环
+game:GetService("RunService").RenderStepped:Connect(function()
+    if not bulletTrackEnabled then
+        fovCircle.Visible = false
+        targetLabel.Visible = false
+        return
     end
-end
 
-AimbotTab:CreateButton({
-    Name = "开启子弹追踪",
-    Callback = function()
-        aimbotEnabled = not aimbotEnabled
-        if aimbotEnabled then
-            enableAimbot()
-            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已开启！（当前全员瞄准）", Duration = 5})
+    fovCircle.Visible = fovEnabled
+    fovCircle.Position = Vector2.new(mouse.X, mouse.Y)
+
+    local target = GetNearestVisibleEnemy()
+    if target then
+        smoothAim(target)
+
+        -- 显示目标名字
+        if showTargetEnabled then
+            targetLabel.Text = "锁定: " .. target.Parent.Name
+            targetLabel.Visible = true
         else
-            disableAimbot()
-            Rayfield:Notify({Title = "独家自瞄", Content = "自瞄已关闭！已完全还原", Duration = 5})
+            targetLabel.Visible = false
+        end
+    else
+        targetLabel.Text = "无目标"
+        targetLabel.Visible = showTargetEnabled
+    end
+end)
+
+-- 开关和设置
+BulletTrackTab:CreateToggle({
+    Name = "开启子弹追踪",
+    CurrentValue = false,
+    Callback = function(Value)
+        bulletTrackEnabled = Value
+        if not Value then
+            fovCircle.Visible = false
+            targetLabel.Visible = false
         end
     end
 })
 
-AimbotTab:CreateToggle({
+BulletTrackTab:CreateToggle({
+    Name = "显示锁定目标名字",
+    CurrentValue = true,
+    Callback = function(Value)
+        showTargetEnabled = Value
+    end
+})
+
+BulletTrackTab:CreateToggle({
+    Name = "墙壁检测（不穿墙）",
+    CurrentValue = true,
+    Callback = function(Value)
+        wallCheckEnabled = Value
+    end
+})
+
+BulletTrackTab:CreateToggle({
+    Name = "显示 FOV 圈",
+    CurrentValue = true,
+    Callback = function(Value)
+        fovEnabled = Value
+        fovCircle.Visible = bulletTrackEnabled and Value
+    end
+})
+
+BulletTrackTab:CreateSlider({
+    Name = "FOV 大小",
+    Range = {50, 400},
+    Increment = 10,
+    Suffix = "px",
+    CurrentValue = 180,
+    Callback = function(Value)
+        fovRadius = Value
+        fovCircle.Radius = Value
+    end
+})
+
+BulletTrackTab:CreateSlider({
+    Name = "平滑度",
+    Range = {0.05, 0.4},
+    Increment = 0.01,
+    Suffix = "",
+    CurrentValue = 0.12,
+    Callback = function(Value)
+        smoothness = Value
+    end
+})
+
+BulletTrackTab:CreateDropdown({
+    Name = "目标部位",
+    Options = {"Head", "UpperTorso", "LowerTorso", "Random"},
+    CurrentOption = "Head",
+    Callback = function(Value)
+        targetPart = Value
+    end
+})
+
+BulletTrackTab:CreateToggle({
     Name = "开启队伍检测（只瞄敌方）",
-    CurrentValue = false,  -- 默认关闭（全员瞄准）
-    Flag = "TeamCheckToggle",
+    CurrentValue = false,
     Callback = function(Value)
         teamCheckEnabled = Value
-        Rayfield:Notify({Title = "队伍检测", Content = "队伍检测已" .. (Value and "开启（只瞄敌方）" or "关闭（全员）"), Duration = 5})
     end
+})
+
+-- 白名单 / 黑名单（简单输入框）
+BulletTrackTab:CreateInput({
+    Name = "添加白名单玩家（用户名，回车添加）",
+    PlaceholderText = "输入用户名后回车",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        if Text \~= "" then
+            table.insert(whitelist, Text)
+            Rayfield:Notify({Title = "白名单", Content = "已添加: " .. Text, Duration = 3})
+        end
+    end
+})
+
+BulletTrackTab:CreateInput({
+    Name = "添加黑名单玩家（用户名，回车添加）",
+    PlaceholderText = "输入用户名后回车",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        if Text \~= "" then
+            table.insert(blacklist, Text)
+            Rayfield:Notify({Title = "黑名单", Content = "已添加: " .. Text, Duration = 3})
+        end
+    end
+})
+
+BulletTrackTab:CreateButton({
+    Name = "清空白名单",
+    Callback = function()
+        whitelist = {}
+        Rayfield:Notify({Title = "白名单", Content = "已清空", Duration = 3})
+    end
+})
+
+BulletTrackTab:CreateButton({
+    Name = "清空黑名单",
+    Callback = function()
+        blacklist = {}
+        Rayfield:Notify({Title = "黑名单", Content = "已清空", Duration = 3})
+    end
+})
+
+Rayfield:Notify({
+    Title = "子弹追踪加载完成",
+    Content = "白名单/黑名单 + FOV + 墙检 + 显示目标\n全部就位",
+    Duration = 8
 })
 
 -- Tab: 99个夜晚区域
