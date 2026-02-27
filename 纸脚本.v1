@@ -1276,7 +1276,7 @@ WarTab:CreateButton({
     end
 })
 
-local AimbotTab = Window:CreateTab("主要功能", 4483362458)
+local AimbotTab = Window:CreateTab("🐧淘汰🐧", 4483362458)
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1291,7 +1291,7 @@ local playerHighlights = {} -- 存储玩家高亮实例
 -- 功能 1：自动收集爱心 (你的核心逻辑)
 -----------------------------------------------------------
 AimbotTab:CreateToggle({
-    Name = "自动收集爱心",
+    Name = "自动收集爱心（会开启afk模式）",
     CurrentValue = false,
     Flag = "AutoHeartToggle",
     Callback = function(Value)
@@ -1347,7 +1347,7 @@ AimbotTab:CreateToggle({
 -- 功能 2：透视玩家蓄力 (高亮玩家)
 -----------------------------------------------------------
 AimbotTab:CreateToggle({
-    Name = "透视玩家蓄力",
+    Name = "透视企鹅",
     CurrentValue = false,
     Flag = "PlayerAimESP",
     Callback = function(Value)
