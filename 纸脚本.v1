@@ -1276,3 +1276,121 @@ WarTab:CreateButton({
     end
 })
 
+local AimbotTab = Window:CreateTab("主要功能", 4483362458)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+local heartbeatConnection = nil -- 传送循环连接
+local espConnection = nil -- 透视循环连接
+local playerHighlights = {} -- 存储玩家高亮实例
+
+-----------------------------------------------------------
+-- 功能 1：自动收集爱心 (你的核心逻辑)
+-----------------------------------------------------------
+AimbotTab:CreateToggle({
+    Name = "自动收集爱心",
+    CurrentValue = false,
+    Flag = "AutoHeartToggle",
+    Callback = function(Value)
+        if Value then
+            print("自动收集已开启")
+            
+            -- 1. 自动发送 AFK 状态 (true)
+            local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+            if remoteEvents then
+                local setAFKEvent = remoteEvents:FindFirstChild("SetAFK")
+                if setAFKEvent then
+                    setAFKEvent:FireServer(true)
+                end
+            end
+            
+            -- 2. 自动传送逻辑
+            local function getHeart()
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    -- 检查名字并确保它有 Pivot (物体位置)
+                    if obj.Name:lower() == "heart" and (obj:IsA("BasePart") or obj:IsA("Model")) then
+                        return obj 
+                    end
+                end
+                return nil
+            end
+
+            -- 开启循环
+            heartbeatConnection = RunService.Heartbeat:Connect(function()
+                local char = player.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+                
+                local currentHeart = getHeart()
+                
+                -- 如果找到了 Heart，则传送
+                if currentHeart then
+                    -- 使用 GetPivot() 并加一个偏移量，防止玩家被卡在爱心里面
+                    local targetCFrame = currentHeart:IsA("Model") and currentHeart:GetPivot() or currentHeart.CFrame
+                    char:PivotTo(targetCFrame * CFrame.new(0, 3, 0))
+                end
+            end)
+        else
+            -- 关闭功能
+            print("自动收集已关闭")
+            if heartbeatConnection then
+                heartbeatConnection:Disconnect()
+                heartbeatConnection = nil
+            end
+        end
+    end
+})
+
+-----------------------------------------------------------
+-- 功能 2：透视玩家蓄力 (高亮玩家)
+-----------------------------------------------------------
+AimbotTab:CreateToggle({
+    Name = "透视玩家蓄力",
+    CurrentValue = false,
+    Flag = "PlayerAimESP",
+    Callback = function(Value)
+        if Value then
+            print("玩家透视已开启")
+            
+            -- 开启循环以刷新高亮
+            espConnection = RunService.Heartbeat:Connect(function()
+                -- 遍历所有玩家
+                for _, otherPlayer in ipairs(Players:GetPlayers()) do
+                    if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local char = otherPlayer.Character
+                        
+                        -- 如果还没有为该玩家创建高亮，则创建一个
+                        if not char:FindFirstChild("AimHighlight") then
+                            local highlight = Instance.new("Highlight")
+                            highlight.Name = "AimHighlight"
+                            highlight.FillColor = Color3.fromRGB(0, 255, 255) -- 青色填充
+                            highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- 白色轮廓
+                            highlight.FillTransparency = 0.5
+                            highlight.OutlineTransparency = 0
+                            highlight.Parent = char
+                            playerHighlights[otherPlayer.UserId] = highlight
+                        end
+                    end
+                end
+            end)
+        else
+            -- 关闭功能
+            print("玩家透视已关闭")
+            if espConnection then
+                espConnection:Disconnect()
+                espConnection = nil
+            end
+            
+            -- 清除所有高亮
+            for _, highlight in pairs(playerHighlights) do
+                if highlight then highlight:Destroy() end
+            end
+            playerHighlights = {}
+        end
+    end
+})
+
+-- 初始化Rayfield
+Rayfield:Load()
