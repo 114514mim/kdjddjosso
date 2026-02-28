@@ -1276,41 +1276,15 @@ WarTab:CreateButton({
     end
 })
 
-local Tab = Window:CreateTab("🐧淘汰🐧", 4483362458)
-
 -- =========================
--- 基础服务与变量
+-- Rayfield UI 插入部分
 -- =========================
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
-
--- 预判参数
-local level = 3 
-local baseSpeed = 7.84
-local speedStep = 2.85
-local friction = 6.3
-local lastPosition = hrp.Position
-local currentLine, currentSphere
-
--- 功能开关状态
-local autoHeartEnabled = false
-local predictEnabled = false
-
--- 缓存
-local Bindables = ReplicatedStorage:WaitForChild("Bindables")
-local powerChangedEvent = Bindables:WaitForChild("PowerChanged")
+-- 确保你的主脚本中已经定义了 Window 变量
+local EliminateTab = Window:CreateTab("🐧淘汰🐧", 4483362458)
 
 -- =========================
 -- 核心物理函数
 -- =========================
-
 local function addBlackBorder(part)
     local highlight = Instance.new("Highlight")
     highlight.Name = "BorderHighlight"
@@ -1328,7 +1302,7 @@ end
 
 local function drawPrediction(startPos, endPos)
     clearPredictionEffects()
-    
+
     local line = Instance.new("Part", workspace)
     line.Name = "PredictLine"
     line.Anchored, line.CanCollide = true, false
@@ -1352,11 +1326,9 @@ local function drawPrediction(startPos, endPos)
 end
 
 -- =========================
--- Rayfield UI 开关
+-- Rayfield UI 开关 (使用新变量名)
 -- =========================
-
--- 1. 自动收集爱心
-Tab:CreateToggle({
+EliminateTab:CreateToggle({
     Name = "自动收集爱心",
     CurrentValue = false,
     Callback = function(Value)
@@ -1364,8 +1336,7 @@ Tab:CreateToggle({
     end
 })
 
--- 2. 预判物理轨迹
-Tab:CreateToggle({
+EliminateTab:CreateToggle({
     Name = "预判物理轨迹",
     CurrentValue = false,
     Callback = function(Value)
@@ -1379,6 +1350,7 @@ Tab:CreateToggle({
 -- =========================
 -- 主循环 (RenderStepped)
 -- =========================
+-- 注意：这里假设之前代码中的变量已定义，未定义的需要加上 local
 RunService.RenderStepped:Connect(function(dt)
     if not hrp or not camera then return end
 
@@ -1405,22 +1377,3 @@ RunService.RenderStepped:Connect(function(dt)
         end
     end
 end)
-
--- =========================
--- 事件监听
--- =========================
-powerChangedEvent.Event:Connect(function(newPowerLevel)
-    level = newPowerLevel
-end)
-
-player.CharacterAdded:Connect(function(char)
-    character = char
-    hrp = char:WaitForChild("HumanoidRootPart")
-    local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
-    if remoteEvents then
-        local setAFKEvent = remoteEvents:FindFirstChild("SetAFK")
-        if setAFKEvent then setAFKEvent:FireServer(true) end
-    end
-end)
-
-Rayfield:Load()
