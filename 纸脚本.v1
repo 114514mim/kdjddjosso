@@ -1276,121 +1276,151 @@ WarTab:CreateButton({
     end
 })
 
-local AimbotTab = Window:CreateTab("🐧淘汰🐧", 4483362458)
+local Tab = Window:CreateTab("🐧淘汰🐧", 4483362458)
+
+-- =========================
+-- 基础服务与变量
+-- =========================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local heartbeatConnection = nil -- 传送循环连接
-local espConnection = nil -- 透视循环连接
-local playerHighlights = {} -- 存储玩家高亮实例
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
 
------------------------------------------------------------
--- 功能 1：自动收集爱心 (你的核心逻辑)
------------------------------------------------------------
-AimbotTab:CreateToggle({
-    Name = "自动收集爱心（会开启afk模式）",
+-- 预判参数
+local level = 3 
+local baseSpeed = 7.84
+local speedStep = 2.85
+local friction = 6.3
+local lastPosition = hrp.Position
+local currentLine, currentSphere
+
+-- 功能开关状态
+local autoHeartEnabled = false
+local predictEnabled = false
+
+-- 缓存
+local Bindables = ReplicatedStorage:WaitForChild("Bindables")
+local powerChangedEvent = Bindables:WaitForChild("PowerChanged")
+
+-- =========================
+-- 核心物理函数
+-- =========================
+
+local function addBlackBorder(part)
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "BorderHighlight"
+    highlight.Adornee = part
+    highlight.FillTransparency = 1
+    highlight.OutlineColor = Color3.new(0, 0, 0)
+    highlight.OutlineTransparency = 0
+    highlight.Parent = part
+end
+
+local function clearPredictionEffects()
+    if currentLine then currentLine:Destroy(); currentLine = nil end
+    if currentSphere then currentSphere:Destroy(); currentSphere = nil end
+end
+
+local function drawPrediction(startPos, endPos)
+    clearPredictionEffects()
+    
+    local line = Instance.new("Part", workspace)
+    line.Name = "PredictLine"
+    line.Anchored, line.CanCollide = true, false
+    line.Transparency, line.Material = 0.2, Enum.Material.Neon
+    line.Color = Color3.fromRGB(255, 0, 0)
+    local distance = (endPos - startPos).Magnitude
+    line.Size = Vector3.new(0.3, 0.3, distance)
+    line.CFrame = CFrame.new(startPos, endPos) * CFrame.new(0, 0, -distance/2)
+    addBlackBorder(line)
+    currentLine = line
+
+    local sphere = Instance.new("Part", workspace)
+    sphere.Name = "PredictSphere"
+    sphere.Shape, sphere.Anchored, sphere.CanCollide = Enum.PartType.Ball, true, false
+    sphere.Transparency, sphere.Material = 0.2, Enum.Material.Neon
+    sphere.Color = Color3.fromRGB(255, 0, 0)
+    sphere.Size = Vector3.new(2, 2, 2)
+    sphere.Position = endPos
+    addBlackBorder(sphere)
+    currentSphere = sphere
+end
+
+-- =========================
+-- Rayfield UI 开关
+-- =========================
+
+-- 1. 自动收集爱心
+Tab:CreateToggle({
+    Name = "自动收集爱心",
     CurrentValue = false,
-    Flag = "AutoHeartToggle",
     Callback = function(Value)
-        if Value then
-            print("自动收集已开启")
-            
-            -- 1. 自动发送 AFK 状态 (true)
-            local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
-            if remoteEvents then
-                local setAFKEvent = remoteEvents:FindFirstChild("SetAFK")
-                if setAFKEvent then
-                    setAFKEvent:FireServer(true)
-                end
-            end
-            
-            -- 2. 自动传送逻辑
-            local function getHeart()
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    -- 检查名字并确保它有 Pivot (物体位置)
-                    if obj.Name:lower() == "heart" and (obj:IsA("BasePart") or obj:IsA("Model")) then
-                        return obj 
-                    end
-                end
-                return nil
-            end
+        autoHeartEnabled = Value
+    end
+})
 
-            -- 开启循环
-            heartbeatConnection = RunService.Heartbeat:Connect(function()
-                local char = player.Character
-                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-                
-                local currentHeart = getHeart()
-                
-                -- 如果找到了 Heart，则传送
-                if currentHeart then
-                    -- 使用 GetPivot() 并加一个偏移量，防止玩家被卡在爱心里面
-                    local targetCFrame = currentHeart:IsA("Model") and currentHeart:GetPivot() or currentHeart.CFrame
-                    char:PivotTo(targetCFrame * CFrame.new(0, 3, 0))
-                end
-            end)
-        else
-            -- 关闭功能
-            print("自动收集已关闭")
-            if heartbeatConnection then
-                heartbeatConnection:Disconnect()
-                heartbeatConnection = nil
-            end
+-- 2. 预判物理轨迹
+Tab:CreateToggle({
+    Name = "预判物理轨迹",
+    CurrentValue = false,
+    Callback = function(Value)
+        predictEnabled = Value
+        if not Value then
+            clearPredictionEffects()
         end
     end
 })
 
------------------------------------------------------------
--- 功能 2：透视玩家蓄力 (高亮玩家)
------------------------------------------------------------
-AimbotTab:CreateToggle({
-    Name = "透视企鹅",
-    CurrentValue = false,
-    Flag = "PlayerAimESP",
-    Callback = function(Value)
-        if Value then
-            print("玩家透视已开启")
-            
-            -- 开启循环以刷新高亮
-            espConnection = RunService.Heartbeat:Connect(function()
-                -- 遍历所有玩家
-                for _, otherPlayer in ipairs(Players:GetPlayers()) do
-                    if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local char = otherPlayer.Character
-                        
-                        -- 如果还没有为该玩家创建高亮，则创建一个
-                        if not char:FindFirstChild("AimHighlight") then
-                            local highlight = Instance.new("Highlight")
-                            highlight.Name = "AimHighlight"
-                            highlight.FillColor = Color3.fromRGB(0, 255, 255) -- 青色填充
-                            highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- 白色轮廓
-                            highlight.FillTransparency = 0.5
-                            highlight.OutlineTransparency = 0
-                            highlight.Parent = char
-                            playerHighlights[otherPlayer.UserId] = highlight
-                        end
-                    end
-                end
-            end)
-        else
-            -- 关闭功能
-            print("玩家透视已关闭")
-            if espConnection then
-                espConnection:Disconnect()
-                espConnection = nil
+-- =========================
+-- 主循环 (RenderStepped)
+-- =========================
+RunService.RenderStepped:Connect(function(dt)
+    if not hrp or not camera then return end
+
+    -- 物理预判
+    if predictEnabled then
+        local currentSpeed = (hrp.Position - lastPosition).Magnitude / dt
+        local moving = currentSpeed > 0.5
+        lastPosition = hrp.Position
+        local direction = hrp.AssemblyLinearVelocity
+        if direction.Magnitude < 1 then direction = camera.CFrame.LookVector end
+        local speedToUse = moving and currentSpeed or (baseSpeed + (level - 1) * speedStep)
+        local endPos = hrp.Position + Vector3.new(direction.X, 0, direction.Z).Unit * ((speedToUse^2) / (2 * friction))
+        drawPrediction(hrp.Position, endPos)
+    end
+
+    -- 自动爱心
+    if autoHeartEnabled then
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name:lower() == "heart" and (obj:IsA("BasePart") or obj:IsA("Model")) then
+                local targetPos = obj:IsA("Model") and obj:GetPivot() or obj.CFrame
+                player.Character:PivotTo(targetPos * CFrame.new(0, 3, 0))
+                break
             end
-            
-            -- 清除所有高亮
-            for _, highlight in pairs(playerHighlights) do
-                if highlight then highlight:Destroy() end
-            end
-            playerHighlights = {}
         end
     end
-})
+end)
 
--- 初始化Rayfield
+-- =========================
+-- 事件监听
+-- =========================
+powerChangedEvent.Event:Connect(function(newPowerLevel)
+    level = newPowerLevel
+end)
+
+player.CharacterAdded:Connect(function(char)
+    character = char
+    hrp = char:WaitForChild("HumanoidRootPart")
+    local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+    if remoteEvents then
+        local setAFKEvent = remoteEvents:FindFirstChild("SetAFK")
+        if setAFKEvent then setAFKEvent:FireServer(true) end
+    end
+end)
+
 Rayfield:Load()
