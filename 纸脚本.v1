@@ -1403,7 +1403,7 @@ end
 -- Rayfield UI 开关 (使用新变量名)
 -- =========================
 EliminateTab:CreateToggle({
-    Name = "自动收集爱心",
+    Name = "自动收集代币(有活动才能用)",
     CurrentValue = false,
     Callback = function(Value)
         autoHeartEnabled = Value
