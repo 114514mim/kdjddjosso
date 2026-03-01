@@ -195,7 +195,7 @@ local function disableAntiInvisibility()
     if antiInvisConn then antiInvisConn:Disconnect() antiInvisConn = nil end
 end
 
-UniversalTab:CreateToggle({Name = "开启 ESP (高光 + 反隐身)", CurrentValue = false, Callback = function(Value)
+UniversalTab:CreateToggle({Name = "开启 ESP", CurrentValue = false, Callback = function(Value)
     espEnabled = Value
     if espEnabled then
         removeHighlights()
@@ -209,6 +209,80 @@ UniversalTab:CreateToggle({Name = "开启 ESP (高光 + 反隐身)", CurrentValu
         Rayfield:Notify({Title = "ESP", Content = "已关闭！", Duration = 5})
     end
 end})
+
+-- 1. 按钮：启用反甩飞 (把你的代码放进去)
+UniversalTab:CreateButton({
+    Name = "防甩飞",
+    Callback = function()
+        -- 你的反甩飞代码
+        local Services = setmetatable({}, {__index = function(Self, Index) local NewService = game.GetService(game, Index) if NewService then Self[Index] = NewService end return NewService end}) 
+        local LocalPlayer = Services.Players.LocalPlayer 
+        local function PlayerAdded(Player) 
+            local Detected = false 
+            local Character; 
+            local PrimaryPart; 
+            local function CharacterAdded(NewCharacter) 
+                Character = NewCharacter 
+                repeat wait() PrimaryPart = NewCharacter:FindFirstChild("HumanoidRootPart") 
+                until PrimaryPart 
+                Detected = false 
+            end 
+            CharacterAdded(Player.Character or Player.CharacterAdded:Wait()) 
+            Player.CharacterAdded:Connect(CharacterAdded) 
+            Services.RunService.Heartbeat:Connect(function() 
+                if (Character and Character:IsDescendantOf(workspace)) and (PrimaryPart and PrimaryPart:IsDescendantOf(Character)) then 
+                    if PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 or PrimaryPart.AssemblyLinearVelocity.Magnitude > 100 then 
+                        if Detected == false then 
+                            game.StarterGui:SetCore("ChatMakeSystemMessage", { Text = "Fling Exploit Detected Player : "..tostring(Player); Color = Color3.fromRGB(255, 200, 0); }) 
+                        end 
+                        Detected = true 
+                        for i,v in ipairs(Character:GetDescendants()) do 
+                            if v:IsA("BasePart") then 
+                                v.CanCollide = false 
+                                v.AssemblyAngularVelocity = Vector3.new(0, 0, 0) 
+                                v.AssemblyLinearVelocity = Vector3.new(0, 0, 0) 
+                                v.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0) 
+                            end 
+                        end 
+                        PrimaryPart.CanCollide = false 
+                        PrimaryPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0) 
+                        PrimaryPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0) 
+                        PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0) 
+                    end 
+                end 
+            end) 
+        end 
+        for i,v in ipairs(Services.Players:GetPlayers()) do 
+            if v ~= LocalPlayer then PlayerAdded(v) end 
+        end 
+        Services.Players.PlayerAdded:Connect(PlayerAdded)
+        
+        print("反甩飞已开启")
+    end,
+})
+
+-- 2. 切换开关：持续旋转
+local spinEnabled = false
+local spinSpeed = 30 -- 旋转速度
+
+UniversalTab:CreateToggle({
+    Name = "人物持续旋转",
+    CurrentValue = false,
+    Callback = function(Value)
+        spinEnabled = Value
+    end
+})
+
+-- =========================
+-- 旋转循环
+-- =========================
+game:GetService("RunService").Heartbeat:Connect(function()
+    local lp = game.Players.LocalPlayer
+    if spinEnabled and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = lp.Character.HumanoidRootPart
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+    end
+end)
 
 -- 其他通用按钮 (Stealth、Delta、连点器、少羽F3X、后门扫描器、飞行)
 UniversalTab:CreateButton({Name = "加载 Stealth 脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/Stealth%20by%20bilbil%20zhifaizi%20yut"))() Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
