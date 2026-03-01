@@ -1428,17 +1428,124 @@ EliminateTab:CreateToggle({
 RunService.RenderStepped:Connect(function(dt)
     if not hrp or not camera then return end
 
-    -- 物理预判
-    if predictEnabled then
-        local currentSpeed = (hrp.Position - lastPosition).Magnitude / dt
-        local moving = currentSpeed > 0.5
-        lastPosition = hrp.Position
-        local direction = hrp.AssemblyLinearVelocity
-        if direction.Magnitude < 1 then direction = camera.CFrame.LookVector end
-        local speedToUse = moving and currentSpeed or (baseSpeed + (level - 1) * speedStep)
-        local endPos = hrp.Position + Vector3.new(direction.X, 0, direction.Z).Unit * ((speedToUse^2) / (2 * friction))
-        drawPrediction(hrp.Position, endPos)
+   -- ==============================================================================
+-- Knockout 自动轨迹追踪 (已移除ESP功能)
+-- ==============================================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- =========================
+-- 配置
+-- =========================
+-- 物理参数
+local level = 3 
+local baseSpeed = 7.84
+local speedStep = 2.85
+local friction = 6.3
+
+-- 状态管理
+local lastPosition = hrp.Position
+local currentLine = nil
+local enemyLines = {}
+-- 已移除 playerHighlights 变量
+
+local Bindables = ReplicatedStorage:WaitForChild("Bindables")
+local powerChangedEvent = Bindables:WaitForChild("PowerChanged")
+
+-- =========================
+-- 物理计算函数 (自身)
+-- =========================
+local function clearPredictionEffects()
+    if currentLine then currentLine:Destroy(); currentLine = nil end
+end
+
+local function drawPrediction(startPos, endPos, color, name)
+    -- 创建线条 (Neon材质)
+    local line = Instance.new("Part", workspace)
+    line.Name = name or "PredictLine"
+    line.Anchored, line.CanCollide = true, false
+    line.Transparency, line.Material = 0.2, Enum.Material.Neon
+    line.Color = color or Color3.fromRGB(0, 255, 0) -- 默认为绿色
+    
+    local distance = (endPos - startPos).Magnitude
+    line.Size = Vector3.new(0.3, 0.3, distance)
+    line.CFrame = CFrame.new(startPos, endPos) * CFrame.new(0, 0, -distance/2)
+    
+    -- 边框高亮
+    local highlight = Instance.new("Highlight", line)
+    highlight.FillTransparency = 1
+    highlight.OutlineColor = Color3.new(0, 0, 0)
+    highlight.OutlineTransparency = 0
+    
+    return line
+end
+
+-- =========================
+-- 主循环 (高频计算)
+-- =========================
+RunService.RenderStepped:Connect(function(dt)
+    if not hrp or not camera then return end
+
+    -- 1. 自身物理预判逻辑
+    local currentSpeed = (hrp.Position - lastPosition).Magnitude / dt
+    local moving = currentSpeed > 0.5
+    lastPosition = hrp.Position
+    local direction = hrp.AssemblyLinearVelocity
+    if direction.Magnitude < 1 then direction = camera.CFrame.LookVector end
+    local speedToUse = moving and currentSpeed or (baseSpeed + (level - 1) * speedStep)
+    
+    -- 计算落点
+    local endPos = hrp.Position + Vector3.new(direction.X, 0, direction.Z).Unit * ((speedToUse^2) / (2 * friction))
+    
+    clearPredictionEffects()
+    -- 绘制自身预判线条 (绿色)
+    currentLine = drawPrediction(hrp.Position, endPos, Color3.fromRGB(0, 255, 0), "MyPredict")
+
+    -- 2. 敌人追踪 - 路径 (红色)
+    -- 清理旧的敌人线条
+    for _, line in pairs(enemyLines) do if line then line:Destroy() end end
+    enemyLines = {}
+
+    local arrowsFolder = workspace:FindFirstChild("ArrowsFolder")
+    if arrowsFolder then
+        for _, arrow in ipairs(arrowsFolder:GetChildren()) do
+            -- 检查是否为箭矢
+            if arrow:IsA("BasePart") and arrow.Name == "LocalAimArrow" then
+                -- 追踪箭头预测其轨迹
+                local arrowEnd = arrow.Position + (arrow.AssemblyLinearVelocity * 0.5) -- 预测未来位置
+                local line = drawPrediction(arrow.Position, arrowEnd, Color3.fromRGB(255, 0, 0), "EnemyPath")
+                table.insert(enemyLines, line)
+            end
+        end
     end
+
+    -- 3. ESP 高亮玩家 - [已移除]
+end)
+
+-- =========================
+-- 同步逻辑
+-- =========================
+powerChangedEvent.Event:Connect(function(newPowerLevel)
+    level = newPowerLevel
+end)
+
+player.CharacterAdded:Connect(function(char)
+    character = char
+    hrp = char:WaitForChild("HumanoidRootPart")
+    local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+    if remoteEvents then
+        local setAFKEvent = remoteEvents:FindFirstChild("SetAFK")
+        if setAFKEvent then setAFKEvent:FireServer(true) end
+    end
+end)
+
 
     -- 自动爱心
     if autoHeartEnabled then
