@@ -292,7 +292,7 @@ UniversalTab:CreateButton({Name = "加载少羽F3X脚本", Callback = function()
 UniversalTab:CreateButton({Name = "加载后门扫描器脚本", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/Its-LALOL/LALOL-Hub/main/Backdoor-Scanner/script'))() Rayfield:Notify({Title = "后门扫描器", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "加载飞行脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/eeeeeeqqaszsssddd"))() Rayfield:Notify({Title = "飞行脚本", Content = "已加载！", Duration = 5}) end})
 UniversalTab:CreateButton({Name = "绕过大多数游戏反作弊", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/绕过反作弊系统"))() Rayfield:Notify({Title = "绕过大多数游戏反作弊脚本", Content = "已加载！", Duration = 5}) end})
-UniversalTab:CreateButton({Name = "纸音乐", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/纸音乐"))() Rayfield:Notify({Title = "纸音乐", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "纸音乐（不太适合手机）", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/114514mim/kdjddjosso/refs/heads/main/纸音乐"))() Rayfield:Notify({Title = "纸音乐", Content = "已加载！", Duration = 5}) end})
 
 -- Tab 3: 新 Slap 脚本
 local SlapTab = Window:CreateTab("光环编制塔", 4483362458)
