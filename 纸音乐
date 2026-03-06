@@ -1,6 +1,6 @@
 --[==[
-    纸音乐 (Paper Music) V4.5 - Pro Edition
-    更新：独立全屏歌词显示层，适配手机/PC
+    纸音乐 (Paper Music) V4.4 - Pro Edition
+    更新：加入循环模式切换、歌词显示窗口、优化UI交互
 ]==]
 
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -9,22 +9,40 @@ local FLAG = "_PAPER_MUSIC_V4_CORE_"
 if env[FLAG] then env[FLAG].Gui:Destroy() end
 
 local service = setmetatable({}, {__index = function(self, n) return game:GetService(n) end})
-local AssetService = service.AssetService
-local SoundService = service.SoundService
-local HttpService = service.HttpService
-local RunService = service.RunService
-local UserInputService = service.UserInputService
-
-local IsMobile = UserInputService.TouchEnabled
-local UIScale = IsMobile and 0.85 or 1
+local AssetService, SoundService, HttpService = service.AssetService, service.SoundService, service.HttpService
+local TweenService, RunService, UserInputService = service.TweenService, service.RunService, service.UserInputService
 
 local C = {
     bg = Color3.fromRGB(22, 22, 26),
+    panel = Color3.fromRGB(30, 30, 36),
     accent = Color3.fromRGB(0, 170, 255),
     text = Color3.fromRGB(255, 255, 255),
+    sub = Color3.fromRGB(160, 160, 170),
+    card = Color3.fromRGB(40, 40, 48),
+    error = Color3.fromRGB(255, 80, 80)
 }
 
-local State = { IsPlaying = false, IsPaused = false, Sound = nil }
+-- 数据存储与状态
+local SAVE_PATH = "PaperMusic_Data.json"
+local State = {
+    Favorites = {},
+    CurrentList = {},
+    Index = 1,
+    IsPlaying = false,
+    IsPaused = false,
+    LoopMode = 0, -- 0: 不循环, 1: 单曲循环, 2: 列表循环
+    Sound = nil,
+    Minimized = false,
+    ShowLyrics = false
+}
+
+local function load()
+    pcall(function() if isfile(SAVE_PATH) then State.Favorites = HttpService:JSONDecode(readfile(SAVE_PATH)) end end)
+end
+local function save()
+    pcall(function() writefile(SAVE_PATH, HttpService:JSONEncode(State.Favorites)) end)
+end
+load()
 
 local function create(cls, props)
     local o = Instance.new(cls)
@@ -32,87 +50,152 @@ local function create(cls, props)
     o.Parent = props.Parent
     return o
 end
+local function corner(p, r) create("UICorner", {CornerRadius = UDim.new(0, r or 8), Parent = p}) end
 
 -- GUI 核心
 local gui = create("ScreenGui", {Name = "PaperMusic_Gui", Parent = service.CoreGui, ResetOnSpawn = false})
 env[FLAG] = {Gui = gui}
 
--- [[ 新增：全屏歌词显示层 ]]
-local lyricFrame = create("Frame", {
-    Size = UDim2.new(1, 0, 0, 80),
-    Position = UDim2.new(0, 0, 1, -120), -- 位于屏幕底部上方一点
-    BackgroundTransparency = 1,
-    Parent = gui
-})
+-- 侧边唤回按钮
+local toggleBtn = create("TextButton", {Size = UDim2.new(0, 50, 0, 50), Position = UDim2.new(0, 20, 0.5, -25), BackgroundColor3 = C.panel, Text = "📄", TextSize = 25, TextColor3 = C.accent, Visible = false, ZIndex = 10, Parent = gui})
+corner(toggleBtn, 25)
+create("UIStroke", {Color = C.accent, Thickness = 2, Parent = toggleBtn})
 
-local lyricText = create("TextLabel", {
-    Size = UDim2.new(1, 0, 1, 0),
-    Text = "",
-    Font = "GothamBold",
-    TextSize = IsMobile and 24 or 32,
-    TextColor3 = C.text,
-    TextStrokeTransparency = 0, -- 开启描边
-    TextStrokeColor3 = Color3.new(0,0,0),
-    BackgroundTransparency = 1,
-    Parent = lyricFrame
-})
+-- 主面板
+local main = create("Frame", {Size = UDim2.new(0, 340, 0, 480), Position = UDim2.new(0.5, -170, 0.5, -240), BackgroundColor3 = C.bg, Parent = gui})
+corner(main, 12)
+create("UIStroke", {Color = C.accent, Thickness = 1.5, Parent = main})
 
--- 歌词更新逻辑
-local function updateLyric(txt)
-    lyricText.Text = txt
-    lyricText.GroupTransparency = 1
-    -- 简单的淡入效果
-    task.spawn(function()
-        for i = 1, 0, -0.1 do
-            lyricText.TextTransparency = i
-            lyricText.TextStrokeTransparency = i
-            task.wait(0.05)
-        end
-    end)
+-- Header
+local header = create("Frame", {Size = UDim2.new(1, 0, 0, 45), BackgroundColor3 = C.panel, Parent = main})
+corner(header, 12)
+local title = create("TextLabel", {Size = UDim2.new(1, -80, 1, 0), Position = UDim2.new(0, 15, 0, 0), Text = "纸 音乐 PAPER MUSIC", Font = "GothamBold", TextSize = 14, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
+local closeBtn = create("TextButton", {Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(1, -40, 0, 7), Text = "×", Font = "GothamBold", TextSize = 20, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = header})
+corner(closeBtn, 6)
+
+closeBtn.MouseButton1Click:Connect(function() 
+    main.Visible = false; toggleBtn.Visible = true
+    toggleBtn.Position = UDim2.new(main.Position.X.Scale, main.Position.X.Offset - 60, main.Position.Y.Scale, main.Position.Y.Offset + 10)
+end)
+toggleBtn.MouseButton1Click:Connect(function() main.Visible = true; toggleBtn.Visible = false end)
+
+-- 中央显示区 (唱片与歌词切换)
+local displayArea = create("Frame", {Size = UDim2.new(0, 200, 0, 120), Position = UDim2.new(0.5, -100, 0, 65), BackgroundTransparency = 1, Parent = main})
+
+-- 1. 唱片封面
+local album = create("Frame", {Size = UDim2.new(0, 120, 0, 120), Position = UDim2.new(0.5, -60, 0, 0), BackgroundTransparency = 1, Parent = displayArea})
+local disc = create("ImageLabel", {Size = UDim2.new(1, 0, 1, 0), Image = "rbxassetid://13110373859", BackgroundTransparency = 1, Parent = album})
+local cover = create("ImageLabel", {Size = UDim2.new(0, 70, 0, 70), Position = UDim2.new(0.5, -35, 0.5, -35), Image = "", BackgroundColor3 = C.card, Parent = disc})
+corner(cover, 100)
+
+-- 2. 歌词层
+local lyricScroll = create("ScrollingFrame", {Size = UDim2.new(1.4, 0, 1, 0), Position = UDim2.new(-0.2, 0, 0, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0,0,2,0), ScrollBarThickness = 0, Parent = displayArea})
+local lyricText = create("TextLabel", {Size = UDim2.new(1, 0, 1, 0), Text = "暂无歌词\n点击切换封面", TextColor3 = C.sub, Font = "GothamBold", TextSize = 12, TextWrapped = true, BackgroundTransparency = 1, Parent = lyricScroll})
+
+-- 点击切换显示模式
+local modeBtn = create("TextButton", {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "", Parent = displayArea})
+modeBtn.MouseButton1Click:Connect(function()
+    State.ShowLyrics = not State.ShowLyrics
+    album.Visible = not State.ShowLyrics
+    lyricScroll.Visible = State.ShowLyrics
+end)
+
+RunService.RenderStepped:Connect(function(dt)
+    if State.IsPlaying and not State.IsPaused then disc.Rotation = disc.Rotation + (dt * 70) end
+end)
+
+-- 信息与控制器
+local info = create("TextLabel", {Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 0, 190), Text = "等待播放...", Font = "GothamBold", TextSize = 13, TextColor3 = C.text, BackgroundTransparency = 1, Parent = main})
+
+local controls = create("Frame", {Size = UDim2.new(1, 0, 0, 50), Position = UDim2.new(0, 0, 0, 220), BackgroundTransparency = 1, Parent = main})
+local function cbtn(txt, pos, size, color)
+    local b = create("TextButton", {Size = size, Position = pos, Text = txt, Font = "GothamBold", TextSize = 18, TextColor3 = C.text, BackgroundColor3 = color or C.card, Parent = controls})
+    corner(b, 8)
+    return b
 end
 
--- 主面板 (保持原样)
-local baseWidth, baseHeight = 340 * UIScale, 480 * UIScale
-local main = create("Frame", {
-    Size = UDim2.new(0, baseWidth, 0, baseHeight), 
-    Position = UDim2.new(0.5, -baseWidth/2, 0.5, -baseHeight/2), 
-    BackgroundColor3 = C.bg, 
-    Parent = gui
-})
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+local prevBtn = cbtn("⏮", UDim2.new(0.5, -95, 0, 10), UDim2.new(0, 35, 0, 35))
+local playBtn = cbtn("▶", UDim2.new(0.5, -25, 0, 0), UDim2.new(0, 50, 0, 50), C.accent)
+local nextBtn = cbtn("⏭", UDim2.new(0.5, 60, 0, 10), UDim2.new(0, 35, 0, 35))
 
--- 播放核心逻辑 (接入歌词)
-local function play(id, name)
+-- 【新增】循环按钮
+local loopBtn = cbtn("🔁", UDim2.new(1, -45, 0, 10), UDim2.new(0, 35, 0, 35))
+loopBtn.TextSize = 14
+local loopModes = {"🔁", "🔂", "🔀"} -- 列表循环, 单曲循环, 不循环(随机代指)
+
+loopBtn.MouseButton1Click:Connect(function()
+    State.LoopMode = (State.LoopMode + 1) % 3
+    loopBtn.Text = loopModes[State.LoopMode + 1]
+    loopBtn.TextColor3 = (State.LoopMode == 0) and C.text or C.accent
+end)
+
+-- 搜索与列表 (复用逻辑)
+local searchBox = create("Frame", {Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 280), BackgroundColor3 = C.card, Parent = main})
+corner(searchBox, 6)
+local input = create("TextBox", {Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 10, 0, 0), PlaceholderText = "搜索音乐...", Text = "", TextColor3 = C.text, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = searchBox})
+local sGo = create("TextButton", {Size = UDim2.new(0, 40, 1, 0), Position = UDim2.new(1, -40, 0, 0), Text = "🔍", BackgroundTransparency = 1, TextSize = 16, Parent = searchBox})
+
+local scroll = create("ScrollingFrame", {Size = UDim2.new(1, -20, 0, 140), Position = UDim2.new(0, 10, 0, 325), BackgroundTransparency = 1, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = "Y", ScrollBarThickness = 2, Parent = main})
+create("UIListLayout", {Padding = UDim.new(0, 5), Parent = scroll})
+
+-- 播放核心逻辑 (增加循环判断)
+local function playNext()
+    if #State.CurrentList == 0 then return end
+    if State.LoopMode == 1 then -- 单曲循环
+        -- 重新播放当前索引即可
+    else
+        State.Index = State.Index + 1
+        if State.Index > #State.CurrentList then 
+            State.Index = 1 
+            if State.LoopMode == 2 then return end -- 如果是非循环模式到末尾停止
+        end
+    end
+    local song = State.CurrentList[State.Index]
+    if song then _G.PlayMusic(song.id, song.name) end
+end
+
+_G.PlayMusic = function(id, name)
     if State.Sound then State.Sound:Destroy() end
-    State.IsPlaying = true
-    State.IsPaused = false
-    
-    -- 在屏幕中央显示歌词提示
-    updateLyric("正在播放: " .. name)
+    State.IsPlaying, State.IsPaused = true, false
+    info.Text = name
+    playBtn.Text = "⏸"
+    cover.Image = "rbxthumb://type=Asset&id="..id.."&w=150&h=150"
+    lyricText.Text = "正在播放: " .. name .. "\n\n(纸音乐: 暂未匹配在线歌词)"
     
     local s = Instance.new("Sound", SoundService)
-    s.SoundId = "rbxassetid://" .. id
+    s.SoundId = "rbxassetid://"..id
     s.Volume = 2
     s:Play()
     State.Sound = s
     
-    -- 模拟歌词随播放阶段变化 (示例)
-    task.delay(3, function()
-        if State.Sound and State.Sound.IsPlaying then
-            updateLyric("♪ ——— " .. name .. " ——— ♪")
-        end
-    end)
-
     s.Ended:Connect(function()
-        State.IsPlaying = false
-        updateLyric("") -- 清空歌词
+        if State.LoopMode == 1 then -- 单曲
+            _G.PlayMusic(id, name)
+        else
+            playNext()
+        end
     end)
 end
 
--- [ 此处省略了你之前的 UI 按钮代码，确保逻辑一致 ]
--- 你可以直接将这段 play 函数替换到你之前的脚本中
+playBtn.MouseButton1Click:Connect(function()
+    if not State.Sound then return end
+    if State.IsPaused then State.Sound:Resume(); State.IsPaused = false; playBtn.Text = "⏸"
+    else State.Sound:Pause(); State.IsPaused = true; playBtn.Text = "▶" end
+end)
 
--- 底部导航按钮：推荐列表
+local function render(data)
+    for _, v in pairs(scroll:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
+    for i, item in pairs(data) do
+        local row = create("Frame", {Size = UDim2.new(1, -5, 0, 35), BackgroundColor3 = C.panel, Parent = scroll})
+        corner(row, 4)
+        create("TextLabel", {Size = UDim2.new(1, -80, 1, 0), Position = UDim2.new(0, 8, 0, 0), Text = item.name, TextColor3 = C.text, Font = "Gotham", TextSize = 11, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = row})
+        local p = create("TextButton", {Size = UDim2.new(0, 25, 0, 25), Position = UDim2.new(1, -30, 0.5, -12), Text = "▶", BackgroundColor3 = C.accent, TextColor3 = C.text, Parent = row})
+        corner(p, 4)
+        p.MouseButton1Click:Connect(function() State.CurrentList = data; State.Index = i; _G.PlayMusic(item.id, item.name) end)
+    end
+end
+
+-- 导航与初始数据
 local Recommends = {
     {id = "104923055259541", name = "不知名"},
     {id = "112834898401032", name = "离开我的依赖"},
@@ -120,5 +203,43 @@ local Recommends = {
     {id = "132772094469180", name = "U京"}
 }
 
--- 提示：由于 Roblox 无法直接抓取外部音频的实时 LRC 歌词文件，
--- 如果你需要特定歌曲显示精准歌词，我们需要手动建立一个歌词库。
+local nav = create("Frame", {Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 1, -40), BackgroundTransparency = 1, Parent = main})
+create("UIListLayout", {FillDirection = "Horizontal", Padding = UDim.new(0, 5), Parent = nav})
+
+local function navBtn(txt, cb)
+    local b = create("TextButton", {Size = UDim2.new(0, 70, 1, 0), Text = txt, Font = "GothamBold", TextSize = 11, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = nav})
+    corner(b, 4)
+    b.MouseButton1Click:Connect(cb)
+end
+
+navBtn("推荐", function() render(Recommends) end)
+navBtn("收藏", function() render(State.Favorites) end)
+
+-- 搜索逻辑
+sGo.MouseButton1Click:Connect(function()
+    local kw = input.Text
+    if kw == "" then return end
+    local params = Instance.new("AudioSearchParams")
+    params.SearchKeyword = kw
+    local success, res = pcall(function() return AssetService:SearchAudio(params) end)
+    if success then
+        local found = {}
+        for _, v in pairs(res:GetCurrentPage()) do table.insert(found, {id=v.Id, name=v.Title}) end
+        render(found)
+    end
+end)
+
+-- 拖拽
+local dragging, dragStart, startPos
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true; dragStart = input.Position; startPos = main.Position end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+header.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+
+render(Recommends)
