@@ -1,0 +1,233 @@
+--[==[
+    纸音乐 (Paper Music) V4.3 - Pro Edition
+    更新：脚本更名为“纸音乐”，同步推荐列表与UI修复
+]==]
+
+if not game:IsLoaded() then game.Loaded:Wait() end
+local env = getgenv and getgenv() or _G
+local FLAG = "_PAPER_MUSIC_V4_CORE_"
+if env[FLAG] then env[FLAG].Gui:Destroy() end
+
+local service = setmetatable({}, {__index = function(self, n) return game:GetService(n) end})
+local MarketplaceService = service.MarketplaceService
+local AssetService = service.AssetService
+local SoundService = service.SoundService
+local HttpService = service.HttpService
+local TweenService = service.TweenService
+local RunService = service.RunService
+local UserInputService = service.UserInputService
+
+local C = {
+    bg = Color3.fromRGB(22, 22, 26),
+    panel = Color3.fromRGB(30, 30, 36),
+    accent = Color3.fromRGB(0, 170, 255),
+    text = Color3.fromRGB(255, 255, 255),
+    sub = Color3.fromRGB(160, 160, 170),
+    card = Color3.fromRGB(40, 40, 48),
+    error = Color3.fromRGB(255, 80, 80)
+}
+
+-- 数据存储
+local SAVE_PATH = "PaperMusic_Data.json"
+local State = {
+    Favorites = {},
+    CurrentList = {},
+    Index = 1,
+    IsPlaying = false,
+    IsPaused = false,
+    Sound = nil,
+    Minimized = false
+}
+
+local function load()
+    pcall(function()
+        if isfile(SAVE_PATH) then State.Favorites = HttpService:JSONDecode(readfile(SAVE_PATH)) end
+    end)
+end
+local function save()
+    pcall(function() writefile(SAVE_PATH, HttpService:JSONEncode(State.Favorites)) end)
+end
+load()
+
+local function create(cls, props)
+    local o = Instance.new(cls)
+    for k, v in pairs(props) do if k ~= "Parent" then o[k] = v end end
+    o.Parent = props.Parent
+    return o
+end
+
+local function corner(p, r) create("UICorner", {CornerRadius = UDim.new(0, r or 8), Parent = p}) end
+
+-- GUI 核心
+local gui = create("ScreenGui", {Name = "PaperMusic_Gui", Parent = service.CoreGui, ResetOnSpawn = false})
+env[FLAG] = {Gui = gui}
+
+-- 侧边唤回按钮
+local toggleBtn = create("TextButton", {
+    Size = UDim2.new(0, 50, 0, 50),
+    Position = UDim2.new(0, 20, 0.5, -25),
+    BackgroundColor3 = C.panel,
+    Text = "📄", -- 纸音乐的主题图标
+    TextSize = 25,
+    TextColor3 = C.accent,
+    Visible = false,
+    ZIndex = 10,
+    Parent = gui
+})
+corner(toggleBtn, 25)
+create("UIStroke", {Color = C.accent, Thickness = 2, Parent = toggleBtn})
+
+-- 主面板
+local main = create("Frame", {Size = UDim2.new(0, 340, 0, 480), Position = UDim2.new(0.5, -170, 0.5, -240), BackgroundColor3 = C.bg, Parent = gui})
+corner(main, 12)
+create("UIStroke", {Color = C.accent, Thickness = 1.5, Parent = main})
+
+-- Header
+local header = create("Frame", {Size = UDim2.new(1, 0, 0, 45), BackgroundColor3 = C.panel, Parent = main})
+corner(header, 12)
+local title = create("TextLabel", {Size = UDim2.new(1, -80, 1, 0), Position = UDim2.new(0, 15, 0, 0), Text = "纸 音乐 PAPER MUSIC", Font = "GothamBold", TextSize = 14, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
+
+local closeBtn = create("TextButton", {Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(1, -40, 0, 7), Text = "×", Font = "GothamBold", TextSize = 20, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = header})
+corner(closeBtn, 6)
+
+local function toggleUI(isMinimize)
+    State.Minimized = isMinimize
+    if isMinimize then
+        toggleBtn.Position = UDim2.new(main.Position.X.Scale, main.Position.X.Offset - 60, main.Position.Y.Scale, main.Position.Y.Offset + 10)
+        main.Visible = false
+        toggleBtn.Visible = true
+    else
+        main.Visible = true
+        toggleBtn.Visible = false
+    end
+end
+
+closeBtn.MouseButton1Click:Connect(function() toggleUI(true) end)
+toggleBtn.MouseButton1Click:Connect(function() toggleUI(false) end)
+
+-- UI 内容区
+local album = create("Frame", {Size = UDim2.new(0, 120, 0, 120), Position = UDim2.new(0.5, -60, 0, 65), BackgroundTransparency = 1, Parent = main})
+local disc = create("ImageLabel", {Size = UDim2.new(1, 0, 1, 0), Image = "rbxassetid://13110373859", BackgroundTransparency = 1, Parent = album})
+local cover = create("ImageLabel", {Size = UDim2.new(0, 70, 0, 70), Position = UDim2.new(0.5, -35, 0.5, -35), Image = "", BackgroundColor3 = C.card, Parent = disc})
+corner(cover, 100)
+
+RunService.RenderStepped:Connect(function(dt)
+    if State.IsPlaying and not State.IsPaused then disc.Rotation = disc.Rotation + (dt * 70) end
+end)
+
+local info = create("TextLabel", {Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 0, 190), Text = "等待播放...", Font = "GothamBold", TextSize = 13, TextColor3 = C.text, BackgroundTransparency = 1, Parent = main})
+
+local controls = create("Frame", {Size = UDim2.new(1, 0, 0, 50), Position = UDim2.new(0, 0, 0, 220), BackgroundTransparency = 1, Parent = main})
+local function cbtn(txt, pos, size)
+    local b = create("TextButton", {Size = size, Position = pos, Text = txt, Font = "GothamBold", TextSize = 18, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = controls})
+    corner(b, 8)
+    return b
+end
+
+local prevBtn = cbtn("⏮", UDim2.new(0.5, -75, 0, 10), UDim2.new(0, 40, 0, 40))
+local playBtn = cbtn("▶", UDim2.new(0.5, -25, 0, 0), UDim2.new(0, 50, 0, 50))
+local nextBtn = cbtn("⏭", UDim2.new(0.5, 35, 0, 10), UDim2.new(0, 40, 0, 40))
+
+-- 搜索
+local searchBox = create("Frame", {Size = UDim2.new(1, -30, 0, 35), Position = UDim2.new(0, 15, 0, 280), BackgroundColor3 = C.card, Parent = main})
+corner(searchBox, 6)
+local input = create("TextBox", {Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 10, 0, 0), PlaceholderText = "搜索音乐...", Text = "", TextColor3 = C.text, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = searchBox})
+local sGo = create("TextButton", {Size = UDim2.new(0, 40, 1, 0), Position = UDim2.new(1, -40, 0, 0), Text = "🔍", BackgroundTransparency = 1, TextSize = 16, Parent = searchBox})
+
+-- 列表滚动区
+local scroll = create("ScrollingFrame", {Size = UDim2.new(1, -20, 0, 140), Position = UDim2.new(0, 10, 0, 325), BackgroundTransparency = 1, CanvasSize = UDim2.new(0,0,0,0), AutomaticCanvasSize = "Y", ScrollBarThickness = 2, Parent = main})
+create("UIListLayout", {Padding = UDim.new(0, 5), Parent = scroll})
+
+-- 播放核心逻辑
+local function play(id, name)
+    if State.Sound then State.Sound:Destroy() end
+    State.IsPlaying = true
+    State.IsPaused = false
+    info.Text = name
+    playBtn.Text = "⏸"
+    cover.Image = "rbxthumb://type=Asset&id="..id.."&w=150&h=150"
+    
+    local s = Instance.new("Sound", SoundService)
+    s.SoundId = "rbxassetid://"..id
+    s.Volume = 2
+    s:Play()
+    State.Sound = s
+    s.Ended:Connect(function() State.IsPlaying = false; playBtn.Text = "▶" end)
+end
+
+playBtn.MouseButton1Click:Connect(function()
+    if not State.Sound then return end
+    if State.IsPaused then State.Sound:Resume(); State.IsPaused = false; playBtn.Text = "⏸"
+    else State.Sound:Pause(); State.IsPaused = true; playBtn.Text = "▶" end
+end)
+
+local function render(data)
+    for _, v in pairs(scroll:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
+    for i, item in pairs(data) do
+        local row = create("Frame", {Size = UDim2.new(1, -5, 0, 35), BackgroundColor3 = C.panel, Parent = scroll})
+        corner(row, 4)
+        create("TextLabel", {Size = UDim2.new(1, -80, 1, 0), Position = UDim2.new(0, 8, 0, 0), Text = item.name, TextColor3 = C.text, Font = "Gotham", TextSize = 11, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = row})
+        
+        local p = create("TextButton", {Size = UDim2.new(0, 25, 0, 25), Position = UDim2.new(1, -30, 0.5, -12), Text = "▶", BackgroundColor3 = C.accent, TextColor3 = C.text, Parent = row})
+        corner(p, 4)
+        p.MouseButton1Click:Connect(function() State.CurrentList = data; State.Index = i; play(item.id, item.name) end)
+
+        local f = create("TextButton", {Size = UDim2.new(0, 25, 0, 25), Position = UDim2.new(1, -60, 0.5, -12), Text = "❤", BackgroundColor3 = C.card, TextColor3 = C.error, Parent = row})
+        corner(f, 4)
+        f.MouseButton1Click:Connect(function() table.insert(State.Favorites, item); save(); f.Text = "✔" end)
+    end
+end
+
+-- 搜索逻辑 (使用记录的 AssetService)
+sGo.MouseButton1Click:Connect(function()
+    local kw = input.Text
+    if kw == "" then return end
+    sGo.Text = "..."
+    local params = Instance.new("AudioSearchParams")
+    params.SearchKeyword = kw
+    local success, res = pcall(function() return AssetService:SearchAudio(params) end)
+    if success then
+        local found = {}
+        for _, v in pairs(res:GetCurrentPage()) do table.insert(found, {id=v.Id, name=v.Title}) end
+        render(found)
+    end
+    sGo.Text = "🔍"
+end)
+
+-- 底部导航
+local nav = create("Frame", {Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 1, -40), BackgroundTransparency = 1, Parent = main})
+create("UIListLayout", {FillDirection = "Horizontal", Padding = UDim.new(0, 5), Parent = nav})
+
+local function navBtn(txt, cb)
+    local b = create("TextButton", {Size = UDim2.new(0, 70, 1, 0), Text = txt, Font = "GothamBold", TextSize = 11, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = nav})
+    corner(b, 4)
+    b.MouseButton1Click:Connect(cb)
+end
+
+-- 推荐列表内容更新
+local Recommends = {
+    {id = "104923055259541", name = "不知名"},
+    {id = "112834898401032", name = "离开我的依赖"},
+    {id = "118537604558488", name = "你说你不想在这里"},
+    {id = "132772094469180", name = "U京"}
+}
+
+navBtn("推荐", function() render(Recommends) end)
+navBtn("收藏", function() render(State.Favorites) end)
+navBtn("清空", function() State.Favorites = {}; save(); render({}) end)
+
+-- 拖拽功能
+local dragging, dragStart, startPos
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true; dragStart = input.Position; startPos = main.Position end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+header.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+
+-- 默认进入显示推荐
+render(Recommends)
