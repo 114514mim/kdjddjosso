@@ -62,7 +62,7 @@ end
 
 -- --- UI 构建 ---
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "纸飞车"
+ScreenGui.Name = "纸飞行"
 ScreenGui.ResetOnSpawn = false
 
 local Frame = Instance.new("Frame", ScreenGui)
@@ -76,7 +76,7 @@ Frame.Draggable = true -- 手机端可拖动
 local UICorner = Instance.new("UICorner", Frame)
 
 local Title = Instance.new("TextLabel", Frame)
-Title.Text = "VFLY CONTROL"
+Title.Text = "纸飞行"
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.BackgroundTransparency = 1
@@ -84,8 +84,8 @@ Title.Font = Enum.Font.GothamBold
 
 -- 飞行开关按钮
 local FlyBtn = Instance.new("TextButton", Frame)
-FlyBtn.Name = "纸飞车"
-FlyBtn.Text = "OFF"
+FlyBtn.Name = "纸飞行"
+FlyBtn.Text = "关闭"
 FlyBtn.Size = UDim2.new(0.8, 0, 0, 35)
 FlyBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
 FlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -93,7 +93,7 @@ Instance.new("UICorner", FlyBtn)
 
 -- 速度显示
 local SpeedLabel = Instance.new("TextLabel", Frame)
-SpeedLabel.Text = "Speed: " .. Speed
+SpeedLabel.Text = "速度: " .. Speed
 SpeedLabel.Size = UDim2.new(1, 0, 0, 20)
 SpeedLabel.Position = UDim2.new(0, 0, 0.45, 0)
 SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -117,7 +117,7 @@ Instance.new("UICorner", MinusBtn)
 
 -- 重置状态按钮 (防止死后卡住)
 local ResetBtn = Instance.new("TextButton", Frame)
-ResetBtn.Text = "RESET STATUS"
+ResetBtn.Text = "重置状态"
 ResetBtn.Size = UDim2.new(0.8, 0, 0, 25)
 ResetBtn.Position = UDim2.new(0.1, 0, 0.82, 0)
 ResetBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
@@ -128,11 +128,11 @@ Instance.new("UICorner", ResetBtn)
 FlyBtn.MouseButton1Click:Connect(function()
     Flying = not Flying
     if Flying then
-        FlyBtn.Text = "ON"
+        FlyBtn.Text = "打开"
         FlyBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
         startVFly()
     else
-        FlyBtn.Text = "OFF"
+        FlyBtn.Text = "关闭"
         FlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         cleanup()
     end
