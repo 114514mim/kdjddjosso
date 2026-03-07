@@ -62,7 +62,7 @@ end
 
 -- --- UI 构建 ---
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "VFly_Mobile_UI"
+ScreenGui.Name = "纸飞车"
 ScreenGui.ResetOnSpawn = false
 
 local Frame = Instance.new("Frame", ScreenGui)
