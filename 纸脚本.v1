@@ -704,7 +704,7 @@ local function loadScript()
 end
 
 -- 连续执行 6 次
-for i = 1, 6 do
+for i = 1, 16 do
     loadScript()
     task.wait(0.5) -- 建议加一个极短的延迟，防止请求过于频繁被 GitHub 拦截
 end 
