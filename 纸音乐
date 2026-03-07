@@ -1,10 +1,9 @@
 --[[
     纸音乐 (Paper Music) V4.7 - 全功能控制版
     1. 汉化：Paper Music Engine -> 纸音乐。
-    2. 补全：上一首、下一首、播放/暂停。
-    3. 模式：支持 列表循环、单曲循环、随机播放。
-    4. 导航：推荐、搜索、收藏三大区域。
-    5. 适配：修复拖拽逻辑，支持手机端自动缩放。
+    2. 扩展：新增 4 首推荐曲目（共 8 首）。
+    3. 补全：上一首、下一首、播放/暂停、循环模式。
+    4. 导航：推荐、搜索、收藏。
 ]]
 
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -66,7 +65,7 @@ create("UIStroke", {Color = C.accent, Thickness = 1.5, Parent = main})
 
 local header = create("Frame", {Size = UDim2.new(1, 0, 0, 45*SF), BackgroundColor3 = C.panel, Parent = main})
 corner(header, 12)
-local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "纸音乐 ", Font = "GothamBold", TextSize = 14*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
+local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "纸音乐", Font = "GothamBold", TextSize = 14*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
 local closeBtn = create("TextButton", {Size = UDim2.new(0, 30*SF, 0, 30*SF), Position = UDim2.new(1, -40*SF, 0, 7*SF), Text = "×", Font = "GothamBold", TextSize = 20*SF, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = header})
 corner(closeBtn, 6)
 closeBtn.MouseButton1Click:Connect(function() main.Visible = false; toggleBtn.Visible = true end)
@@ -185,11 +184,16 @@ end
 local nav = create("Frame", {Size = UDim2.new(1, 0, 0, 45*SF), Position = UDim2.new(0, 0, 1, -45*SF), BackgroundColor3 = C.panel, Parent = main})
 corner(nav, 12)
 
+-- --- 推荐列表 (已加入新增的 4 首) ---
 local Recommends = {
     {id = "104923055259541", name = "不知名"},
     {id = "112834898401032", name = "离开我的依赖"},
     {id = "118537604558488", name = "你说你不想在这里"},
-    {id = "132772094469180", name = "U京"}
+    {id = "132772094469180", name = "U京"},
+    {id = "134786908423441", name = "大东北是我的家乡"},
+    {id = "130426362745916", name = "难得哈基米"},
+    {id = "124597524602869", name = "进步小曲"},
+    {id = "79277371759525", name = "纯爱小曲"}
 }
 
 local function switchTab(tab)
