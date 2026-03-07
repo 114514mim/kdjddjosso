@@ -511,29 +511,88 @@ PrisonTab:CreateButton({
 })
 
 -- Ragebot
+local players = game:GetService('Players')
+local lp = players.LocalPlayer
+local camera = workspace.CurrentCamera
+local RunService = game:GetService('RunService')
+
+-- 配置参数
 local RagebotActive = false
+local fov = 120
+local targetPart = 'Head'
+local target = nil
+
+local raycastParams = RaycastParams.new()
+raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+raycastParams.IgnoreWater = true
+
+-- 获取最近玩家的函数
+local function getClosestPlayer()
+    if not RagebotActive then return nil end
+    
+    local closestPlayer = nil
+    local closestDistance = fov
+    local mouse = lp:GetMouse()
+    local mousePos = Vector2.new(mouse.X, mouse.Y)
+    
+    raycastParams.FilterDescendantsInstances = {lp.Character or workspace}
+    
+    for _, p in pairs(players:GetPlayers()) do
+        if p ~= lp and p.Team ~= lp.Team and p.Character then
+            local part = p.Character:FindFirstChild(targetPart)
+            local humanoid = p.Character:FindFirstChild('Humanoid')
+            
+            if part and humanoid and humanoid.Health > 0 then
+                local screen, onScreen = camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local screenPos = Vector2.new(screen.X, screen.Y)
+                    local dist = (screenPos - mousePos).Magnitude
+                    
+                    if dist < closestDistance then
+                        -- 射线检测障碍物（可见性检查）
+                        local direction = part.Position - camera.CFrame.Position
+                        local result = workspace:Raycast(camera.CFrame.Position, direction, raycastParams)
+                        
+                        if not result or result.Instance:IsDescendantOf(p.Character) then
+                            closestPlayer = part
+                            -- 注意：这里原逻辑用 distance 赋值给 closestDistance 可能会导致逻辑跳跃
+                            -- 保持使用屏幕距离 (dist) 判断谁更靠近准星
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+-- 持续更新目标
+RunService.RenderStepped:Connect(function()
+    target = getClosestPlayer()
+end)
+
+-- Metatable Hook (只需执行一次)
+local oldNamecall
+oldNamecall = hookmetamethod(game, '__namecall', newcclosure(function(self, ...) 
+    local method = getnamecallmethod()
+    local args = {...}
+    
+    -- 只有当开关开启且目标存在时，才修改 Raycast 参数
+    if RagebotActive and target and self == workspace and method == 'Raycast' and not checkcaller() then
+        -- 修正射线方向指向目标
+        args[2] = (target.Position - args[1]).Unit * 1000
+        return oldNamecall(self, unpack(args))
+    end
+    
+    return oldNamecall(self, ...)
+end))
+
+-- UI 开关定义
 PrisonTab:CreateToggle({
-    Name = "愤怒机器人 (Ragebot)",
+    Name = "愤怒机器人 (Ragebot - Silent)",
     CurrentValue = false,
     Callback = function(Value)
         RagebotActive = Value
-        if Value then
-            task.spawn(function()
-                while RagebotActive do
-                    local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
-                    if tool and tool:FindFirstChild("RemoteEvent") then
-                        for _, v in pairs(Players:GetPlayers()) do
-                            if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                                pcall(function()
-                                    tool.RemoteEvent:FireServer({[1] = {["RayObject"] = Ray.new(Vector3.new(), Vector3.new()), ["Distance"] = 0, ["Cframe"] = v.Character.HumanoidRootPart.CFrame, ["Hit"] = v.Character.HumanoidRootPart}})
-                                end)
-                            end
-                        end
-                    end
-                    task.wait(0.05)
-                end
-            end)
-        end
     end,
 })
 
