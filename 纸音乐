@@ -1,16 +1,17 @@
 --[[
-    纸音乐 (Paper Music) V4.7 - Full Control Edition
-    1. 补全：上一首、下一首、播放/暂停。
-    2. 模式：支持 列表循环、单曲循环、随机播放。
-    3. 导航：推荐、搜索、收藏三大区域。
-    4. 适配：修复拖拽逻辑，支持手机端自动缩放。
+    纸音乐 (Paper Music) V4.7 - 全功能控制版
+    1. 汉化：Paper Music Engine -> 纸音乐。
+    2. 补全：上一首、下一首、播放/暂停。
+    3. 模式：支持 列表循环、单曲循环、随机播放。
+    4. 导航：推荐、搜索、收藏三大区域。
+    5. 适配：修复拖拽逻辑，支持手机端自动缩放。
 ]]
 
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local env = getgenv and getgenv() or _G
-local RANDOM_NAME = "Paper_Music_Engine_" .. math.random(1000, 9999)
-local SAVE_PATH = "PaperMusic_Favs.json"
+local RANDOM_NAME = "ZhiYinYue_Engine_" .. math.random(1000, 9999)
+local SAVE_PATH = "ZhiYinYue_Favs.json"
 if env["_PAPER_MUSIC_V4_CORE_"] then env["_PAPER_MUSIC_V4_CORE_"].Gui:Destroy() end
 
 local service = setmetatable({}, {__index = function(self, n) return game:GetService(n) end})
@@ -56,7 +57,7 @@ pcall(function() gui.Parent = service.CoreGui end)
 if not gui.Parent then gui.Parent = service.Players.LocalPlayer:WaitForChild("PlayerGui") end
 env["_PAPER_MUSIC_V4_CORE_"] = {Gui = gui}
 
-local toggleBtn = create("TextButton", {Size = UDim2.new(0, 50*SF, 0, 50*SF), Position = UDim2.new(0, 15, 0.5, -25*SF), BackgroundColor3 = C.panel, Text = "纸音乐", TextSize = 25*SF, TextColor3 = C.accent, Visible = false, ZIndex = 10, Parent = gui})
+local toggleBtn = create("TextButton", {Size = UDim2.new(0, 50*SF, 0, 50*SF), Position = UDim2.new(0, 15, 0.5, -25*SF), BackgroundColor3 = C.panel, Text = "纸", TextSize = 25*SF, TextColor3 = C.accent, Visible = false, ZIndex = 10, Parent = gui})
 corner(toggleBtn, 25)
 
 local main = create("Frame", {Size = UDim2.new(0, 340*SF, 0, 510*SF), Position = UDim2.new(0.5, -170*SF, 0.5, -255*SF), BackgroundColor3 = C.bg, Parent = gui})
@@ -65,7 +66,7 @@ create("UIStroke", {Color = C.accent, Thickness = 1.5, Parent = main})
 
 local header = create("Frame", {Size = UDim2.new(1, 0, 0, 45*SF), BackgroundColor3 = C.panel, Parent = main})
 corner(header, 12)
-local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "PAPER MUSIC ENGINE", Font = "GothamBold", TextSize = 13*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
+local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "纸 音乐 (PAPER MUSIC)", Font = "GothamBold", TextSize = 14*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
 local closeBtn = create("TextButton", {Size = UDim2.new(0, 30*SF, 0, 30*SF), Position = UDim2.new(1, -40*SF, 0, 7*SF), Text = "×", Font = "GothamBold", TextSize = 20*SF, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = header})
 corner(closeBtn, 6)
 closeBtn.MouseButton1Click:Connect(function() main.Visible = false; toggleBtn.Visible = true end)
@@ -158,7 +159,7 @@ local function render(data)
         local row = create("Frame", {Size = UDim2.new(1, -5, 0, 40*SF), BackgroundColor3 = C.panel, Parent = scroll})
         corner(row, 6)
         create("TextLabel", {Size = UDim2.new(1, -100*SF, 1, 0), Position = UDim2.new(0, 10*SF, 0, 0), Text = item.name, TextColor3 = C.text, Font = "Gotham", TextSize = 11*SF, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = row})
-        
+
         local p = create("TextButton", {Size = UDim2.new(0, 30*SF, 0, 30*SF), Position = UDim2.new(1, -40*SF, 0.5, -15*SF), Text = "▶", BackgroundColor3 = C.accent, Parent = row})
         corner(p, 6)
         p.MouseButton1Click:Connect(function() State.CurrentList = data; State.Index = i; _G.PlayMusic(item.id, item.name) end)
