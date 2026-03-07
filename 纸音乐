@@ -56,7 +56,7 @@ pcall(function() gui.Parent = service.CoreGui end)
 if not gui.Parent then gui.Parent = service.Players.LocalPlayer:WaitForChild("PlayerGui") end
 env["_PAPER_MUSIC_V4_CORE_"] = {Gui = gui}
 
-local toggleBtn = create("TextButton", {Size = UDim2.new(0, 50*SF, 0, 50*SF), Position = UDim2.new(0, 15, 0.5, -25*SF), BackgroundColor3 = C.panel, Text = "📄", TextSize = 25*SF, TextColor3 = C.accent, Visible = false, ZIndex = 10, Parent = gui})
+local toggleBtn = create("TextButton", {Size = UDim2.new(0, 50*SF, 0, 50*SF), Position = UDim2.new(0, 15, 0.5, -25*SF), BackgroundColor3 = C.panel, Text = "纸音乐", TextSize = 25*SF, TextColor3 = C.accent, Visible = false, ZIndex = 10, Parent = gui})
 corner(toggleBtn, 25)
 
 local main = create("Frame", {Size = UDim2.new(0, 340*SF, 0, 510*SF), Position = UDim2.new(0.5, -170*SF, 0.5, -255*SF), BackgroundColor3 = C.bg, Parent = gui})
