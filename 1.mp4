@@ -1,1 +1,63 @@
-.
+.--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local players = game:GetService('Players')
+local lp = players.LocalPlayer
+local camera = workspace.CurrentCamera
+local team = game:GetService('Teams')
+
+local fov = 120
+local targetPart = 'Head'
+local target = nil
+
+local raycastParams = RaycastParams.new()
+raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+raycastParams.IgnoreWater = true
+
+local function closest()
+    local closestPlayer = nil
+    local closestDistance = fov
+    local mouse = lp:GetMouse()
+    local mousePos = Vector2.new(mouse.X, mouse.Y)
+    local team = lp.Team
+    raycastParams.FilterDescendantsInstances = {lp.Character or workspace}
+    for _, p in pairs(players:GetPlayers()) do
+        if p ~= lp and p.Team and p.Team ~= team and p.Character then
+            local player = p.Character:FindFirstChild(targetPart)
+            local humanoid = p.Character:FindFirstChild('Humanoid')
+            if player and humanoid then
+                local screen, onScreen = camera:WorldToViewportPoint(player.Position)
+                if onScreen then
+                    local screenPos = Vector2.new(screen.X, screen.Y)
+                    local dist = (screenPos - mousePos).Magnitude
+                    if dist < closestDistance then
+                        local headPos = player.Position
+                        local direction = headPos - camera.CFrame.Position
+                        local distance = direction.Magnitude
+                        local result = workspace:Raycast(camera.CFrame.Position, direction.Unit * distance, raycastParams)
+                        if not result or result.Instance:IsDescendantOf(p.Character) then
+                            closestDistance = distance
+                            closestPlayer = player
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+game:GetService('RunService').RenderStepped:Connect(function()
+    target = closest()
+end)
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, '__namecall', newcclosure(function(self, ...) 
+    if checkcaller() then return oldNamecall(self, ...) end
+    local args = {...}
+    if self == workspace and getnamecallmethod() == 'Raycast' and target then
+        args[2] = (target.Position - args[1]).Unit * 1000
+        return oldNamecall(self, unpack(args))
+    end
+    return oldNamecall(self, ...)
+end))
