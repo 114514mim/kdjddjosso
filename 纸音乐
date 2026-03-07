@@ -66,7 +66,7 @@ create("UIStroke", {Color = C.accent, Thickness = 1.5, Parent = main})
 
 local header = create("Frame", {Size = UDim2.new(1, 0, 0, 45*SF), BackgroundColor3 = C.panel, Parent = main})
 corner(header, 12)
-local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "纸 音乐 (PAPER MUSIC)", Font = "GothamBold", TextSize = 14*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
+local title = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 15*SF, 0, 0), Text = "纸音乐 ", Font = "GothamBold", TextSize = 14*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
 local closeBtn = create("TextButton", {Size = UDim2.new(0, 30*SF, 0, 30*SF), Position = UDim2.new(1, -40*SF, 0, 7*SF), Text = "×", Font = "GothamBold", TextSize = 20*SF, TextColor3 = C.text, BackgroundColor3 = C.card, Parent = header})
 corner(closeBtn, 6)
 closeBtn.MouseButton1Click:Connect(function() main.Visible = false; toggleBtn.Visible = true end)
