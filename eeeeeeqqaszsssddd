@@ -1,214 +1,163 @@
---[[
-    纸飞行 (Paper Fly) V3.1 - Pro Edition
-    1. 视觉：暗色极简风，蓝色强调色，视觉统一。
-    2. 核心：支持死亡重生后自动恢复飞行状态。
-    3. 适配：自动检测设备屏幕，适配不同大小的手机。
-    4. 功能：上升、下降、速度调节、UI缩小/唤回。
-]]
-
-if not game:IsLoaded() then game.Loaded:Wait() end
-
-local env = getgenv and getgenv() or _G
-local RANDOM_NAME = "Paper_Fly_Core_" .. math.random(1000, 9999)
--- 清理旧版本
-if env["_PAPER_FLY_CORE_"] then env["_PAPER_FLY_CORE_"]:Destroy() end
-
-local service = setmetatable({}, {__index = function(self, n) return game:GetService(n) end})
-local RunService, UserInputService, Players = service.RunService, service.UserInputService, service.Players
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 
--- --- 设备缩放适配 ---
-local function getSF() 
-    return math.clamp(Camera.ViewportSize.X / 1000, 0.7, 1.0) 
-end
-local SF = getSF()
-
-local C = {
-    bg = Color3.fromRGB(22, 22, 26),
-    panel = Color3.fromRGB(30, 30, 36),
-    accent = Color3.fromRGB(0, 170, 255),
-    text = Color3.fromRGB(255, 255, 255),
-    card = Color3.fromRGB(45, 45, 52)
-}
-
--- --- 飞行状态变量 ---
-local speeds = 1
+-- --- 核心变量 ---
 local Flying = false
+local Speed = 80
 local bv, bg, connection
 
--- --- UI 助手函数 ---
-local function create(cls, props)
-    local o = Instance.new(cls)
-    for k, v in pairs(props) do if k ~= "Parent" then o[k] = v end end
-    o.Parent = props.Parent
-    return o
-end
-local function corner(p, r) create("UICorner", {CornerRadius = UDim.new(0, (r or 8) * SF), Parent = p}) end
-
--- --- GUI 注入 ---
-local gui = create("ScreenGui", {Name = RANDOM_NAME, ResetOnSpawn = false})
-pcall(function() gui.Parent = service.CoreGui end)
-if not gui.Parent then gui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
-env["_PAPER_FLY_CORE_"] = gui
-
--- 缩小后的唤回按钮
-local toggleBtn = create("TextButton", {
-    Size = UDim2.new(0, 45*SF, 0, 45*SF), 
-    Position = UDim2.new(0, 15, 0.35, 0), 
-    BackgroundColor3 = C.panel, 
-    Text = "✈️", 
-    TextSize = 20*SF, 
-    TextColor3 = C.accent, 
-    Visible = false, 
-    ZIndex = 10, 
-    Parent = gui
-})
-corner(toggleBtn, 25)
-
--- 主面板
-local main = create("Frame", {
-    Size = UDim2.new(0, 200 * SF, 0, 165 * SF), 
-    Position = UDim2.new(0.05, 0, 0.35, 0), 
-    BackgroundColor3 = C.bg, 
-    Parent = gui
-})
-corner(main, 10)
-create("UIStroke", {Color = C.accent, Thickness = 1.2, Parent = main})
-
--- 标题栏
-local header = create("Frame", {Size = UDim2.new(1, 0, 0, 32 * SF), BackgroundColor3 = C.panel, Parent = main})
-corner(header, 10)
-local title = create("TextLabel", {Size = UDim2.new(1, -60*SF, 1, 0), Position = UDim2.new(0, 12*SF, 0, 0), Text = "纸飞行", Font = "GothamBold", TextSize = 11*SF, TextColor3 = C.accent, BackgroundTransparency = 1, TextXAlignment = "Left", Parent = header})
-local mini = create("TextButton", {Size = UDim2.new(0, 25*SF, 0, 25*SF), Position = UDim2.new(1, -55*SF, 0, 3.5*SF), Text = "-", Font = "GothamBold", TextSize = 18*SF, TextColor3 = C.text, BackgroundTransparency = 1, Parent = header})
-local close = create("TextButton", {Size = UDim2.new(0, 25*SF, 0, 25*SF), Position = UDim2.new(1, -30*SF, 0, 3.5*SF), Text = "×", Font = "GothamBold", TextSize = 18*SF, TextColor3 = C.text, BackgroundTransparency = 1, Parent = header})
-
--- 功能按钮区
-local flyBtn = create("TextButton", {Size = UDim2.new(0.9, 0, 0, 32*SF), Position = UDim2.new(0.05, 0, 0, 42*SF), Text = "开启飞行", Font = "GothamBold", TextSize = 12*SF, BackgroundColor3 = C.card, TextColor3 = C.text, Parent = main})
-corner(flyBtn, 6)
-
-local speedFrame = create("Frame", {Size = UDim2.new(0.9, 0, 0, 35*SF), Position = UDim2.new(0.05, 0, 0, 82*SF), BackgroundTransparency = 1, Parent = main})
-local minus = create("TextButton", {Size = UDim2.new(0, 35*SF, 1, 0), Text = "-", Font = "GothamBold", TextSize = 20*SF, BackgroundColor3 = C.card, TextColor3 = C.text, Parent = speedFrame})
-corner(minus, 6)
-local speedShow = create("TextLabel", {Size = UDim2.new(1, -80*SF, 1, 0), Position = UDim2.new(0, 40*SF, 0, 0), Text = "速度: 1", Font = "GothamBold", TextSize = 11*SF, TextColor3 = C.accent, BackgroundColor3 = C.panel, Parent = speedFrame})
-corner(speedShow, 6)
-local plus = create("TextButton", {Size = UDim2.new(0, 35*SF, 1, 0), Position = UDim2.new(1, -35*SF, 0, 0), Text = "+", Font = "GothamBold", TextSize = 20*SF, BackgroundColor3 = C.card, TextColor3 = C.text, Parent = speedFrame})
-corner(plus, 6)
-
-local up = create("TextButton", {Size = UDim2.new(0.43, 0, 0, 28*SF), Position = UDim2.new(0.05, 0, 0, 125*SF), Text = "上升", Font = "GothamBold", TextSize = 10*SF, BackgroundColor3 = C.card, TextColor3 = C.text, Parent = main})
-corner(up, 6)
-local down = create("TextButton", {Size = UDim2.new(0.43, 0, 0, 28*SF), Position = UDim2.new(0.52, 0, 0, 125*SF), Text = "下降", Font = "GothamBold", TextSize = 10*SF, BackgroundColor3 = C.card, TextColor3 = C.text, Parent = main})
-corner(down, 6)
-
--- --- 飞行逻辑核心 ---
+-- --- 核心功能函数 ---
 local function cleanup()
-    if connection then connection:Disconnect() connection = nil end
-    if bv then bv:Destroy() bv = nil end
-    if bg then bg:Destroy() bg = nil end
+    if connection then connection:Disconnect() end
+    if bv then bv:Destroy(); bv = nil end
+    if bg then bg:Destroy(); bg = nil end
     local char = LocalPlayer.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.PlatformStand = false
-            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
-        end
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        char:FindFirstChildOfClass("Humanoid").PlatformStand = false
     end
 end
 
 local function startVFly()
     cleanup()
-    local char = LocalPlayer.Character
-    if not char then return end
-    local root = char:WaitForChild("HumanoidRootPart", 10)
-    local hum = char:WaitForChild("Humanoid", 10)
-    if not root or not hum then return end
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hum = char:WaitForChild("Humanoid")
     local camera = workspace.CurrentCamera
+    
+    local function getTarget()
+        return (hum.SeatPart and hum.SeatPart:IsA("BasePart") and hum.SeatPart) or char:FindFirstChild("HumanoidRootPart")
+    end
 
-    bv = Instance.new("BodyVelocity")
+    local target = getTarget()
+    if not target then return end
+
+    bv = Instance.new("BodyVelocity", target)
     bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
-    bv.Velocity = Vector3.new(0, 0, 0)
-    bv.Parent = root
-
-    bg = Instance.new("BodyGyro")
+    bg = Instance.new("BodyGyro", target)
     bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
-    bg.P = 10000
-    bg.Parent = root
-    hum.PlatformStand = true 
 
     connection = RunService.RenderStepped:Connect(function()
-        if not Flying or not char:IsDescendantOf(workspace) or hum.Health <= 0 then cleanup() return end
+        if not Flying or hum.Health <= 0 then cleanup(); return end
+        
+        local currentTarget = getTarget()
+        if currentTarget and bv.Parent ~= currentTarget then
+            bv.Parent = currentTarget
+            bg.Parent = currentTarget
+        end
+
         bg.CFrame = camera.CFrame
         if hum.MoveDirection.Magnitude > 0 then
-            bv.Velocity = camera.CFrame.LookVector * (speeds * 50) 
+            bv.Velocity = camera.CFrame.LookVector * Speed
         else
             bv.Velocity = Vector3.new(0, 0, 0)
+        end
+        
+        -- 同步载具原生速度（如果是车）
+        if hum.SeatPart and hum.SeatPart:IsA("VehicleSeat") then
+            hum.SeatPart.MaxSpeed = Speed
+            hum.SeatPart.Torque = 10000
         end
     end)
 end
 
--- --- 处理重生 ---
+-- --- UI 构建 ---
+local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "VFly_Mobile_UI"
+ScreenGui.ResetOnSpawn = false
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 160, 0, 180)
+Frame.Position = UDim2.new(0.5, -80, 0.1, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BackgroundTransparency = 0.3
+Frame.Active = true
+Frame.Draggable = true -- 手机端可拖动
+
+local UICorner = Instance.new("UICorner", Frame)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Text = "VFLY CONTROL"
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+
+-- 飞行开关按钮
+local FlyBtn = Instance.new("TextButton", Frame)
+FlyBtn.Name = "纸飞车"
+FlyBtn.Text = "OFF"
+FlyBtn.Size = UDim2.new(0.8, 0, 0, 35)
+FlyBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
+FlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+Instance.new("UICorner", FlyBtn)
+
+-- 速度显示
+local SpeedLabel = Instance.new("TextLabel", Frame)
+SpeedLabel.Text = "Speed: " .. Speed
+SpeedLabel.Size = UDim2.new(1, 0, 0, 20)
+SpeedLabel.Position = UDim2.new(0, 0, 0.45, 0)
+SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
+SpeedLabel.BackgroundTransparency = 1
+
+-- 加速按钮
+local AddBtn = Instance.new("TextButton", Frame)
+AddBtn.Text = "+"
+AddBtn.Size = UDim2.new(0.35, 0, 0, 30)
+AddBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
+AddBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Instance.new("UICorner", AddBtn)
+
+-- 减速按钮
+local MinusBtn = Instance.new("TextButton", Frame)
+MinusBtn.Text = "-"
+MinusBtn.Size = UDim2.new(0.35, 0, 0, 30)
+MinusBtn.Position = UDim2.new(0.55, 0, 0.6, 0)
+MinusBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+Instance.new("UICorner", MinusBtn)
+
+-- 重置状态按钮 (防止死后卡住)
+local ResetBtn = Instance.new("TextButton", Frame)
+ResetBtn.Text = "RESET STATUS"
+ResetBtn.Size = UDim2.new(0.8, 0, 0, 25)
+ResetBtn.Position = UDim2.new(0.1, 0, 0.82, 0)
+ResetBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+ResetBtn.TextSize = 10
+Instance.new("UICorner", ResetBtn)
+
+-- --- 交互逻辑 ---
+FlyBtn.MouseButton1Click:Connect(function()
+    Flying = not Flying
+    if Flying then
+        FlyBtn.Text = "ON"
+        FlyBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        startVFly()
+    else
+        FlyBtn.Text = "OFF"
+        FlyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        cleanup()
+    end
+end)
+
+AddBtn.MouseButton1Click:Connect(function()
+    Speed = Speed + 20
+    SpeedLabel.Text = "Speed: " .. Speed
+end)
+
+MinusBtn.MouseButton1Click:Connect(function()
+    Speed = math.max(10, Speed - 20)
+    SpeedLabel.Text = "Speed: " .. Speed
+end)
+
+ResetBtn.MouseButton1Click:Connect(function()
+    cleanup()
+    if Flying then startVFly() end
+end)
+
+-- 重生处理
 LocalPlayer.CharacterAdded:Connect(function()
     cleanup()
-    if Flying then
-        task.wait(1)
-        if Flying then startVFly() end
-    end
+    task.wait(1.5)
+    if Flying then startVFly() end
 end)
 
--- --- 交互响应 ---
-flyBtn.MouseButton1Click:Connect(function()
-    Flying = not Flying
-    flyBtn.Text = Flying and "关闭飞行" or "开启飞行"
-    flyBtn.BackgroundColor3 = Flying and C.accent or C.card
-    flyBtn.TextColor3 = Flying and C.bg or C.text
-    if Flying then startVFly() else cleanup() end
-end)
-
-plus.MouseButton1Click:Connect(function() speeds = speeds + 1; speedShow.Text = "速度: " .. speeds end)
-minus.MouseButton1Click:Connect(function() if speeds > 1 then speeds = speeds - 1; speedShow.Text = "速度: " .. speeds end end)
-
--- 上下移动
-local upConn, downConn
-local function handleMovement(btn, delta)
-    local conn
-    btn.MouseButton1Down:Connect(function()
-        conn = RunService.Heartbeat:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame *= CFrame.new(0, delta, 0)
-            end
-        end)
-    end)
-    local stop = function() if conn then conn:Disconnect() end end
-    btn.MouseButton1Up:Connect(stop)
-    btn.MouseLeave:Connect(stop)
-end
-handleMovement(up, 1)
-handleMovement(down, -1)
-
--- UI 控制
-mini.MouseButton1Click:Connect(function() main.Visible = false; toggleBtn.Visible = true end)
-toggleBtn.MouseButton1Click:Connect(function() main.Visible = true; toggleBtn.Visible = false end)
-close.MouseButton1Click:Connect(function() Flying = false; gui:Destroy(); cleanup() end)
-
--- 拖拽支持
-local dragging, dragStart, startPos
-header.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true; dragStart = input.Position; startPos = main.Position
-    end
-end)
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-UserInputService.InputEnded:Connect(function() dragging = false end)
-
--- 反踢出保护
-pcall(function()
-    hookfunction(LocalPlayer.Kick, function() return end)
-end)
-
-print("纸飞行 (Paper Fly) 已准备就绪")
+print("VFly 整合 UI 已加载")
