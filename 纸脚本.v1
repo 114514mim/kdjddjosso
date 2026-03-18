@@ -7,7 +7,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = false -- 重点：先关闭配置保存，防止它强制读取旧的黑色主题
    },
-   Theme = "Amethyst", -- 备选方案: "Amber", "Green", "Red", "" (紫色)
+   Theme = "White",
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
 })
