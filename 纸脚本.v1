@@ -930,7 +930,7 @@ Night99Tab:CreateButton({
     Name = "锁血",
     Callback = function()
         pcall(function()
-            ReplicatedStorage.RemoteEvents.DamagePlayer:FireServer(-9e18)
+            ReplicatedStorage.RemoteEvents.DamagePlayer:FireServer(-inf)
         end)
     end
 })
