@@ -273,3 +273,87 @@ local function createGUI(root)
     closeBtn.MouseButton1Click:Connect(function() gui.Enabled = not gui.Enabled end)
 end
 
+-- // 第四段：主运行逻辑 (FE 隐身转换与脚本启动)
+local function runInvisfling()
+    local speaker = LocalPlayer
+    local ch = speaker.Character
+    if not ch then return warn("Character not found") end
+    
+    print("★ Invisfling V3 Mobile starting...")
+    local humanoid = ch:FindFirstChildWhichIsA("Humanoid")
+    if humanoid then 
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false) 
+    end
+
+    -- ═══════════════════════════════════════════ --
+    -- FE INVISIBILITY TRICK (原本的交换逻辑，完全保留)
+    -- ═══════════════════════════════════════════ --
+    local prt = Instance.new("Model", ch)
+    local z2 = Instance.new("Part", prt)
+    z2.Name = "Head"; z2.Anchored = true; z2.CanCollide = false
+    local z3 = Instance.new("Humanoid", prt)
+    local z1 = Instance.new("Part", prt)
+    z1.Name = "Torso"; z1.CanCollide = false; z1.Anchored = true
+    z1.Position = Vector3.new(0, 9999, 0)
+
+    print(" → Swap 1...")
+    speaker.Character = prt
+    task.wait(3)
+    
+    print(" → Swap 2...")
+    speaker.Character = ch
+    task.wait(3)
+
+    local newHum = Instance.new("Humanoid", ch)
+    local root = getRoot(ch)
+    if not root then return warn("No RootPart") end
+    rootRef = root
+
+    -- 清理角色，仅保留 RootPart
+    for _, v in pairs(ch:GetChildren()) do
+        if v ~= root and not v:IsA("Humanoid") then
+            v:Destroy()
+        end
+    end
+
+    -- 初始化外观
+    root.Transparency = CONFIG.RootTransparency
+    root.Color = CONFIG.PartColor
+    root.Material = CONFIG.RootMaterial
+
+    -- 应用所有效果
+    applyFace(root)
+    applyTrail(root)
+    applyParticles(root)
+    applyGlow(root)
+
+    -- 旋转 (Spin)
+    local spin = Instance.new("BodyAngularVelocity", root)
+    spin.Name = "SpinForce"
+    spin.MaxTorque = Vector3.new(0, math.huge, 0)
+    spin.AngularVelocity = Vector3.new(0, CONFIG.SpinSpeed * math.pi * 2, 0)
+
+    -- 肢体
+    buildLimbs(root)
+
+    -- 飞行启动
+    sFLY()
+    workspace.CurrentCamera.CameraSubject = root
+
+    -- 击飞 (Fling)
+    local bambam = Instance.new("BodyThrust", root)
+    bambam.Force = Vector3.new(CONFIG.FlingForce, CONFIG.FlingForce * CONFIG.FlingMultiplier, CONFIG.FlingForce)
+    bambam.Location = root.Position
+
+    -- 启动逻辑循环与界面
+    startUpdateLoop(root, spin)
+    createGUI(root)
+
+    print("═══════════════════════════════════")
+    print("★ INVISFLING V3 MOBILE ACTIVE ★")
+    print(" 使用摇杆移动，右侧按钮升降")
+    print("═══════════════════════════════════")
+end
+
+-- 正式运行
+runInvisfling()
