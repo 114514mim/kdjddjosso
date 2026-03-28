@@ -109,3 +109,76 @@ function sFLY()
         if PlayerGui:FindFirstChild("FlyControls") then PlayerGui.FlyControls:Destroy() end
     end)
 end
+
+-- // 第二段：肢体与特效逻辑 (功能完全保留)
+local function addConn(conn) table.insert(connections, conn) return conn end
+local function getColor() return CONFIG.PartColor end
+
+local function clearLimbs()
+    for _, part in ipairs(limbParts) do if part and part.Parent then part:Destroy() end end
+    limbParts = {}
+end
+
+local function createLimb(root, name, size, offset)
+    local limb = Instance.new("Part", root.Parent)
+    limb.Name = name; limb.Size = size; limb.CanCollide = false; limb.Massless = true
+    limb.Material = CONFIG.RootMaterial; limb.Color = CONFIG.PartColor
+    limb.Transparency = CONFIG.RootTransparency
+    local weld = Instance.new("WeldConstraint", limb)
+    weld.Part0 = root; weld.Part1 = limb
+    limb.CFrame = root.CFrame * offset
+    table.insert(limbParts, limb)
+end
+
+local function buildLimbs(root)
+    clearLimbs()
+    if CONFIG.ArmsEnabled then
+        createLimb(root, "RightArm", Vector3.new(0.5, 1.8, 0.5), CFrame.new(1.25, 0, 0))
+        createLimb(root, "LeftArm", Vector3.new(0.5, 1.8, 0.5), CFrame.new(-1.25, 0, 0))
+    end
+    if CONFIG.LegsEnabled then
+        createLimb(root, "RightLeg", Vector3.new(0.5, 1.8, 0.5), CFrame.new(0.5, -1.8, 0))
+        createLimb(root, "LeftLeg", Vector3.new(0.5, 1.8, 0.5), CFrame.new(-0.5, -1.8, 0))
+    end
+end
+
+local function applyFace(root)
+    if not CONFIG.FaceEnabled then return end
+    local d = Instance.new("Decal", root); d.Name = "InvisFace"; d.Texture = CONFIG.FaceId; d.Face = "Front"
+    local d2 = d:Clone(); d2.Face = "Back"; d2.Parent = root
+end
+
+local function applyTrail(root)
+    if not CONFIG.TrailEnabled then return end
+    local a0 = Instance.new("Attachment", root); a0.Position = Vector3.new(0, 0.8, 0)
+    local a1 = Instance.new("Attachment", root); a1.Position = Vector3.new(0, -0.8, 0)
+    local trail = Instance.new("Trail", root); trail.Name = "InvisTrail"
+    trail.Attachment0 = a0; trail.Attachment1 = a1; trail.Lifetime = 0.6
+    trail.Color = ColorSequence.new(CONFIG.PartColor)
+    trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1)})
+end
+
+local function applyParticles(root)
+    if not CONFIG.ParticlesEnabled then return end
+    local p = Instance.new("ParticleEmitter", root); p.Name = "InvisParticle"
+    p.Rate = 15; p.Color = ColorSequence.new(CONFIG.PartColor); p.Texture = "rbxassetid://6490035152"
+end
+
+local function applyGlow(root)
+    if not CONFIG.GlowEnabled then return end
+    local light = Instance.new("PointLight", root); light.Name = "InvisGlow"; light.Brightness = 2; light.Color = CONFIG.PartColor
+end
+
+local function startUpdateLoop(root, spinForce)
+    addConn(RunService.Heartbeat:Connect(function()
+        if not root or not root.Parent then return end
+        root.Color = getColor(); root.Material = CONFIG.RootMaterial; root.CanCollide = false
+        if spinForce and CONFIG.SpinEnabled then
+            local spd = CONFIG.SpinSpeed * math.pi * 2
+            spinForce.AngularVelocity = (CONFIG.SpinAxis == "Y" and Vector3.new(0, spd, 0)) or (CONFIG.SpinAxis == "X" and Vector3.new(spd, 0, 0)) or Vector3.new(0, 0, spd)
+        end
+        local fling = root:FindFirstChildOfClass("BodyThrust")
+        if fling then fling.Force = Vector3.new(CONFIG.FlingForce, CONFIG.FlingForce * CONFIG.FlingMultiplier, CONFIG.FlingForce) end
+    end))
+end
+
