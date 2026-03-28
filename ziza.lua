@@ -182,3 +182,94 @@ local function startUpdateLoop(root, spinForce)
     end))
 end
 
+-- // 第三段：GUI 系统 (包含所有原始功能与 UI 控件)
+local function createGUI(root)
+    if PlayerGui:FindFirstChild("InvisFlingGUI") then PlayerGui:FindFirstChild("InvisFlingGUI"):Destroy() end
+    local gui = Instance.new("ScreenGui", PlayerGui)
+    gui.Name = "InvisFlingGUI"; gui.ResetOnSpawn = false; guiRef = gui
+
+    -- 主面板
+    local main = Instance.new("Frame", gui)
+    main.Name = "Main"; main.Size = UDim2.new(0, 260, 0, 400) -- 手机端稍微缩短一点高度以防遮挡
+    main.Position = UDim2.new(0.5, -130, 0.5, -200)
+    main.BackgroundColor3 = Color3.fromRGB(12, 12, 20); main.Active = true; main.Draggable = true
+    Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+    local stroke = Instance.new("UIStroke", main); stroke.Thickness = 2; stroke.Color = CONFIG.PartColor
+
+    -- 标题栏
+    local titleBar = Instance.new("Frame", main)
+    titleBar.Size = UDim2.new(1, 0, 0, 34); titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+    Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 10)
+    local title = Instance.new("TextLabel", titleBar)
+    title.Size = UDim2.new(1, -70, 1, 0); title.Position = UDim2.new(0, 10, 0, 0)
+    title.BackgroundTransparency = 1; title.Text = "★ INVISFLING V3 MOBILE"; title.TextColor3 = Color3.new(1, 1, 1)
+    title.TextSize = 13; title.Font = Enum.Font.GothamBold; title.TextXAlignment = "Left"
+
+    -- 按钮助手
+    local function headerBtn(text, pos, color)
+        local b = Instance.new("TextButton", titleBar)
+        b.Size = UDim2.new(0, 24, 0, 24); b.Position = pos; b.BackgroundColor3 = color
+        b.Text = text; b.TextColor3 = Color3.new(1, 1, 1); Instance.new("UICorner", b)
+        return b
+    end
+    local closeBtn = headerBtn("X", UDim2.new(1, -30, 0, 5), Color3.fromRGB(170, 40, 40))
+    local minBtn = headerBtn("—", UDim2.new(1, -58, 0, 5), Color3.fromRGB(170, 140, 30))
+
+    -- 滚动内容区
+    local scroll = Instance.new("ScrollingFrame", main)
+    scroll.Size = UDim2.new(1, -12, 1, -40); scroll.Position = UDim2.new(0, 6, 0, 38)
+    scroll.BackgroundTransparency = 1; scroll.ScrollBarThickness = 3; scroll.AutomaticCanvasSize = "Y"
+    local layout = Instance.new("UIListLayout", scroll); layout.Padding = UDim.new(0, 3)
+
+    local ord = 0
+    local function nextOrd() ord = ord + 1 return ord end
+
+    -- [UI 控件函数: Section, Toggle, Slider, Dropdown]
+    local function section(text)
+        local s = Instance.new("TextLabel", scroll)
+        s.Size = UDim2.new(1, 0, 0, 20); s.BackgroundTransparency = 1; s.Text = "── " .. text .. " ──"
+        s.TextColor3 = Color3.fromRGB(120, 80, 200); s.Font = "GothamBold"; s.LayoutOrder = nextOrd()
+    end
+
+    local function toggle(text, default, callback)
+        local f = Instance.new("Frame", scroll); f.Size = UDim2.new(1, 0, 0, 26); f.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+        f.LayoutOrder = nextOrd(); Instance.new("UICorner", f)
+        local lbl = Instance.new("TextLabel", f); lbl.Size = UDim2.new(1, -55, 1, 0); lbl.Position = UDim2.new(0, 8, 0, 0)
+        lbl.BackgroundTransparency = 1; lbl.Text = text; lbl.TextColor3 = Color3.new(0.8, 0.8, 0.8); lbl.TextXAlignment = "Left"
+        local btn = Instance.new("TextButton", f); btn.Size = UDim2.new(0, 40, 0, 18); btn.Position = UDim2.new(1, -48, 0.5, -9)
+        local s = default; btn.Text = s and "ON" or "OFF"; btn.BackgroundColor3 = s and Color3.new(0, 0.6, 0) or Color3.new(0.6, 0, 0)
+        btn.MouseButton1Click:Connect(function() s = not s; btn.Text = s and "ON" or "OFF"; btn.BackgroundColor3 = s and Color3.new(0, 0.6, 0) or Color3.new(0.6, 0, 0); callback(s) end)
+    end
+
+    local function slider(text, min, max, default, callback)
+        local f = Instance.new("Frame", scroll); f.Size = UDim2.new(1, 0, 0, 36); f.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+        f.LayoutOrder = nextOrd(); Instance.new("UICorner", f)
+        local lbl = Instance.new("TextLabel", f); lbl.Size = UDim2.new(0.5, 0, 0, 16); lbl.Position = UDim2.new(0, 8, 0, 2)
+        lbl.BackgroundTransparency = 1; lbl.Text = text; lbl.TextColor3 = Color3.new(0.8, 0.8, 0.8); lbl.TextXAlignment = "Left"
+        local bg = Instance.new("Frame", f); bg.Size = UDim2.new(1, -14, 0, 5); bg.Position = UDim2.new(0, 7, 0, 23); bg.BackgroundColor3 = Color3.new(0.2, 0.2, 0.3)
+        local fill = Instance.new("Frame", bg); fill.Size = UDim2.fromScale((default-min)/(max-min), 1); fill.BackgroundColor3 = Color3.fromRGB(80, 45, 200)
+        
+        local function update(input)
+            local rel = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1)
+            fill.Size = UDim2.fromScale(rel, 1); callback(math.floor(min + (max-min)*rel + 0.5))
+        end
+        bg.InputBegan:Connect(function(i) if i.UserInputType.Name:find("Mouse") or i.UserInputType.Name:find("Touch") then local c; c = RunService.RenderStepped:Connect(function() update(UserInputService:GetMouseLocation()) end) i.Ended:Connect(function() c:Disconnect() end) end end)
+    end
+
+    -- [填充具体选项]
+    section("COLOR")
+    local grid = Instance.new("Frame", scroll); grid.Size = UDim2.new(1, 0, 0, 72); grid.BackgroundTransparency = 1; grid.LayoutOrder = nextOrd()
+    local gl = Instance.new("UIGridLayout", grid); gl.CellSize = UDim2.new(0, 27, 0, 27)
+    for _, p in ipairs(COLOR_PRESETS) do
+        local b = Instance.new("TextButton", grid); b.BackgroundColor3 = p.color; b.Text = ""
+        b.MouseButton1Click:Connect(function() CONFIG.PartColor = p.color; stroke.Color = p.color end)
+    end
+
+    section("FLIGHT"); slider("Speed", 1, 200, CONFIG.FlySpeed, function(v) CONFIG.FlySpeed = v end)
+    section("SPIN"); toggle("Enabled", CONFIG.SpinEnabled, function(v) CONFIG.SpinEnabled = v end)
+    section("FLING"); slider("Force", 10000, 500000, CONFIG.FlingForce, function(v) CONFIG.FlingForce = v end)
+
+    minBtn.MouseButton1Click:Connect(function() scroll.Visible = not scroll.Visible; main.Size = scroll.Visible and UDim2.new(0, 260, 0, 400) or UDim2.new(0, 260, 0, 34) end)
+    closeBtn.MouseButton1Click:Connect(function() gui.Enabled = not gui.Enabled end)
+end
+
