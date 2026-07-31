@@ -1433,4 +1433,38 @@ WarTab:CreateButton({
 
 local UtopiaTab = Window:CreateTab("乌托邦1945", 4483362458)
 
-UtopiaTab:CreateButton({Name = "纸.乌托邦1945脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/zhifeijiyutggddfbe/zhisp/refs/heads/main/%E7%BA%B8.%E4%B9%8C%E6%89%98%E9%82%A61948"))() Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
+UtopiaTab:CreateButton({
+    Name = "纸.乌托邦1945脚本", 
+    Callback = function()
+        -- 先弹窗提示开始加载
+        Rayfield:Notify({
+            Title = "Stealth", 
+            Content = "正在加载脚本，请稍候...", 
+            Duration = 3
+        })
+        
+        -- 使用 task.spawn 异步加载，防止阻塞 UI
+        task.spawn(function()
+            local success, err = pcall(function()
+                -- 注意：请确认 URL 结尾是 1945 还是 1948
+                local scriptUrl = "https://raw.githubusercontent.com/zhifeijiyutggddfbe/zhisp/refs/heads/main/%E7%BA%B8.%E4%B9%8C%E6%89%98%E9%82%A61948"
+                loadstring(game:HttpGet(scriptUrl))()
+            end)
+            
+            if success then
+                Rayfield:Notify({
+                    Title = "Stealth", 
+                    Content = "已成功加载！", 
+                    Duration = 5
+                })
+            else
+                Rayfield:Notify({
+                    Title = "加载失败", 
+                    Content = "远程脚本读取错误，请检查网络或链接！", 
+                    Duration = 5
+                })
+                warn("Load Error:", err)
+            end
+        end)
+    end
+})
