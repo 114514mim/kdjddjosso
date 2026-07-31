@@ -1432,3 +1432,5 @@ WarTab:CreateButton({
 })
 
 local NaturalDisasterTab = Window:CreateTab("乌托邦1945", 4483362458)
+
+UniversalTab:CreateButton({Name = "加载 Stealth 脚本", Callback = function()  Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
