@@ -1433,4 +1433,4 @@ WarTab:CreateButton({
 
 local NaturalDisasterTab = Window:CreateTab("乌托邦1945", 4483362458)
 
-UniversalTab:CreateButton({Name = "加载 Stealth 脚本", Callback = function()  Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
+UniversalTab:CreateButton({Name = "纸.乌托邦1945脚本", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/zhifeijiyutggddfbe/zhisp/refs/heads/main/%E7%BA%B8.%E4%B9%8C%E6%89%98%E9%82%A61948"))() Rayfield:Notify({Title = "Stealth", Content = "已加载！", Duration = 5}) end})
